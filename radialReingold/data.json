@@ -1,0 +1,78 @@
+{ "name": "All",
+  "children": [
+		{ "name": "Nervous System",
+		  "children": [
+				{ "name": "Nervous System Physiology",
+				  "children": [
+						{ "name": "Neurodevelopmental Abnormality",
+						  "children": []
+						}
+					]
+				}, 
+				{ "name": "Nervous System Morphology",
+				  "children": []
+				}
+			]
+		},
+		{ "name": "Skeletal System",
+		  "children": []
+		},
+		{ "name": "Head and Neck",
+		  "children": []
+		},
+		{ "name": "Eye",
+		  "children": []
+		},
+		{ "name": "Integument",
+		  "children": []
+		},
+		{ "name": "Genitourinary System",
+		  "children": []
+		},
+		{ "name": "Growth",
+		  "children": []
+		},
+		{ "name": "Abdomen",
+		  "children": []
+		},
+		{ "name": "Metabolism/Homeostasis",
+		  "children": []
+		},
+		{ "name": "Musculature",
+		  "children": []
+		},
+		{ "name": "Cardiovascular System",
+		  "children": []
+		},
+		{ "name": "Ear",
+		  "children": []
+		},
+		{ "name": "Respiratory System",
+		  "children": []
+		},
+		{ "name": "Immune System",
+		  "children": []
+		},
+		{ "name": "Blood and Blood-forming Tissues",
+		  "children": []
+		},
+		{ "name": "Connective Tissue",
+		  "children": []
+		},
+		{ "name": "Endocrine System",
+		  "children": []
+		},
+		{ "name": "Neoplasm",
+		  "children": []
+		},
+		{ "name": "Prenatal Development or Birth",
+		  "children": []
+		},
+		{ "name": "Breast",
+		  "children": []
+		},
+		{ "name": "Voice",
+		  "children": []
+		}
+	]
+}
