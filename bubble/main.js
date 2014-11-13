@@ -4,7 +4,9 @@ var diameter = 1100,
     search = "";
 
 var bubble = d3.layout.pack()
-    .sort(null)
+    .sort(function comparator(a, b) {
+        return b.medline_pub_year - a.medline_pub_year;
+      })
     .size([diameter, diameter-300])
     .padding(1.5)
     .radius(diameter/35);
@@ -56,36 +58,17 @@ function generate(filter, search) {
 
     node.append("text")
           .text(function(d) { return d.medline_journal_title; })
-          .style("text-anchor", "middle")
-          .style("font-size", function(d) { return Math.min(0.5 * d.r, (2 * d.r - 8) / this.getComputedTextLength() * 20) + "px"; })
-          .attr("dy", ".35em");
+           .style("text-anchor", "middle")
+           .style("font-size", function(d) { return Math.min(0.5 * d.r, (2 * d.r - 8) / this.getComputedTextLength() * 20) + "px"; })
+           .attr("dy", ".35em");
+
+    d3plus.textwrap()
+      .container(d3.select("node"))
+      .resize(true)
+      .shape("circle")
+      .draw();
   });
 }
-
-function wrap(text, width) {
-  text.each(function() {
-    var text = d3.select(this),
-        words = text.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1.1, // ems
-        y = text.attr("y"),
-        dy = parseFloat(text.attr("dy")),
-        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-    while (word = words.pop()) {
-      line.push(word);
-      tspan.text(line.join(" "));
-      if (tspan.node().getComputedTextLength() > width) {
-        line.pop();
-        tspan.text(line.join(" "));
-        line = [word];
-        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-      }
-    }
-  });
-}
-
 
 function filter() {
   search = d3.select("#searchfield");
