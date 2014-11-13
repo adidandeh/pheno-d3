@@ -1,4 +1,4 @@
-var diameter = 960;
+var diameter = 1960;
 
 var tree = d3.layout.tree()
     .size([360, diameter / 2 - 120])
@@ -32,11 +32,11 @@ d3.json("data.json", function(error, root) {
   node.append("circle")
       .attr("r", 4.5);
 
-  node.append("text")
-      .attr("dy", ".31em")
-      .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-      .attr("transform", function(d) { return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
-      .text(function(d) { return d.name; });
+  // node.append("text")
+  //     .attr("dy", ".31em")
+  //     .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+  //     .attr("transform", function(d) { return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
+  //     .text(function(d) { return d.name; });
 });
 
 d3.select(self.frameElement).style("height", diameter - 150 + "px");
