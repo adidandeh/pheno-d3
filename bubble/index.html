@@ -5,11 +5,12 @@
     <link rel="stylesheet" type="text/css" href="style.css"/>
   </head>
   <body>
+  <div id="interactionpanel">
     <h2>Document Search Demo</h2>
-    <form>
-      Search PubMed by Phenotype: <input id="pubmedfield" type="text" onkeyup="" value="osteoporosis">
-      Filter Results by Metadata: <input id="searchfield" type="text" onkeyup="filter()" placeholder="Year, author, etc...">
-    </form>
+    Search PubMed by Phenotype: <input id="pubmedfield" type="text" name="pubmedfield" value="osteoporosis">
+    <button id="pubmedsearchbtn" type="submit" onClick="pubmedsearch();">Search PubMed</button>
+    Filter Results by Metadata: <input id="searchfield" type="text" onkeyup="filter()" placeholder="Year, author, etc...">
+  </div>
   </body>
   <script type="text/javascript" src="d3/d3.min.js"></script>
   <script type="text/javascript" src="d3plus.js"></script>

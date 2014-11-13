@@ -44,7 +44,7 @@ generate(defaultFilter,search);
 function generate(filter, search) {
   svg.selectAll("*").remove();
 
-  d3.json("ost.json", function(error, root) {
+  d3.json("data.json", function(error, root) {
     var node = svg.selectAll(".node")
         .data(bubble.nodes(classes(root, search))
         .filter(filter))
@@ -97,12 +97,39 @@ function filter() {
   generate(defaultFilter, search);
 }
 
-function pubmed() {
-  // pubmed = d3.select("#pubmedfield");
-  // console.log(pubmed);
-  // pubmed = pubmed[0][0].value;
+function httpGet(url, searchterm)
+{
+    var paramobj = {
+        core: 'medline-citations',
+        handler: 'select',
+        searchFields: JSON.stringify(['medline_abstract_text']), //stringify the array so it is sent properly
+        query: searchterm,
+      };
+//    var params = JSON.stringify(paramobj);
 
-  // lookup(search); // TODO
+    url = url + "?core=" + paramobj.core + 
+                "&handler=" + paramobj.handler +
+                "&searchFields=" + paramobj.searchFields +
+                "&query=" + paramobj.query;
+    var xmlHttp = null;
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("POST", url, true);
+    xmlHttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    xmlHttp.send();
+    return xmlHttp.responseText;
+}
+
+function pubmedsearch() {
+  pubmed = d3.select("#pubmedfield");
+  pubmed = pubmed[0][0].value;
+
+  jsonresponse = httpGet("//129.100.19.193/soscip/api/search.php",
+    pubmed);
+
+  
+
+  console.log(jsonresponse);
+
 }
 
 function searchCase(d, search){

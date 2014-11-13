@@ -15,12 +15,26 @@ form {
 div.tooltip {   
   position: absolute;           
   text-align: left;           
-  width: 240px;                  
+  width: 440px;                  
   height:240px;                 
   padding: 10px;             
   font: 14px sans-serif;        
   background: white;   
-  border: 0px;      
-  border-radius: 8px;           
+  border: 2px;      
+  border-radius: 8px;
+  border-style: solid;           
   pointer-events: none;         
+}
+
+#pubmedsearchbtn {
+  padding: 2px;
+  margin-right: 20px;
+}
+
+#interactionpanel {
+  margin-bottom: 10px;
+}
+
+#pubmedsearchbtn{
+  padding: 5px;
 }
