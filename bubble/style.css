@@ -11,6 +11,16 @@ form {
   top: 10px;
 }
 
-.node:hover circle {
-  fill: orange;
+
+div.tooltip {   
+  position: absolute;           
+  text-align: left;           
+  width: 240px;                  
+  height:240px;                 
+  padding: 10px;             
+  font: 14px sans-serif;        
+  background: white;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;         
 }
