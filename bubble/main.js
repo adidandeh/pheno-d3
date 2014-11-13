@@ -1,7 +1,8 @@
 var diameter = 1100,
     format = d3.format(",d"),
     color = d3.scale.category20c(),
-    search = "";
+    search = "",
+    pubmed = "";
 
 var bubble = d3.layout.pack()
     .sort(function comparator(a, b) {
@@ -61,12 +62,6 @@ function generate(filter, search) {
            .style("text-anchor", "middle")
            .style("font-size", function(d) { return Math.min(0.5 * d.r, (2 * d.r - 8) / this.getComputedTextLength() * 20) + "px"; })
            .attr("dy", ".35em");
-
-    d3plus.textwrap()
-      .container(d3.select("node"))
-      .resize(true)
-      .shape("circle")
-      .draw();
   });
 }
 
@@ -75,6 +70,14 @@ function filter() {
   search = search[0][0].value;
 
   generate(searchFilter, search);
+}
+
+function pubmed() {
+  // pubmed = d3.select("#pubmedfield");
+  // console.log(pubmed);
+  // pubmed = pubmed[0][0].value;
+
+  // lookup(search); // TODO
 }
 
 function searchCase(d, search){
