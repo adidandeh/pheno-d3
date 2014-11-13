@@ -2,7 +2,8 @@ var diameter = 1100,
     format = d3.format(",d"),
     color = d3.scale.category20c(),
     search = "",
-    pubmed = "";
+    pubmed = "",
+    lastdataarray = [];
 
 var bubble = d3.layout.pack()
     .sort(function comparator(a, b) {
@@ -26,12 +27,12 @@ d3.selection.prototype.size = function() {
 defaultFilter = function(d) { 
   return (!d.children)
 };
-searchFilter = function(d) {
-  if(typeof d.id === 'undefined'){
-      return (!d.children);
-  };
-  return (!d.children) && searchCase(d, search)
-};
+// searchFilter = function(d) {
+//   if(typeof d.id === 'undefined'){
+//       return (!d.children);
+//   };
+//   return (!d.children) && searchCase(d, search)
+// };
 
 generate(defaultFilter,search);
 
@@ -69,7 +70,7 @@ function filter() {
   search = d3.select("#searchfield");
   search = search[0][0].value;
 
-  generate(searchFilter, search);
+  generate(defaultFilter, search);
 }
 
 function pubmed() {
@@ -150,6 +151,11 @@ function classes(root, search) {
     }
   });
 
+  if (classes.length <= 0 ){
+    return {children: lastdataarray};
+  }
+
+  lastdataarray = classes;
   return {children: classes};
 }
 
