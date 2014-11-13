@@ -2,11 +2,15 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin: auto;
   position: relative;
-  width: 960px;
+  width: 1060px;
 }
 
 form {
   position: absolute;
   right: 10px;
   top: 10px;
+}
+
+.node:hover circle {
+  fill: orange;
 }
