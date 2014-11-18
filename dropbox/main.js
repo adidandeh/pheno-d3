@@ -33,6 +33,10 @@ var svg = d3.select("#phenobar").append("svg")
     .attr("width", width)
     .attr("height", height);
 
+var div = d3.select("body").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);
+
 var bar = svg.selectAll("g")
              .data(data)
              .enter().append("g")
@@ -57,7 +61,20 @@ bar.append("rect")
     } else {
       rec.style("fill", "red"); 
     }
-  });
+  })
+  .on("mouseover", function(d) {      
+            div.transition()        
+                .duration(200)      
+                .style("opacity", 10);      
+            div .html("<h3>" + d.name + "</h3><br/>")  
+                .style("left", (d3.event.pageX - 0) + "px")     
+                .style("top", (d3.event.pageY - 100) + "px");    
+            })                  
+        .on("mouseout", function(d) {       
+            div.transition()        
+                .duration(1000)      
+                .style("opacity", 0);   
+        });
 
 bar.append("text")
   .attr("x", function(d) { return d.x + 25; })
@@ -65,6 +82,7 @@ bar.append("text")
   .attr("dy", ".35em")
   .style("font-size","16px")
   .style("text-anchor", "middle")
+  .attr("pointer-events", "none")
   .text(function(d) { return d.name.substring(0,5); });
 
 
