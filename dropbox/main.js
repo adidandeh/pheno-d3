@@ -100,7 +100,9 @@ bar.append("text")
   .attr("x", function(d) { return (d.order * (sqwidth + sqspacing) + sqwidth/2); })
   .attr("y", sqheight - 7) // hardcoded until better option is found
   .attr("dy", ".35em")
-  .style("font-size","16px")
+  .style("font-size", function(d) { 
+    return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
+  })
   .style("text-anchor", "middle")
   .attr("pointer-events", "none")
   .text(function(d) { return d.name.substring(0,5); });
