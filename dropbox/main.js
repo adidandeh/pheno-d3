@@ -4,29 +4,30 @@ var margin = {top: 20, right: 120, bottom: 20, left: 120},
 
 var sqwidth = 50,
     sqheight = sqwidth,
-    sqspacing = 0;
+    sqspacing = 0,
+    phenobarheight = 20;
 
-var data = [{"name": "Integument", "x": 50},
-            {"name": "Genitourinary System", "x": 100},
-            {"name": "Head and Neck", "x": 150},
-            {"name": "Endocrine", "x": 200},
-            {"name": "Connective Tissue", "x": 250},
-            {"name": "Immune System", "x": 300},
-            {"name": "Abdomen", "x": 350},
-            {"name": "Voice", "x": 400},
-            {"name": "Musculature", "x": 450},
-            {"name": "Cardiovascular System", "x": 500},
-            {"name": "Eye", "x": 550},
-            {"name": "Metabolism/Homeostasis", "x": 600},
-            {"name": "Ear", "x": 650},
-            {"name": "Neoplasm", "x": 700},
-            {"name": "Growth", "x": 750},
-            {"name": "Prenatal or Birth", "x": 800},
-            {"name": "Blood and Blood-Forming Tissue", "x": 850},
-            {"name": "Nervous System", "x": 900},
-            {"name": "Breast", "x": 950},
-            {"name": "Respiratory System", "x": 1000},
-            {"name": "Skeletal System", "x": 1050}
+var data = [{"name": "Integument", "order": 1},
+            {"name": "Genitourinary System", "order": 2},
+            {"name": "Head and Neck", "order": 3},
+            {"name": "Endocrine", "order": 4},
+            {"name": "Connective Tissue", "order": 5},
+            {"name": "Immune System", "order": 6},
+            {"name": "Abdomen", "order": 7},
+            {"name": "Voice", "order": 8},
+            {"name": "Musculature", "order": 9},
+            {"name": "Cardiovascular System", "order": 10},
+            {"name": "Eye", "order": 11},
+            {"name": "Metabolism/Homeostasis", "order": 12},
+            {"name": "Ear", "order": 13},
+            {"name": "Neoplasm", "order": 14},
+            {"name": "Growth", "order": 15},
+            {"name": "Prenatal or Birth", "order": 16},
+            {"name": "Blood and Blood-Forming Tissue", "order": 17},
+            {"name": "Nervous System", "order": 18},
+            {"name": "Breast", "order": 19},
+            {"name": "Respiratory System", "order": 20},
+            {"name": "Skeletal System", "order": 21}
           ]
 
 var svg = d3.select("#phenobar").append("svg")
@@ -42,14 +43,15 @@ var bar = svg.selectAll("g")
              .enter().append("g")
              .attr("transform",
                 function(d,i) {
-                  return "translate(" + i * sqspacing + ", "+ sqwidth +")";
+                  return "translate(" + i + ", "+ sqwidth +")";
                 });
 
 bar.append("rect")
-  .attr("x", function(d) { return d.x; })
-  .attr("y", 20)
+  .attr("x", function(d) { return d.order * (sqwidth + sqspacing); })
+  .attr("y", phenobarheight)
   .attr("width", sqwidth)
   .attr("height", sqheight)
+  .attr("class", "inactive")
   .attr("style", "outline: thin solid black;")
   .style("fill", "red")
   .on("click", function() {
@@ -58,8 +60,10 @@ bar.append("rect")
     // toggle color between two choices
     if (rec.style("fill") == "rgb(255, 0, 0)") {
       rec.style("fill", "green"); 
+      rec.attr("class","active");
     } else {
-      rec.style("fill", "red"); 
+      rec.style("fill", "red");
+      rec.attr("class","inactive");
     }
   })
   .on("mouseover", function(d) {      
@@ -76,9 +80,25 @@ bar.append("rect")
                 .style("opacity", 0);   
         });
 
+bar.append("line")
+  .attr("x1", function(d) { return d.order * (sqwidth + sqspacing) + 10;})
+  .attr("y1", phenobarheight + 40)
+  .attr("x2", function(d) { return d.order * (sqwidth + sqspacing) + 25;})
+  .attr("y2", phenobarheight + 45)
+  .style("stroke", "black")
+  .style("stroke-width", 1);
+
+bar.append("line")
+  .attr("x1", function(d) { return d.order * (sqwidth + sqspacing) + 40;})
+  .attr("y1", phenobarheight + 40)
+  .attr("x2", function(d) { return d.order * (sqwidth + sqspacing) + 25;})
+  .attr("y2", phenobarheight + 45)
+  .style("stroke", "black")
+  .style("stroke-width", 1);
+
 bar.append("text")
-  .attr("x", function(d) { return d.x + 25; })
-  .attr("y", sqheight - 7)
+  .attr("x", function(d) { return (d.order * (sqwidth + sqspacing) + sqwidth/2); })
+  .attr("y", sqheight - 7) // hardcoded until better option is found
   .attr("dy", ".35em")
   .style("font-size","16px")
   .style("text-anchor", "middle")
