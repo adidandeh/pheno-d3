@@ -64,7 +64,7 @@ draw = function(svg, data) {
                   });
 
   bar.append("rect")
-    .attr("x", function(d,i) { return (d.order * sqwidth); })
+    .attr("x", function(d) { return (d.order * sqwidth); })
     .attr("y", phenobarheight)
     .attr("width", sqwidth)
     .attr("height", sqheight)
@@ -88,19 +88,22 @@ draw = function(svg, data) {
         rec.attr("class","active");
 
         // include itself
-        var numOfActivePheno = getNumOfActivePheno() + 1; 
+        var numOfActivePheno = getNumOfActivePheno(); 
 
         // reorder pheno data list
         // make sure that the new pheno isn't already in the proper place.
-        if(removedArr[0].order != numOfActivePheno){
+        if(removedArr[0].order != numOfActivePheno + 1){
           // if it isn't, bump the order of all the right obj elems
-          for (var i=numOfActivePheno-1, l=data.length; i<l; i++) {
-            data[i].order++;
-          }
+          data.forEach(function(pheno){
+            if(pheno.order < removedArr[0].order + 1
+              && pheno.active == 0) {
+              pheno.order++;
+            }
+          });
         }
         // adjust the pheno object for insertion
         removedArr[0].active = 1;
-        removedArr[0].order = numOfActivePheno;
+        removedArr[0].order = numOfActivePheno + 1;
         // push the changed pheno into the data list at new place.
         data.splice(numOfActivePheno, 0, removedArr[0]);
 
@@ -111,17 +114,14 @@ draw = function(svg, data) {
         // get number of phenos still active
         var numOfActivePheno = getNumOfActivePheno(); 
 
-        // reorder pheno data list
-        // make sure that the new pheno isn't already in the proper place.
-        // i.e. it's the rightmost of the active slots, and thus can stay
-        // as it is.
-        if(removedArr[0].order != numOfActivePheno){
-          // if it isn't, bump the still active phenos down starting
-          // from it's origin position up to the right most active
-          // pheno.
-          for (var i=removedArr[0].order, l=numOfActivePheno+1; i<l; i++) {
-            data[i].order--;
-          }
+        if(removedArr[0].order != numOfActivePheno + 1){
+          data.forEach(function(pheno){
+            if(pheno.order > removedArr[0].order
+                && pheno.active == 1) {
+              pheno.order--;
+            }
+          });
+
         }
         // put it's position at the leftmost inactive.
         removedArr[0].active = 0;
