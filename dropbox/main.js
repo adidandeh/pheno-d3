@@ -152,9 +152,38 @@ draw = function(svg, data) {
     .attr("width", sqwidth)
     .attr("height", dropbuttonheight)
     .attr("class", "drop, inactive")
-    .style("fill", "transparent")
+    .attr("style", "fill: transparent")
     .on("click", function(d) {
-      console.log("text");
+      if(d.active == 1) {
+        // d is the selecting array
+        // d.name is full name of pheno for tree generation
+        // d.order is useful for the positioning of the tree.
+
+        /* TODO:
+        3. if opening
+          ii. generate selection
+        4  else
+          ii. close selection menu
+        */
+
+        var pheno = d3.select(this); // pheno is the drop button
+        if(pheno.attr("class") == "drop, inactive") {
+          pheno.attr("class", "drop, active");
+
+          bar.append("rect")
+          .attr("x", d.order * sqwidth)
+          .attr("y", phenobarheight + sqheight+10)
+          .attr("width", 200)
+          .attr("height", 200)
+          .attr("class", "phenoselect")
+          .attr("style", "outline: thin solid black;")
+          .attr("style", "fill: red");
+
+        } else {
+          pheno.attr("class", "drop, inactive");
+          draw(svg, data);
+        }
+      }
     });
 
   bar.append("line")
