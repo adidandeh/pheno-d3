@@ -6,7 +6,8 @@ var sqwidth = 50,
     sqheight = sqwidth,
     sqspacing = 0,
     phenobarheight = 20,
-    dropbuttonheight = 15;
+    dropbuttonheight = 15
+    dropactive = false;
 
 var data = [{"name": "Integument", "order": 1, "active": 0},
             {"name": "Genitourinary System", "order": 2, "active": 0},
@@ -167,9 +168,9 @@ draw = function(svg, data) {
         */
 
         var pheno = d3.select(this); // pheno is the drop button
-        if(pheno.attr("class") == "drop, inactive") {
+        if(pheno.attr("class") == "drop, inactive" && !dropactive) {
           pheno.attr("class", "drop, active");
-
+          dropactive = true;
           bar.append("rect")
           .attr("x", d.order * sqwidth)
           .attr("y", phenobarheight + sqheight+10)
@@ -180,6 +181,7 @@ draw = function(svg, data) {
           .attr("style", "fill: red");
 
         } else {
+          dropactive = false;
           pheno.attr("class", "drop, inactive");
           draw(svg, data);
         }
