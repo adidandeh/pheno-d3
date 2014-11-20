@@ -69,12 +69,12 @@ draw = function(svg, data) {
     .attr("width", sqwidth)
     .attr("height", sqheight)
     .attr("class", "inactive")
-    .attr("style", "outline: thin solid black;")
+    //.attr("style", "outline: thin solid black;")
     .style("fill", function(d){ 
       if(d.active == 1) { 
-        return "green";
+        return "#49B649";
       } else {
-        return "red";
+        return "#E35C5C";
       }})
     .on("click", function(d) {
       var rec = d3.select(this); // clicked rec
@@ -83,8 +83,8 @@ draw = function(svg, data) {
       var removedArr = data.splice(findWithAttr(data, 'name', d.name), 1);
 
       // toggle color between two choices
-      if (rec.style("fill") == "rgb(255, 0, 0)") {
-        rec.style("fill", "green"); 
+      if (rec.style("fill") == "rgb(227, 92, 92)") {
+        rec.style("fill", "#49B649"); 
         rec.attr("class","active");
 
         // include itself
@@ -108,7 +108,7 @@ draw = function(svg, data) {
         data.splice(numOfActivePheno, 0, removedArr[0]);
 
       } else {
-        rec.style("fill", "red");
+        rec.style("fill", "#E35C5C");
         rec.attr("class","inactive");
 
         // get number of phenos still active
