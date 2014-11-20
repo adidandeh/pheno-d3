@@ -1,13 +1,15 @@
 var margin = {top: 20, right: 120, bottom: 20, left: 120},
     width = 2060 - margin.right - margin.left,
-    height = 800 - margin.top - margin.bottom;
+    height = 200 - margin.top - margin.bottom;
 
 var sqwidth = 50,
     sqheight = sqwidth,
     sqspacing = 0,
     phenobarheight = 20,
     dropbuttonheight = 15
-    dropactive = false;
+    dropactive = false,
+    duration = 750,
+    i = 0;
 
 var data = [{"name": "Integument", "order": 1, "active": 0},
             {"name": "Genitourinary System", "order": 2, "active": 0},
@@ -32,6 +34,12 @@ var data = [{"name": "Integument", "order": 1, "active": 0},
             {"name": "Skeletal System", "order": 21, "active": 0}
           ]
 
+var tree = d3.layout.tree()
+    .size([200, 200]);
+
+var diagonal = d3.svg.diagonal()
+    .projection(function(d) { return [d.y, d.x]; });
+
 // helper func
 getNumOfActivePheno = function() {
   var count = 0;
@@ -54,45 +62,104 @@ findWithAttr = function (array, attr, value) {
     }
 }
 
-updateTree = function(source, tree) {
-// Compute the new tree layout.
-  var nodes = tree.nodes(source).reverse(), // root == source
-    links = tree.links(nodes);
+function update(source) {
+
+  // Compute the new tree layout.
+  var nodes = tree.nodes(root).reverse(),
+      links = tree.links(nodes);
 
   // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 100; });
+  nodes.forEach(function(d) { d.y = d.depth * 200; }); // How wide it gets
 
-  // Declare the nodes…
+  // Update the nodes…
   var node = svg.selectAll("g.node")
-    .data(nodes, function(d) { return d.id || (d.id = ++i); });
+      .data(nodes, function(d) { return d.id || (d.id = ++i); });
 
-  // Enter the nodes.
+  // Enter any new nodes at the parent's previous position.
   var nodeEnter = node.enter().append("g")
-    .attr("class", "node")
-    .attr("transform", function(d) { 
-      return "translate(" + d.x + "," + d.y + ")"; });
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+      .on("click", click);
 
   nodeEnter.append("circle")
-    .attr("r", 10)
-    .style("fill", "#fff");
+      .attr("r", 1e-6)
+      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
   nodeEnter.append("text")
-    .attr("y", function(d) { 
-      return d.children || d._children ? -18 : 18; })
-    .attr("dy", ".35em")
-    .attr("text-anchor", "middle")
-    .text(function(d) { return d.name; })
-    .style("fill-opacity", 1);
+      .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+      .attr("dy", ".35em")
+      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+      .text(function(d) { return d.name; })
+      .style("fill-opacity", 1e-6);
 
-  // Declare the links…
+  // Transition nodes to their new position.
+  var nodeUpdate = node.transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+  nodeUpdate.select("circle")
+      .attr("r", 4.5)
+      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+  nodeUpdate.select("text")
+      .style("fill-opacity", 1);
+
+  // Transition exiting nodes to the parent's new position.
+  var nodeExit = node.exit().transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+      .remove();
+
+  nodeExit.select("circle")
+      .attr("r", 1e-6);
+
+  nodeExit.select("text")
+      .style("fill-opacity", 1e-6);
+
+  // Update the links…
   var link = svg.selectAll("path.link")
-    .data(links, function(d) { return d.target.id; });
+      .data(links, function(d) { return d.target.id; });
 
-  // Enter the links.
+  // Enter any new links at the parent's previous position.
   link.enter().insert("path", "g")
-    .attr("class", "link")
-    .attr("d", diagonal);
-};
+      .attr("class", "link")
+      .attr("d", function(d) {
+        var o = {x: source.x0, y: source.y0};
+        return diagonal({source: o, target: o});
+      });
+
+  // Transition links to their new position.
+  link.transition()
+      .duration(duration)
+      .attr("d", diagonal);
+
+  // Transition exiting nodes to the parent's new position.
+  link.exit().transition()
+      .duration(duration)
+      .attr("d", function(d) {
+        var o = {x: source.x, y: source.y};
+        return diagonal({source: o, target: o});
+      })
+      .remove();
+
+  // Stash the old positions for transition.
+  nodes.forEach(function(d) {
+    d.x0 = d.x;
+    d.y0 = d.y;
+  });
+}
+
+// Toggle children on click.
+function click(d) {
+  if (d.children) {
+    d._children = d.children;
+    d.children = null;
+  } else {
+    d.children = d._children;
+    d._children = null;
+  }
+  update(d);
+}
 
 draw = function(svg, data) {
   svg.selectAll("*").remove();
@@ -205,30 +272,39 @@ draw = function(svg, data) {
           pheno.attr("class", "drop, active");
           dropactive = true;
 
-          // var tree = d3.layout.tree()
-          //   .size([200, 200]);
 
-          // var diagonal = d3.svg.diagonal()
-          //   .projection(function(d) { return [d.x, d.y]; });
+          bar.append("g")
+              .attr("transform", "translate(" + 1000 + "," + 100+ ")");
 
-          // svg.append("g")
-          //   .attr("transform", "translate("+ (d.order * sqwidth) +","+ (phenobarheight + sqheight+10) +")");
+          d3.json("data.json", function(error, flare) {
+            root = flare;
 
-          // d3.json("data.json", function(error, treeData) {
-          //   root = treeData[0]; // TODO: Get actual root of choice
+            var children = root.children;
+            var child = null;
+           children.forEach(function(element) {
+              var tempchildname = element.name.toLowerCase();
+              if(tempchildname.indexOf(d.name.toLowerCase()) > -1){
+                child = element;
+                return;
+              }
+            });
 
-          //   updateTree(root, tree);
-          // });
-    
-          bar.append("rect")
-          .attr("x", d.order * sqwidth)
-          .attr("y", phenobarheight + sqheight+10)
-          .attr("width", 200)
-          .attr("height", 200)
-          .attr("class", "phenoselect")
-          .attr("style", "outline: thin solid black;")
-          .attr("style", "fill: red");
+            root = child;
 
+            root.x0 = 400;
+            root.y0 = sqwidth;
+
+            function collapse(d) {
+              if (d.children) {
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+              }
+            }
+
+            root.children.forEach(collapse);
+            update(root);
+          });
         } else {
           dropactive = false;
           pheno.attr("class", "drop, inactive");
