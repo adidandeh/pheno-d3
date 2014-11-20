@@ -54,6 +54,46 @@ findWithAttr = function (array, attr, value) {
     }
 }
 
+updateTree = function(source, tree) {
+// Compute the new tree layout.
+  var nodes = tree.nodes(source).reverse(), // root == source
+    links = tree.links(nodes);
+
+  // Normalize for fixed-depth.
+  nodes.forEach(function(d) { d.y = d.depth * 100; });
+
+  // Declare the nodes…
+  var node = svg.selectAll("g.node")
+    .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+  // Enter the nodes.
+  var nodeEnter = node.enter().append("g")
+    .attr("class", "node")
+    .attr("transform", function(d) { 
+      return "translate(" + d.x + "," + d.y + ")"; });
+
+  nodeEnter.append("circle")
+    .attr("r", 10)
+    .style("fill", "#fff");
+
+  nodeEnter.append("text")
+    .attr("y", function(d) { 
+      return d.children || d._children ? -18 : 18; })
+    .attr("dy", ".35em")
+    .attr("text-anchor", "middle")
+    .text(function(d) { return d.name; })
+    .style("fill-opacity", 1);
+
+  // Declare the links…
+  var link = svg.selectAll("path.link")
+    .data(links, function(d) { return d.target.id; });
+
+  // Enter the links.
+  link.enter().insert("path", "g")
+    .attr("class", "link")
+    .attr("d", diagonal);
+};
+
 draw = function(svg, data) {
   svg.selectAll("*").remove();
 
@@ -132,7 +172,7 @@ draw = function(svg, data) {
       }
       draw(svg, data);
     })
-    .on("mouseover", function(d) {      
+    .on("mouseover", function(d) {   // tool tip   
               div.transition()        
                   .duration(200)      
                   .style("opacity", 10);      
@@ -146,7 +186,7 @@ draw = function(svg, data) {
                   .style("opacity", 0);   
           });
 
-  // drop down button
+  // drop down button for each pheno
   bar.append("rect")
     .attr("x", function(d) { return (d.order * sqwidth); })
     .attr("y", phenobarheight + sqheight - dropbuttonheight)
@@ -160,17 +200,26 @@ draw = function(svg, data) {
         // d.name is full name of pheno for tree generation
         // d.order is useful for the positioning of the tree.
 
-        /* TODO:
-        3. if opening
-          ii. generate selection
-        4  else
-          ii. close selection menu
-        */
-
         var pheno = d3.select(this); // pheno is the drop button
         if(pheno.attr("class") == "drop, inactive" && !dropactive) {
           pheno.attr("class", "drop, active");
           dropactive = true;
+
+          // var tree = d3.layout.tree()
+          //   .size([200, 200]);
+
+          // var diagonal = d3.svg.diagonal()
+          //   .projection(function(d) { return [d.x, d.y]; });
+
+          // svg.append("g")
+          //   .attr("transform", "translate("+ (d.order * sqwidth) +","+ (phenobarheight + sqheight+10) +")");
+
+          // d3.json("data.json", function(error, treeData) {
+          //   root = treeData[0]; // TODO: Get actual root of choice
+
+          //   updateTree(root, tree);
+          // });
+    
           bar.append("rect")
           .attr("x", d.order * sqwidth)
           .attr("y", phenobarheight + sqheight+10)
