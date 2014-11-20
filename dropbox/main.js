@@ -52,6 +52,127 @@ findWithAttr = function (array, attr, value) {
     }
 }
 
+draw = function(svg, data) {
+  svg.selectAll("*").remove();
+
+  var bar = svg.selectAll("g")
+               .data(data, function(d) { return d.order; })
+               .enter().append("g")
+               .attr("transform",
+                  function(d,i) {
+                    return "translate(" + i + ", "+ sqheight +")";
+                  });
+
+  bar.append("rect")
+    .attr("x", function(d,i) { return (d.order * sqwidth); })
+    .attr("y", phenobarheight)
+    .attr("width", sqwidth)
+    .attr("height", sqheight)
+    .attr("class", "inactive")
+    .attr("style", "outline: thin solid black;")
+    .style("fill", function(d){ 
+      if(d.active == 1) { 
+        return "green";
+      } else {
+        return "red";
+      }})
+    .on("click", function(d) {
+      var rec = d3.select(this); // clicked rec
+
+      // pull current pheno out of the data array.
+      var removedArr = data.splice(findWithAttr(data, 'name', d.name), 1);
+
+      // toggle color between two choices
+      if (rec.style("fill") == "rgb(255, 0, 0)") {
+        rec.style("fill", "green"); 
+        rec.attr("class","active");
+
+        // include itself
+        var numOfActivePheno = getNumOfActivePheno() + 1; 
+
+        // reorder pheno data list
+        // make sure that the new pheno isn't already in the proper place.
+        if(removedArr[0].order != numOfActivePheno){
+          // if it isn't, bump the order of all the right obj elems
+          for (var i=numOfActivePheno-1, l=data.length; i<l; i++) {
+            data[i].order++;
+          }
+        }
+        // adjust the pheno object for insertion
+        removedArr[0].active = 1;
+        removedArr[0].order = numOfActivePheno;
+        // push the changed pheno into the data list at new place.
+        data.splice(numOfActivePheno, 0, removedArr[0]);
+
+      } else {
+        rec.style("fill", "red");
+        rec.attr("class","inactive");
+
+        // get number of phenos still active
+        var numOfActivePheno = getNumOfActivePheno(); 
+
+        // reorder pheno data list
+        // make sure that the new pheno isn't already in the proper place.
+        // i.e. it's the rightmost of the active slots, and thus can stay
+        // as it is.
+        if(removedArr[0].order != numOfActivePheno){
+          // if it isn't, bump the still active phenos down starting
+          // from it's origin position up to the right most active
+          // pheno.
+          for (var i=removedArr[0].order, l=numOfActivePheno+1; i<l; i++) {
+            data[i].order--;
+          }
+        }
+        // put it's position at the leftmost inactive.
+        removedArr[0].active = 0;
+        removedArr[0].order = numOfActivePheno + 1;
+        // push the changed pheno into the data list at new place.
+        data.splice(numOfActivePheno, 0, removedArr[0]);
+      }
+      draw(svg, data);
+    })
+    .on("mouseover", function(d) {      
+              div.transition()        
+                  .duration(200)      
+                  .style("opacity", 10);      
+              div .html("<h3>" + d.name + "</h3><br/>")  
+                  .style("left", (d3.event.pageX - 0) + "px")     
+                  .style("top", (d3.event.pageY - 100) + "px");    
+              })                  
+          .on("mouseout", function(d) {       
+              div.transition()        
+                  .duration(1000)      
+                  .style("opacity", 0);   
+          });
+
+  bar.append("line")
+    .attr("x1", function(d) { return d.order * (sqwidth + sqspacing) + 10;})
+    .attr("y1", phenobarheight + 40)
+    .attr("x2", function(d) { return d.order * (sqwidth + sqspacing) + 25;})
+    .attr("y2", phenobarheight + 45)
+    .style("stroke", "black")
+    .style("stroke-width", 1);
+
+  bar.append("line")
+    .attr("x1", function(d) { return d.order * (sqwidth + sqspacing) + 40;})
+    .attr("y1", phenobarheight + 40)
+    .attr("x2", function(d) { return d.order * (sqwidth + sqspacing) + 25;})
+    .attr("y2", phenobarheight + 45)
+    .style("stroke", "black")
+    .style("stroke-width", 1);
+
+  bar.append("text")
+    .attr("x", function(d) { return (d.order * (sqwidth + sqspacing) + sqwidth/2); })
+    .attr("y", sqheight - 7) // hardcoded until better option is found
+    .attr("dy", ".35em")
+    .style("font-size", function(d) { 
+      return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
+    })
+    .style("text-anchor", "middle")
+    .attr("pointer-events", "none")
+    .text(function(d) { return d.name.substring(0,5); });
+};
+
 var svg = d3.select("#phenobar").append("svg")
     .attr("width", width)
     .attr("height", height);
@@ -60,113 +181,4 @@ var div = d3.select("body").append("div")
     .attr("class", "tooltip")               
     .style("opacity", 0);
 
-var bar = svg.selectAll("g")
-             .data(data)
-             .enter().append("g")
-             .attr("transform",
-                function(d,i) {
-                  return "translate(" + i + ", "+ sqheight +")";
-                });
-
-bar.append("rect")
-  .attr("x", function(d,i ) { return d.order * (sqwidth); })
-  .attr("y", phenobarheight)
-  .attr("width", sqwidth)
-  .attr("height", sqheight)
-  .attr("class", "inactive")
-  .attr("style", "outline: thin solid black;")
-  .style("fill", "red")
-  .on("click", function(d) {
-    var rec = d3.select(this); // clicked rec
-
-    // pull current pheno out of the data array.
-    var removedArr = data.splice(findWithAttr(data, 'name', d.name), 1);
-
-    // toggle color between two choices
-    if (rec.style("fill") == "rgb(255, 0, 0)") {
-      rec.style("fill", "green"); 
-      rec.attr("class","active");
-
-      // include itself
-      var numOfActivePheno = getNumOfActivePheno() + 1; 
-
-      // reorder pheno data list
-      // make sure that the new pheno isn't already in the proper place.
-      if(removedArr[0].order != numOfActivePheno){
-        // if it isn't, bump the order of all the right obj elems
-        for (var i=numOfActivePheno-1, l=data.length; i<l; i++) {
-          data[i].order++;
-        }
-      }
-      // adjust the pheno object for insertion
-      removedArr[0].active = 1;
-      removedArr[0].order = numOfActivePheno;
-      // push the changed pheno into the data list at new place.
-      data.splice(numOfActivePheno, 0, removedArr[0]);
-
-    } else {
-      rec.style("fill", "red");
-      rec.attr("class","inactive");
-
-      // get number of phenos still active
-      var numOfActivePheno = getNumOfActivePheno(); 
-
-      // reorder pheno data list
-      // make sure that the new pheno isn't already in the proper place.
-      // i.e. it's the rightmost of the active slots, and thus can stay
-      // as it is.
-      if(removedArr[0].order != numOfActivePheno){
-        // if it isn't, bump the still active phenos down starting
-        // from it's origin position up to the right most active
-        // pheno.
-        for (var i=removedArr[0].order-1, l=numOfActivePheno; i<l; i++) {
-          data[i].order--;
-        }
-      }
-      // put it's position at the leftmost inactive.
-      removedArr[0].active = 0;
-      removedArr[0].order = numOfActivePheno + 1;
-      // push the changed pheno into the data list at new place.
-      data.splice(numOfActivePheno, 0, removedArr[0]);
-    }
-  })
-  .on("mouseover", function(d) {      
-            div.transition()        
-                .duration(200)      
-                .style("opacity", 10);      
-            div .html("<h3>" + d.name + "</h3><br/>")  
-                .style("left", (d3.event.pageX - 0) + "px")     
-                .style("top", (d3.event.pageY - 100) + "px");    
-            })                  
-        .on("mouseout", function(d) {       
-            div.transition()        
-                .duration(1000)      
-                .style("opacity", 0);   
-        });
-
-bar.append("line")
-  .attr("x1", function(d) { return d.order * (sqwidth + sqspacing) + 10;})
-  .attr("y1", phenobarheight + 40)
-  .attr("x2", function(d) { return d.order * (sqwidth + sqspacing) + 25;})
-  .attr("y2", phenobarheight + 45)
-  .style("stroke", "black")
-  .style("stroke-width", 1);
-
-bar.append("line")
-  .attr("x1", function(d) { return d.order * (sqwidth + sqspacing) + 40;})
-  .attr("y1", phenobarheight + 40)
-  .attr("x2", function(d) { return d.order * (sqwidth + sqspacing) + 25;})
-  .attr("y2", phenobarheight + 45)
-  .style("stroke", "black")
-  .style("stroke-width", 1);
-
-bar.append("text")
-  .attr("x", function(d) { return (d.order * (sqwidth + sqspacing) + sqwidth/2); })
-  .attr("y", sqheight - 7) // hardcoded until better option is found
-  .attr("dy", ".35em")
-  .style("font-size", function(d) { 
-    return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
-  })
-  .style("text-anchor", "middle")
-  .attr("pointer-events", "none")
-  .text(function(d) { return d.name.substring(0,5); });
+draw(svg, data);
