@@ -5,7 +5,8 @@ var margin = {top: 20, right: 120, bottom: 20, left: 120},
 var sqwidth = 50,
     sqheight = sqwidth,
     sqspacing = 0,
-    phenobarheight = 20;
+    phenobarheight = 20,
+    dropbuttonheight = 15;
 
 var data = [{"name": "Integument", "order": 1, "active": 0},
             {"name": "Genitourinary System", "order": 2, "active": 0},
@@ -68,7 +69,7 @@ draw = function(svg, data) {
     .attr("y", phenobarheight)
     .attr("width", sqwidth)
     .attr("height", sqheight)
-    .attr("class", "inactive")
+    .attr("class", "inactive, top")
     //.attr("style", "outline: thin solid black;")
     .style("fill", function(d){ 
       if(d.active == 1) { 
@@ -85,8 +86,7 @@ draw = function(svg, data) {
       // toggle color between two choices
       if (rec.style("fill") == "rgb(227, 92, 92)") {
         rec.style("fill", "#49B649"); 
-        rec.attr("class","active");
-
+        rec.attr("class","top, active");
         // include itself
         var numOfActivePheno = getNumOfActivePheno(); 
 
@@ -109,7 +109,7 @@ draw = function(svg, data) {
 
       } else {
         rec.style("fill", "#E35C5C");
-        rec.attr("class","inactive");
+        rec.attr("class","top, inactive");
 
         // get number of phenos still active
         var numOfActivePheno = getNumOfActivePheno(); 
@@ -144,6 +144,18 @@ draw = function(svg, data) {
                   .duration(1000)      
                   .style("opacity", 0);   
           });
+
+  // drop down button
+  bar.append("rect")
+    .attr("x", function(d) { return (d.order * sqwidth); })
+    .attr("y", phenobarheight + sqheight - dropbuttonheight)
+    .attr("width", sqwidth)
+    .attr("height", dropbuttonheight)
+    .attr("class", "drop, inactive")
+    .style("fill", "transparent")
+    .on("click", function(d) {
+      console.log("text");
+    });
 
   bar.append("line")
     .attr("x1", function(d) { return d.order * (sqwidth + sqspacing) + 10;})
