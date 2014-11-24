@@ -92,7 +92,17 @@ function update(source) {
       .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
       .attr("dy", ".35em")
       .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-      .text(function(d) { return d.name; })
+      .text(function(d) { 
+        var name = d.name;
+        if (typeof lastname !== "undefined"){
+          name = name.replace("Abnormality of the ", "");
+          name = name.replace("Abnormality of ", "");
+          name = name.replace(" Abnormality", "");
+          name = name.replace("Abnormal ", "");
+          name = name.charAt(0).toUpperCase() + name.slice(1);
+        }
+        return name;
+      })
       .style("font-size", "10pt")
       .style("fill-opacity", 1e-6);
 
