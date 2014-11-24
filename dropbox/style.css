@@ -23,3 +23,23 @@ div.tooltip {
 *::-webkit-selection {
     background:transparent;
 }
+
+.node {
+  cursor: pointer;
+}
+
+.node circle { /* the circle around the node, but not the inside */
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node text { 
+  font: 10px sans-serif;
+}
+
+.link { /* line connecting the tree nodes */
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}

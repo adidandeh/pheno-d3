@@ -1,6 +1,6 @@
 var margin = {top: 20, right: 120, bottom: 20, left: 120},
     width = 2060 - margin.right - margin.left,
-    height = 200 - margin.top - margin.bottom;
+    height = 500 - margin.top - margin.bottom;
 
 var sqwidth = 50,
     sqheight = sqwidth,
@@ -34,8 +34,11 @@ var data = [{"name": "Integument", "order": 1, "active": 0},
             {"name": "Skeletal System", "order": 21, "active": 0}
           ]
 
+var treeWidth = 200,
+    treeHeight = treeWidth;
+
 var tree = d3.layout.tree()
-    .size([200, 200]);
+    .size([treeHeight, treeWidth]);
 
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
@@ -69,7 +72,7 @@ function update(source) {
       links = tree.links(nodes);
 
   // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 200; }); // How wide it gets
+  nodes.forEach(function(d) { d.y = d.depth * treeWidth + 200; d.x += 120;}); // How wide it gets
 
   // Update the nodes…
   var node = svg.selectAll("g.node")
@@ -90,6 +93,7 @@ function update(source) {
       .attr("dy", ".35em")
       .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
       .text(function(d) { return d.name; })
+      .style("font-size", "10pt")
       .style("fill-opacity", 1e-6);
 
   // Transition nodes to their new position.
@@ -272,9 +276,8 @@ draw = function(svg, data) {
           pheno.attr("class", "drop, active");
           dropactive = true;
 
-
-          bar.append("g")
-              .attr("transform", "translate(" + 1000 + "," + 100+ ")");
+          // bar.append("g")
+          //     .attr("transform", "translate(" + 2000 + "," + 100+ ")");
 
           d3.json("data.json", function(error, flare) {
             root = flare;
@@ -291,8 +294,8 @@ draw = function(svg, data) {
 
             root = child;
 
-            root.x0 = 400;
-            root.y0 = sqwidth;
+            root.x0 = d.order * sqwidth;
+            root.y0 = phenobarheight + sqheight - dropbuttonheight;
 
             function collapse(d) {
               if (d.children) {
