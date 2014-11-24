@@ -94,13 +94,15 @@ function update(source) {
       .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
       .text(function(d) { 
         var name = d.name;
-        if (typeof lastname !== "undefined"){
+        // if (typeof lastname !== "undefined"){
+          try {
           name = name.replace("Abnormality of the ", "");
           name = name.replace("Abnormality of ", "");
           name = name.replace(" Abnormality", "");
           name = name.replace("Abnormal ", "");
           name = name.charAt(0).toUpperCase() + name.slice(1);
-        }
+        } catch(e) {}
+        // }
         return name;
       })
       .style("font-size", "10pt")
@@ -201,7 +203,6 @@ draw = function(svg, data) {
       }})
     .on("click", function(d) {
       var rec = d3.select(this); // clicked rec
-
       // pull current pheno out of the data array.
       var removedArr = data.splice(findWithAttr(data, 'name', d.name), 1);
 
@@ -289,6 +290,37 @@ draw = function(svg, data) {
           // bar.append("g")
           //     .attr("transform", "translate(" + 2000 + "," + 100+ ")");
 
+          d3.json("data.json", function(error, flare) {
+            root = flare;
+
+            var children = root.children;
+            var child = null;
+           children.forEach(function(element) {
+              var tempchildname = element.name.toLowerCase();
+              if(tempchildname.indexOf(d.name.toLowerCase()) > -1){
+                child = element;
+                return;
+              }
+            });
+
+            root = child;
+
+            root.x0 = d.order * sqwidth;
+            root.y0 = phenobarheight + sqheight - dropbuttonheight;
+
+            function collapse(d) {
+              if (d.children) {
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+              }
+            }
+
+            root.children.forEach(collapse);
+            update(root);
+          });
+        } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
+          // another is active, but we want this one
           d3.json("data.json", function(error, flare) {
             root = flare;
 
