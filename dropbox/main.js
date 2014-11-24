@@ -99,6 +99,7 @@ function update(source) {
           name = name.replace("Abnormality of the ", "");
           name = name.replace("Abnormality of ", "");
           name = name.replace(" Abnormality", "");
+          name = name.replace(" abnormality", "");
           name = name.replace("Abnormal ", "");
           name = name.charAt(0).toUpperCase() + name.slice(1);
         } catch(e) {}
