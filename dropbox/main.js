@@ -270,7 +270,9 @@ function update(source) {
 function click(d) {
     console.log(d);
     if (d.children) { // Going back a step
-        barStack.pop();
+        do { // TODO: Maybe fix the expansion issue where when you expand an already expanded subnodes, not all are added to the stack
+          var tempItem = barStack.pop();
+        } while (tempItem != d);
         d._children = d.children;
         d.children = null;
     } else { // opening the nodes below
