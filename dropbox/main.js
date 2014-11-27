@@ -1,3 +1,4 @@
+// hardcoded pheno bar data
 var data = [{
     "name": "Integument",
     "order": 1,
@@ -84,6 +85,7 @@ var data = [{
     "active": 0
 }]
 
+//declarations
 var margin = {
         top: 20,
         right: 120,
@@ -91,19 +93,18 @@ var margin = {
         left: 120
     },
     width = 2060 - margin.right - margin.left,
-    height = 500 - margin.top - margin.bottom;
-
-var sqwidth = 50,
+    height = 500 - margin.top - margin.bottom,
+    sqwidth = 50,
     sqheight = sqwidth,
     sqspacing = 0,
     phenobarheight = 20,
     dropbuttonheight = 15,
     dropactive = false,
     duration = 750,
-    i = 0;
-
-var treeWidth = 200,
-    treeHeight = treeWidth;
+    i = 0,
+    treeWidth = 200,
+    treeHeight = treeWidth,
+    barStack = [];
 
 var tree = d3.layout.tree()
     .size([treeHeight, treeWidth]);
@@ -112,8 +113,6 @@ var diagonal = d3.svg.diagonal()
     .projection(function(d) {
         return [d.y, d.x];
     });
-
-var barStack = [];
 
 // helper func
 getNumOfActivePheno = function() {
