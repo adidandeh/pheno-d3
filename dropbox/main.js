@@ -274,7 +274,7 @@ function click(d) {
         d._children = d.children;
         d.children = null;
     } else { // opening the nodes below
-        if (barStack[barStack.length-1] !== d) { // stopping same node from being repeat added.
+        if (barStack[barStack.length-1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
             barStack.push(d);
             d.children = d._children;
             d._children = null;
@@ -453,6 +453,7 @@ draw = function(svg, data) {
                         }
 
                         root.children.forEach(collapse);
+                        barStack.push(root);
                         update(root);
                     });
                 } else {
