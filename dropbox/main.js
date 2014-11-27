@@ -1,23 +1,22 @@
-//declarations
-var margin = {
+var barStack = [],
+    dropbuttonheight = 15,
+    dropactive = false,
+    duration = 750,
+    i = 0,
+    margin = {
         top: 20,
         right: 120,
         bottom: 20,
         left: 120
     },
-    width = 2060 - margin.right - margin.left,
-    height = 500 - margin.top - margin.bottom,
+    phenobarheight = 20,
     sqwidth = 50,
     sqheight = sqwidth,
     sqspacing = 0,
-    phenobarheight = 20,
-    dropbuttonheight = 15,
-    dropactive = false,
-    duration = 750,
-    i = 0,
     treeWidth = 200,
     treeHeight = treeWidth,
-    barStack = [];
+    height = 500 - margin.top - margin.bottom,
+    width = 2060 - margin.right - margin.left;
 
 var tree = d3.layout.tree()
     .size([treeHeight, treeWidth]);
