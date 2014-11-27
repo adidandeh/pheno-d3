@@ -9,7 +9,8 @@ div.tooltip {
   border: 1px;      
   border-radius: 8px;
   border-style: solid;   */        
-  pointer-events: none;         
+  pointer-events: none;
+  opacity: 0;         
 }
 
 *::selection {

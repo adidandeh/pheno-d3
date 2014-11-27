@@ -31,8 +31,7 @@ var svg = d3.select("#phenobar").append("svg")
     .attr("height", height);
 
 var div = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+    .attr("class", "tooltip");
 
 // helper func
 getNumOfActivePheno = function() {
@@ -86,6 +85,7 @@ function update(source) {
         });
 
     nodeEnter.append("text")
+        .attr("class", "boxtext")
         .attr("x", function(d) {
             return d.children || d._children ? -10 : 10;
         })
@@ -106,7 +106,7 @@ function update(source) {
             return name;
         })
         .style("font-size", "10pt")
-        .style("fill-opacity", 1e-6);
+        .style("fill-opacity", 1e-6); // svg style
 
     // Transition nodes to their new position.
     var nodeUpdate = node.transition()
@@ -350,7 +350,7 @@ draw = function(svg, data) {
             }
         });
 
-    bar.append("line") // -- \ in \/ 
+    bar.append("line") // -- \ in \/
     .attr("x1", function(d) {
         return d.order * (sqwidth + sqspacing) + 10;
     })
