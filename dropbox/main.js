@@ -55,7 +55,7 @@ findWithAttr = function(array, attr, value) {
 
 function update(source) {
     // Compute the new tree layout.
-    var nodes = tree.nodes(root).reverse(),
+    var nodes = tree.nodes(source).reverse(),
         links = tree.links(nodes);
 
     // Normalize for fixed-depth.
@@ -188,19 +188,27 @@ function update(source) {
 // Toggle children on click.
 function click(d) {
     if (d.children) { // Going back a step
+        var tempRoot;
         do { // TODO: Maybe fix the expansion issue where when you expand an already expanded subnodes, not all are added to the stack
-            var tempItem = barStack.pop();
-        } while (tempItem != d);
-        d._children = d.children;
+            tempRoot = barStack.pop();
+        } while (tempRoot != d);
+        d._children = d.children; // collapse nodes into parent
         d.children = null;
+        console.log("Before update in back: ");
+        console.log(barStack);
+        console.log("This is tempRoot:"); // TODO: Not going back when dealing with deep children.
+        console.log(tempRoot);
+        update(tempRoot);
     } else { // opening the nodes below
         if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
             barStack.push(d);
             d.children = d._children;
             d._children = null;
+            console.log("After going further down:");
+            console.log(barStack);
         }
+      update(d);
     }
-    update(d);
 }
 
 prepData = function(d) {
