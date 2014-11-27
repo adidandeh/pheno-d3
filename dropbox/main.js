@@ -268,22 +268,53 @@ function update(source) {
 
 // Toggle children on click.
 function click(d) {
-    console.log(d);
     if (d.children) { // Going back a step
         do { // TODO: Maybe fix the expansion issue where when you expand an already expanded subnodes, not all are added to the stack
-          var tempItem = barStack.pop();
+            var tempItem = barStack.pop();
         } while (tempItem != d);
         d._children = d.children;
         d.children = null;
     } else { // opening the nodes below
-        if (barStack[barStack.length-1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
+        if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
             barStack.push(d);
             d.children = d._children;
             d._children = null;
         }
     }
-    console.log(barStack);
     update(d);
+}
+
+prepData = function(d) {
+    d3.json("data.json", function(error, flare) {
+        root = flare;
+
+        var children = root.children;
+        var child = null;
+        children.forEach(function(element) {
+            var tempchildname = element.name.toLowerCase();
+            if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
+                child = element;
+                return;
+            }
+        });
+
+        root = child;
+
+        root.x0 = d.order * sqwidth;
+        root.y0 = phenobarheight + sqheight - dropbuttonheight;
+
+        function collapse(d) {
+            if (d.children) {
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+            }
+        }
+
+        root.children.forEach(collapse);
+        barStack.push(root);
+        update(root);
+    });
 }
 
 draw = function(svg, data) {
@@ -384,80 +415,14 @@ draw = function(svg, data) {
         .attr("style", "fill: transparent")
         .on("click", function(d) {
             if (d.active == 1) {
-                // d is the selecting array
-                // d.name is full name of pheno for tree generation
-                // d.order is useful for the positioning of the tree.
-
                 var pheno = d3.select(this); // pheno is the drop button
                 if (pheno.attr("class") == "drop, inactive" && !dropactive) {
                     pheno.attr("class", "drop, active");
                     dropactive = true;
-
-                    // bar.append("g")
-                    //     .attr("transform", "translate(" + 2000 + "," + 100+ ")");
-
-                    d3.json("data.json", function(error, flare) {
-                        root = flare;
-
-                        var children = root.children;
-                        var child = null;
-                        children.forEach(function(element) {
-                            var tempchildname = element.name.toLowerCase();
-                            if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
-                                child = element;
-                                return;
-                            }
-                        });
-
-                        root = child;
-
-                        root.x0 = d.order * sqwidth;
-                        root.y0 = phenobarheight + sqheight - dropbuttonheight;
-
-                        function collapse(d) {
-                            if (d.children) {
-                                d._children = d.children;
-                                d._children.forEach(collapse);
-                                d.children = null;
-                            }
-                        }
-
-                        root.children.forEach(collapse);
-                        barStack.push(root);
-                        update(root);
-                    });
+                    prepData(d);
                 } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                     // another is active, but we want this one
-                    d3.json("data.json", function(error, flare) {
-                        root = flare;
-
-                        var children = root.children;
-                        var child = null;
-                        children.forEach(function(element) {
-                            var tempchildname = element.name.toLowerCase();
-                            if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
-                                child = element;
-                                return;
-                            }
-                        });
-
-                        root = child;
-
-                        root.x0 = d.order * sqwidth;
-                        root.y0 = phenobarheight + sqheight - dropbuttonheight;
-
-                        function collapse(d) {
-                            if (d.children) {
-                                d._children = d.children;
-                                d._children.forEach(collapse);
-                                d.children = null;
-                            }
-                        }
-
-                        root.children.forEach(collapse);
-                        barStack.push(root);
-                        update(root);
-                    });
+                    prepData(d);
                 } else {
                     dropactive = false;
                     pheno.attr("class", "drop, inactive");
