@@ -113,6 +113,8 @@ var diagonal = d3.svg.diagonal()
         return [d.y, d.x];
     });
 
+var barStack = [];
+
 // helper func
 getNumOfActivePheno = function() {
     var count = 0;
@@ -266,13 +268,19 @@ function update(source) {
 
 // Toggle children on click.
 function click(d) {
-    if (d.children) {
+    console.log(d);
+    if (d.children) { // Going back a step
+        barStack.pop();
         d._children = d.children;
         d.children = null;
-    } else {
-        d.children = d._children;
-        d._children = null;
+    } else { // opening the nodes below
+        if (barStack[barStack.length-1] !== d) { // stopping same node from being repeat added.
+            barStack.push(d);
+            d.children = d._children;
+            d._children = null;
+        }
     }
+    console.log(barStack);
     update(d);
 }
 
@@ -413,6 +421,7 @@ draw = function(svg, data) {
                         }
 
                         root.children.forEach(collapse);
+                        barStack.push(root);
                         update(root);
                     });
                 } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
