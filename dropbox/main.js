@@ -103,6 +103,13 @@ function update(source) {
                 name = name.replace("Abnormal ", "");
                 name = name.charAt(0).toUpperCase() + name.slice(1);
             } catch (e) {}
+            var tempEnd = "";
+            var tempTextLength = 27;
+            if (name.length >= tempTextLength) {
+                tempEnd = "...";
+            }
+            name = name.substring(0, tempTextLength) + tempEnd;
+
             return name;
         })
         .style("font-size", "10pt")
