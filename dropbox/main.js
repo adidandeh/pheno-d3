@@ -194,10 +194,6 @@ function click(d) {
         } while (tempRoot != d);
         d._children = d.children; // collapse nodes into parent
         d.children = null;
-        console.log("Before update in back: ");
-        console.log(barStack);
-        console.log("This is tempRoot:"); // TODO: Not going back when dealing with deep children.
-        console.log(tempRoot);
         update(tempRoot);
     } else { // opening the nodes below
         if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
