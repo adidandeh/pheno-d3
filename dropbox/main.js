@@ -129,7 +129,7 @@ function update(source) {
                 .duration(1000)
                 .style("opacity", 0);
         });
-        
+
     // Transition nodes to their new position.
     var nodeUpdate = node.transition()
         .duration(duration)
