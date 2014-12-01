@@ -10,6 +10,7 @@ var barStack = [],
         left: 120
     },
     phenobarheight = 20,
+    priorPheno = null,
     sqwidth = 50,
     sqheight = sqwidth,
     sqspacing = 0,
@@ -108,9 +109,7 @@ function update(source) {
             if (name.length >= tempTextLength) {
                 tempEnd = "...";
             }
-            name = name.substring(0, tempTextLength) + tempEnd;
-
-            return name;
+            return name.substring(0, tempTextLength) + tempEnd;
         })
         .style("font-size", "10pt")
         .style("fill-opacity", 1e-6); // svg style
@@ -190,6 +189,8 @@ function update(source) {
         d.x0 = d.x;
         d.y0 = d.y;
     });
+
+    priorPheno = source;
 }
 
 // Toggle children on click.
@@ -207,8 +208,6 @@ function click(d) {
             barStack.push(d);
             d.children = d._children;
             d._children = null;
-            console.log("After going further down:");
-            console.log(barStack);
         }
       update(d);
     }
