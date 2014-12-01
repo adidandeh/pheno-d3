@@ -103,13 +103,16 @@ function update(source) {
                 name = name.replace(" abnormality", "");
                 name = name.replace("Abnormal ", "");
                 name = name.charAt(0).toUpperCase() + name.slice(1);
+
+                var tempEnd = "";
+                var tempTextLength = 26;
+                if (name.length >= tempTextLength) {
+                    tempEnd = "...";
+                }
+                name = name.substring(0, tempTextLength) + tempEnd;
             } catch (e) {}
-            var tempEnd = "";
-            var tempTextLength = 27;
-            if (name.length >= tempTextLength) {
-                tempEnd = "...";
-            }
-            return name.substring(0, tempTextLength) + tempEnd;
+
+            return name;
         })
         .style("font-size", "10pt")
         .style("fill-opacity", 1e-6); // svg style
@@ -197,12 +200,12 @@ function update(source) {
 function click(d) {
     if (d.children) { // Going back a step
         var tempRoot;
-        do { // TODO: Maybe fix the expansion issue where when you expand an already expanded subnodes, not all are added to the stack
+        do {
             tempRoot = barStack.pop();
         } while (tempRoot != d);
-        d._children = d.children; // collapse nodes into parent
+        d._children = d.children;
         d.children = null;
-        update(tempRoot);
+        update(priorPheno);
     } else { // opening the nodes below
         if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
             barStack.push(d);
@@ -241,6 +244,7 @@ prepData = function(d) {
         }
 
         root.children.forEach(collapse);
+        priorPheno = root;
         barStack.push(root);
         update(root);
     });
