@@ -115,8 +115,21 @@ function update(source) {
             return name;
         })
         .style("font-size", "10pt")
-        .style("fill-opacity", 1e-6); // svg style
-
+        .style("fill-opacity", 1e-6) // svg style
+        .on("mouseover", function(d) { // tool tip   
+            div.transition()
+                .duration(200)
+                .style("opacity", 10);
+            div.html("<h3>" + d.name + "</h3><br/>")
+                .style("left", (d3.event.pageX - 0) + "px")
+                .style("top", (d3.event.pageY - 100) + "px");
+        })
+        .on("mouseout", function(d) {
+            div.transition()
+                .duration(1000)
+                .style("opacity", 0);
+        });
+        
     // Transition nodes to their new position.
     var nodeUpdate = node.transition()
         .duration(duration)
