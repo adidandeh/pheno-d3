@@ -54,7 +54,7 @@ findWithAttr = function(array, attr, value) {
     }
 }
 
-function update(source) {
+update = function(source) {
     // Compute the new tree layout.
     var nodes = tree.nodes(source).reverse(),
         links = tree.links(nodes);
@@ -210,7 +210,7 @@ function update(source) {
 }
 
 // Toggle children on click.
-function click(d) {
+click = function(d) {
     if (d.children) { // Going back a step
         var tempRoot;
         do {
