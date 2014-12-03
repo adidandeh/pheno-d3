@@ -1,7 +1,7 @@
 var barStack = [],
     dropbuttonheight = 15,
     dropactive = false,
-    duration = 750,
+    duration = 300,
     i = 0,
     margin = {
         top: 20,
@@ -106,7 +106,7 @@ update = function(source) {
 
                 var tempEnd = "";
                 var tempTextLength = 26;
-                if (name.length >= tempTextLength) {
+                if (name.length > tempTextLength) {
                     tempEnd = "...";
                 }
                 name = name.substring(0, tempTextLength) + tempEnd;
@@ -205,8 +205,6 @@ update = function(source) {
         d.x0 = d.x;
         d.y0 = d.y;
     });
-
-    priorPheno = source;
 }
 
 // Toggle children on click.
@@ -218,14 +216,14 @@ click = function(d) {
         } while (tempRoot != d);
         d._children = d.children;
         d.children = null;
-        update(priorPheno);
+        update(barStack[barStack.length - 1]); // required to go back into tree
     } else { // opening the nodes below
         if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
             barStack.push(d);
             d.children = d._children;
             d._children = null;
         }
-      update(d);
+      update(d); // required to delve further into tree.
     }
 }
 
