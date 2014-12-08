@@ -76,8 +76,9 @@ update = function(source) {
         .attr("class", "node")
         .attr("transform", function(d) {
             return "translate(" + source.y0 + "," + source.x0 + ")";
-        });
-        //.on("click", click);
+        })
+        .on("mouseover", tooltopMouseOver)
+        .on("mouseout", tooltopMouseOut);
 
     nodeEnter.append("circle")
         .attr("r", 1e-6)
@@ -136,19 +137,6 @@ update = function(source) {
         })
         .style("font-size", "10pt")
         .style("fill-opacity", 1e-6) // svg style
-        .on("mouseover", function(d) { // tool tip   
-            div.transition()
-                .duration(200)
-                .style("opacity", 10);
-            div.html("<h3>" + d.name + "</h3><br/>")
-                .style("left", (d3.event.pageX - 0) + "px")
-                .style("top", (d3.event.pageY - 100) + "px");
-        })
-        .on("mouseout", function(d) {
-            div.transition()
-                .duration(1000)
-                .style("opacity", 0);
-        })
         .on("click", click);
 
     // Transition nodes to their new position.
@@ -226,6 +214,21 @@ update = function(source) {
         d.x0 = d.x;
         d.y0 = d.y;
     });
+}
+
+tooltopMouseOver = function(d) { 
+    div.transition()
+        .duration(200)
+        .style("opacity", 10);
+    div.html("<h3>" + d.name + "</h3><br/>")
+        .style("left", (d3.event.pageX - 0) + "px")
+        .style("top", (d3.event.pageY - 100) + "px");
+}
+
+tooltopMouseOut = function(d) {
+    div.transition()
+        .duration(1000)
+        .style("opacity", 0);
 }
 
 checkmarkClick = function(d) {
