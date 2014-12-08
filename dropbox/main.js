@@ -76,14 +76,34 @@ update = function(source) {
         .attr("class", "node")
         .attr("transform", function(d) {
             return "translate(" + source.y0 + "," + source.x0 + ")";
-        })
-        .on("click", click);
+        });
+        //.on("click", click);
 
     nodeEnter.append("circle")
         .attr("r", 1e-6)
         .style("fill", function(d) {
             return d._children ? "lightsteelblue" : "#fff";
-        });
+        })   
+        .on("click", click);
+
+
+    nodeEnter.append("line") // -- \ in \/ of checkmark
+        .attr("x1", 10)
+        .attr("y1", 0)
+        .attr("x2", 15)
+        .attr("y2", 5)
+        .style("stroke", "green")
+        .style("stroke-width", 3)
+        .on("click", checkmarkClick);
+
+    nodeEnter.append("line") // -- / in \/ of checkmark
+        .attr("x1", 14)
+        .attr("y1", 5)
+        .attr("x2", 25)
+        .attr("y2", -8)
+        .style("stroke", "green")
+        .style("stroke-width", 3)
+        .on("click", checkmarkClick);
 
     nodeEnter.append("text")
         .attr("class", "boxtext")
@@ -128,7 +148,8 @@ update = function(source) {
             div.transition()
                 .duration(1000)
                 .style("opacity", 0);
-        });
+        })
+        .on("click", click);
 
     // Transition nodes to their new position.
     var nodeUpdate = node.transition()
@@ -205,6 +226,15 @@ update = function(source) {
         d.x0 = d.x;
         d.y0 = d.y;
     });
+}
+
+checkmarkClick = function(d) {
+    // add this pheno to box listing.
+    // refresh drawing. 
+    // make sure to have the drawing mech read from updated box listing
+    //   and dynamically generate the box structure.
+    // will also have to have the tree structure dynamically place based
+    //   off available vertical space.
 }
 
 // Toggle children on click.
