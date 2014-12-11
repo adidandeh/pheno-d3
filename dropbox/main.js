@@ -299,10 +299,9 @@ draw = function(svg, data) {
             return d.order;
         })
         .enter().append("g")
-        .attr("transform",
-            function(d, i) {
-                return "translate(" + i + ", " + sqheight + ")";
-            });
+        .attr("transform", function(d, i) {
+            return "translate(" + i + ", " + sqheight + ")";
+        });
 
     bar.append("rect") // top majority of phenotype box
         .attr("x", function(d) {
@@ -378,9 +377,9 @@ draw = function(svg, data) {
         });
 
     bar.append("rect") // drop down button for each pheno
-    .attr("x", function(d) {
-        return (d.order * sqwidth);
-    })
+        .attr("x", function(d) {
+            return (d.order * sqwidth);
+        })
         .attr("y", phenobarheight + sqheight - dropbuttonheight)
         .attr("width", sqwidth)
         .attr("height", dropbuttonheight)
@@ -408,9 +407,9 @@ draw = function(svg, data) {
         });
 
     bar.append("line") // -- \ in \/
-    .attr("x1", function(d) {
-        return d.order * (sqwidth + sqspacing) + 10;
-    })
+        .attr("x1", function(d) {
+            return d.order * (sqwidth + sqspacing) + 10;
+        })
         .attr("y1", phenobarheight + 40)
         .attr("x2", function(d) {
             return d.order * (sqwidth + sqspacing) + 25;
@@ -420,9 +419,9 @@ draw = function(svg, data) {
         .style("stroke-width", 1);
 
     bar.append("line") // -- / in \/
-    .attr("x1", function(d) {
-        return d.order * (sqwidth + sqspacing) + 40;
-    })
+        .attr("x1", function(d) {
+            return d.order * (sqwidth + sqspacing) + 40;
+        })
         .attr("y1", phenobarheight + 40)
         .attr("x2", function(d) {
             return d.order * (sqwidth + sqspacing) + 25;
@@ -432,11 +431,11 @@ draw = function(svg, data) {
         .style("stroke-width", 1);
 
     bar.append("text") // phenotype name
-    .attr("x", function(d) {
-        return (d.order * (sqwidth + sqspacing) + sqwidth / 2);
-    })
+        .attr("x", function(d) {
+            return (d.order * (sqwidth + sqspacing) + sqwidth / 2);
+        })
         .attr("y", sqheight - 7) // hardcoded until better option is found
-    .attr("dy", ".35em")
+        .attr("dy", ".35em")
         .style("font-size", function(d) {
             return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
         })
@@ -448,36 +447,6 @@ draw = function(svg, data) {
 
     // attempt to create children boxes.
 
-    bar.append("rect") // top majority of phenotype box
-        .attr("x", function(d) {
-            return (d.order * sqwidth);
-        })
-        .attr("y", phenobarheight + 51) // temp arb num
-        .attr("width", sqwidth)
-        .attr("height", sqheight)
-        .attr("class", "inactive, top")
-        .style("fill", function(d) {
-            if (d.active == 1) {
-                return "#49B649";
-            } else {
-                return "#ffffff";
-            }
-        })
-        .on("click", function(d) {
-        })
-        .on("mouseover", function(d) { // tool tip   
-            div.transition()
-                .duration(200)
-                .style("opacity", 10);
-            div.html("<h3>" + d.name + "</h3><br/>")
-                .style("left", (d3.event.pageX - 0) + "px")
-                .style("top", (d3.event.pageY - 100) + "px");
-        })
-        .on("mouseout", function(d) {
-            div.transition()
-                .duration(1000)
-                .style("opacity", 0);
-        });
 }
 
 draw(svg, data);
