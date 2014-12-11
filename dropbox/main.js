@@ -1,4 +1,5 @@
-var barStack = [],
+var activeColumn = -1,
+    barStack = [],
     dropbuttonheight = 15,
     dropactive = false,
     duration = 300,
@@ -87,7 +88,6 @@ update = function(source) {
             return d._children ? "lightsteelblue" : "#fff";
         })   
         .on("click", click);
-
 
     nodeEnter.append("line") // -- \ in \/ of checkmark
         .attr("x1", 10)
@@ -233,12 +233,7 @@ tooltopMouseOut = function(d) {
 }
 
 checkmarkClick = function(d) {
-    // add this pheno to box listing.
-    // refresh drawing. 
-    // make sure to have the drawing mech read from updated box listing
-    //   and dynamically generate the box structure.
-    // will also have to have the tree structure dynamically place based
-    //   off available vertical space.
+    data[activeColumn].children.push(d);
 }
 
 // Toggle children on click.
@@ -349,7 +344,6 @@ draw = function(svg, data) {
             } else {
                 rec.style("fill", "#E35C5C");
                 rec.attr("class", "top, inactive");
-
                 // get number of phenos still active
                 var numOfActivePheno = getNumOfActivePheno();
 
@@ -397,13 +391,16 @@ draw = function(svg, data) {
                 var pheno = d3.select(this); // pheno is the drop button
                 if (pheno.attr("class") == "drop, inactive" && !dropactive) {
                     pheno.attr("class", "drop, active");
+                    activeColumn = d.ArrOrder;
                     dropactive = true;
                     prepData(d);
                 } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                     // another is active, but we want this one
+                    activeColumn = d.ArrOrder;
                     prepData(d);
                 } else {
                     dropactive = false;
+                    activeColumn = -1;
                     pheno.attr("class", "drop, inactive");
                     draw(svg, data);
                 }
@@ -447,6 +444,39 @@ draw = function(svg, data) {
         .attr("pointer-events", "none")
         .text(function(d) {
             return d.name.substring(0, 5);
+        });
+
+    // attempt to create children boxes.
+
+    bar.append("rect") // top majority of phenotype box
+        .attr("x", function(d) {
+            return (d.order * sqwidth);
+        })
+        .attr("y", phenobarheight + 51) // temp arb num
+        .attr("width", sqwidth)
+        .attr("height", sqheight)
+        .attr("class", "inactive, top")
+        .style("fill", function(d) {
+            if (d.active == 1) {
+                return "#49B649";
+            } else {
+                return "#ffffff";
+            }
+        })
+        .on("click", function(d) {
+        })
+        .on("mouseover", function(d) { // tool tip   
+            div.transition()
+                .duration(200)
+                .style("opacity", 10);
+            div.html("<h3>" + d.name + "</h3><br/>")
+                .style("left", (d3.event.pageX - 0) + "px")
+                .style("top", (d3.event.pageY - 100) + "px");
+        })
+        .on("mouseout", function(d) {
+            div.transition()
+                .duration(1000)
+                .style("opacity", 0);
         });
 }
 
