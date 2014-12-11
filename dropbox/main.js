@@ -17,7 +17,8 @@ var barStack = [],
     treeWidth = 200,
     treeHeight = treeWidth,
     height = 500 - margin.top - margin.bottom,
-    width = 2060 - margin.right - margin.left;
+    width = 2060 - margin.right - margin.left,
+    maxBoxHeight = 120;
 
 var tree = d3.layout.tree()
     .size([treeHeight, treeWidth]);
@@ -62,7 +63,7 @@ update = function(source) {
     // Normalize for fixed-depth.
     nodes.forEach(function(d) {
         d.y = d.depth * treeWidth + 200;
-        d.x += 120;
+        d.x += maxBoxHeight;
     }); // How wide it gets
 
     // Update the nodes…
@@ -294,6 +295,7 @@ prepData = function(d) {
     });
 }
 
+
 draw = function(svg, data) {
     svg.selectAll("*").remove();
 
@@ -308,9 +310,9 @@ draw = function(svg, data) {
             });
 
     bar.append("rect") // top majority of phenotype box
-    .attr("x", function(d) {
-        return (d.order * sqwidth);
-    })
+        .attr("x", function(d) {
+            return (d.order * sqwidth);
+        })
         .attr("y", phenobarheight)
         .attr("width", sqwidth)
         .attr("height", sqheight)
