@@ -493,7 +493,7 @@ draw = function(svg, data) {
                         div.transition()
                             .duration(200)
                             .style("opacity", 10);
-                        div.html("<h3>" + tempName + "</h3><br/>")
+                        div.html("<h3>" + tempName + "</h3><br/>") // issue only remembers last name
                             .style("left", (d3.event.pageX - 0) + "px")
                             .style("top", (d3.event.pageY - 100) + "px");
                     })
@@ -502,6 +502,60 @@ draw = function(svg, data) {
                             .duration(1000)
                             .style("opacity", 0);
                     });
+                    
+                barChildren.append("rect") // drop down button for each pheno
+                        .attr("x", function(d) {
+                            return (d.order * sqwidth);
+                        })
+                        .attr("y", phenobarheight + sqheight - dropbuttonheight)
+                        .attr("width", sqwidth)
+                        .attr("height", dropbuttonheight)
+                        .attr("class", "drop, inactive")
+                        .attr("style", "fill: transparent")
+                        .on("click", function(d) {
+                            if (d.active == 1) {
+                                var pheno = d3.select(this); // pheno is the drop button
+                                if (pheno.attr("class") == "drop, inactive" && !dropactive) {
+                                    pheno.attr("class", "drop, active");
+                                    activeColumn = d.order;
+                                    dropactive = true;
+                                    prepData(d);
+                                } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
+                                    // another is active, but we want this one
+                                    activeColumn = d.order;
+                                    prepData(d);
+                                } else {
+                                    dropactive = false;
+                                    activeColumn = -1;
+                                    pheno.attr("class", "drop, inactive");
+                                    draw(svg, data);
+                                }
+                            }
+                        });
+
+                barChildren.append("line") // -- \ in \/
+                    .attr("x1", function(d) {
+                        return locData[column].order * (sqwidth+sqspacing) + 10;
+                    })
+                    .attr("y1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
+                    .attr("x2", function(d) {
+                        return locData[column].order * (sqwidth) + 25;
+                    })
+                    .attr("y2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
+                    .style("stroke", "black")
+                    .style("stroke-width", 1);
+
+                barChildren.append("line") // -- / in \/
+                    .attr("x1", function(d) {
+                        return locData[column].order * (sqwidth) + 40;
+                    })
+                    .attr("y1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
+                    .attr("x2", function(d) {
+                        return locData[column].order * (sqwidth) + 25;
+                    })
+                    .attr("y2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
+                    .style("stroke", "black")
+                    .style("stroke-width", 1);
 
                 barChildren.append("text") // phenotype name
                     .attr("x", function(d) {
