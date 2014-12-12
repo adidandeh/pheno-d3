@@ -234,6 +234,7 @@ tooltopMouseOut = function(d) {
 
 checkmarkClick = function(d) {
     data[activeColumn].children.push(d);
+    draw(svg, data);
 }
 
 // Toggle children on click.
@@ -305,12 +306,14 @@ draw = function(svg, data) {
 
     bar.append("rect") // top majority of phenotype box
         .attr("x", function(d) {
-            return (d.order * sqwidth);
+            return (d.order * sqwidth) + 1;
         })
         .attr("y", phenobarheight)
         .attr("width", sqwidth)
         .attr("height", sqheight)
-        .attr("class", "inactive, top")
+        .attr("class", function(d) {
+            return "inactive, top, " + d.name;
+        })
         .style("fill", function(d) {
             if (d.active == 1) {
                 return "#49B649";
@@ -446,7 +449,63 @@ draw = function(svg, data) {
         });
 
     // attempt to create children boxes.
+    
+    data.forEach(function(rootPheno){
+        if (rootPheno.children.length > 0) {
 
+            var barChildren = svg.selectAll(rootPheno.name) // the bar which will hold the phenotype boxes.
+                .data(rootPheno.children)
+                .enter().append("g")
+                .attr("transform", function(d, i) {
+                    return "translate(" + 0 + ", " + sqheight + ")";
+                });
+
+            var count = 1;
+            rootPheno.children.forEach(function(child) {
+                barChildren.append("rect") // top majority of phenotype box
+                    .attr("x", function(d) {
+                        console.log(data);
+                        return ((rootPheno.order) * 51);
+                    })
+                    .attr("y", function(d) {
+                        return (51*count + 20);
+                    })
+                    .attr("width", sqwidth)
+                    .attr("height", sqheight)
+                    .attr("class", "child")
+                    .style("fill", "#49B649")
+                    .on("mouseover", function(d) { // tool tip   
+                        div.transition()
+                            .duration(200)
+                            .style("opacity", 10);
+                        div.html("<h3>" + child.name + "</h3><br/>")
+                            .style("left", (d3.event.pageX - 0) + "px")
+                            .style("top", (d3.event.pageY - 100) + "px");
+                    })
+                    .on("mouseout", function(d) {
+                        div.transition()
+                            .duration(1000)
+                            .style("opacity", 0);
+                    });
+
+                barChildren.append("text") // phenotype name
+                    .attr("x", function(d) {
+                        return ((rootPheno.order) * (sqwidth + sqspacing) + sqwidth / 2);
+                    })
+                    .attr("y", 51*count + 42) // hardcoded until better option is found
+                    .attr("dy", ".35em")
+                    .style("font-size", function(d) {
+                        return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
+                    })
+                    .style("text-anchor", "middle")
+                    .attr("pointer-events", "none")
+                    .text(function(d) {
+                        return child.name.substring(0, 5);
+                    });
+                count++; 
+            });
+        }
+    });
 }
 
 draw(svg, data);
