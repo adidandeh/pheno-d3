@@ -56,6 +56,17 @@ findWithAttr = function(array, attr, value) {
     }
 }
 
+getMaxChildren = function() {
+    var children = 0;
+
+    data.forEach(function(rootPheno) {
+        if(rootPheno.children.length > children) {
+            children = rootPheno.children.length;
+        }
+    });
+    return children;
+} 
+
 cleanName = function(name) {
     try {
         name = name.replace("Abnormality of the ", "");
@@ -80,11 +91,10 @@ update = function(source) {
     // Compute the new tree layout.
     var nodes = tree.nodes(source).reverse(),
         links = tree.links(nodes);
-
     // Normalize for fixed-depth.
     nodes.forEach(function(d) {
-        d.y = d.depth * treeWidth + 200;
-        d.x += maxBoxHeight;
+        d.y = d.depth * treeWidth + 200; // horizontal
+        d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + 20; // vertical height
     }); // How wide it gets
 
     // Update the nodes…
