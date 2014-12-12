@@ -326,7 +326,8 @@ draw = function(svg, data) {
         .attr("width", sqwidth)
         .attr("height", sqheight)
         .attr("class", function(d) {
-            var name = d.name.replace("/", " ");
+            var name = d.name.replace("/", " "); // TODO: does not address selector issue
+            var name = d.name.replace("-", " ");
             return "inactive, top, " + name;
         })
         .style("fill", function(d) {
@@ -540,7 +541,7 @@ draw = function(svg, data) {
                     })
                     .attr("y1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
                     .attr("x2", function(d) {
-                        return locData[column].order * (sqwidth) + 25;
+                        return locData[column].order * (sqwidth+sqspacing) + 25;
                     })
                     .attr("y2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
                     .style("stroke", "black")
@@ -548,11 +549,11 @@ draw = function(svg, data) {
 
                 barChildren.append("line") // -- / in \/
                     .attr("x1", function(d) {
-                        return locData[column].order * (sqwidth) + 40;
+                        return locData[column].order * (sqwidth+sqspacing) + 40;
                     })
                     .attr("y1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
                     .attr("x2", function(d) {
-                        return locData[column].order * (sqwidth) + 25;
+                        return locData[column].order * (sqwidth+sqspacing) + 25;
                     })
                     .attr("y2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
                     .style("stroke", "black")
