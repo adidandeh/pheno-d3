@@ -56,6 +56,26 @@ findWithAttr = function(array, attr, value) {
     }
 }
 
+cleanName = function(name) {
+    try {
+        name = name.replace("Abnormality of the ", "");
+        name = name.replace("Abnormality of ", "");
+        name = name.replace(" Abnormality", "");
+        name = name.replace(" abnormality", "");
+        name = name.replace("Abnormal ", "");
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+
+        var tempEnd = "";
+        var tempTextLength = 26;
+        if (name.length > tempTextLength) {
+            tempEnd = "...";
+        }
+        name = name.substring(0, tempTextLength) + tempEnd;
+    } catch (e) {}
+
+    return name;
+}
+
 update = function(source) {
     // Compute the new tree layout.
     var nodes = tree.nodes(source).reverse(),
@@ -118,23 +138,7 @@ update = function(source) {
         })
         .text(function(d) {
             var name = d.name;
-            try {
-                name = name.replace("Abnormality of the ", "");
-                name = name.replace("Abnormality of ", "");
-                name = name.replace(" Abnormality", "");
-                name = name.replace(" abnormality", "");
-                name = name.replace("Abnormal ", "");
-                name = name.charAt(0).toUpperCase() + name.slice(1);
-
-                var tempEnd = "";
-                var tempTextLength = 26;
-                if (name.length > tempTextLength) {
-                    tempEnd = "...";
-                }
-                name = name.substring(0, tempTextLength) + tempEnd;
-            } catch (e) {}
-
-            return name;
+            return cleanName(name);
         })
         .style("font-size", "10pt")
         .style("fill-opacity", 1e-6) // svg style
@@ -449,26 +453,25 @@ draw = function(svg, data) {
         });
 
     // attempt to create children boxes.
-    
-    data.forEach(function(rootPheno){
-        if (rootPheno.children.length > 0) {
-
-            var barChildren = svg.selectAll(rootPheno.name) // the bar which will hold the phenotype boxes.
-                .data(rootPheno.children)
+    var locData = data;
+    for(var column = 0; column < locData.length; column++) {
+        if (locData[column].children.length > 0) {
+            var barChildren = svg.selectAll(locData[column].name) // the bar which will hold the phenotype boxes.
+                .data(locData[column].children)
                 .enter().append("g")
                 .attr("transform", function(d, i) {
                     return "translate(" + 0 + ", " + sqheight + ")";
                 });
 
-            var count = 1;
-            rootPheno.children.forEach(function(child) {
+            for(var count = 0; count < locData[column].children.length; count++) {
+                var tempName = locData[column].children[count].name;
+
                 barChildren.append("rect") // top majority of phenotype box
                     .attr("x", function(d) {
-                        console.log(data);
-                        return ((rootPheno.order) * 51);
+                        return ((locData[column].order) * 51);
                     })
                     .attr("y", function(d) {
-                        return (51*count + 20);
+                        return (51*(count+1) + 20);
                     })
                     .attr("width", sqwidth)
                     .attr("height", sqheight)
@@ -478,7 +481,7 @@ draw = function(svg, data) {
                         div.transition()
                             .duration(200)
                             .style("opacity", 10);
-                        div.html("<h3>" + child.name + "</h3><br/>")
+                        div.html("<h3>" + tempName + "</h3><br/>")
                             .style("left", (d3.event.pageX - 0) + "px")
                             .style("top", (d3.event.pageY - 100) + "px");
                     })
@@ -490,9 +493,9 @@ draw = function(svg, data) {
 
                 barChildren.append("text") // phenotype name
                     .attr("x", function(d) {
-                        return ((rootPheno.order) * (sqwidth + sqspacing) + sqwidth / 2);
+                        return ((locData[column].order) * (sqwidth + sqspacing) + sqwidth / 2);
                     })
-                    .attr("y", 51*count + 42) // hardcoded until better option is found
+                    .attr("y", 51*(count+1) + 42) // hardcoded until better option is found
                     .attr("dy", ".35em")
                     .style("font-size", function(d) {
                         return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
@@ -500,12 +503,11 @@ draw = function(svg, data) {
                     .style("text-anchor", "middle")
                     .attr("pointer-events", "none")
                     .text(function(d) {
-                        return child.name.substring(0, 5);
+                        return cleanName(locData[column].children[count].name).substring(0, 5);
                     });
-                count++; 
-            });
+            }
         }
-    });
+    }
 }
 
 draw(svg, data);
