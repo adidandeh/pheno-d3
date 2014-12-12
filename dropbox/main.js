@@ -237,7 +237,7 @@ tooltopMouseOut = function(d) {
 }
 
 checkmarkClick = function(d) {
-    data[activeColumn].children.push(d);
+    data[activeColumn-1].children.push(d);
     draw(svg, data);
 }
 
@@ -397,12 +397,12 @@ draw = function(svg, data) {
                 var pheno = d3.select(this); // pheno is the drop button
                 if (pheno.attr("class") == "drop, inactive" && !dropactive) {
                     pheno.attr("class", "drop, active");
-                    activeColumn = d.ArrOrder;
+                    activeColumn = d.order;
                     dropactive = true;
                     prepData(d);
                 } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                     // another is active, but we want this one
-                    activeColumn = d.ArrOrder;
+                    activeColumn = d.order;
                     prepData(d);
                 } else {
                     dropactive = false;
