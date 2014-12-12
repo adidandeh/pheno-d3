@@ -316,7 +316,8 @@ draw = function(svg, data) {
         .attr("width", sqwidth)
         .attr("height", sqheight)
         .attr("class", function(d) {
-            return "inactive, top, " + d.name;
+            var name = d.name.replace("/", " ");
+            return "inactive, top, " + name;
         })
         .style("fill", function(d) {
             if (d.active == 1) {
@@ -364,6 +365,7 @@ draw = function(svg, data) {
                 // put it's position at the leftmost inactive.
                 removedArr[0].active = 0;
                 removedArr[0].order = numOfActivePheno + 1;
+                removedArr[0].children = [];
                 // push the changed pheno into the data list at new place.
                 data.splice(numOfActivePheno, 0, removedArr[0]);
             }
