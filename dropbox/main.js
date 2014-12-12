@@ -480,7 +480,7 @@ draw = function(svg, data) {
 
                 barChildren.append("rect") // top majority of phenotype box
                     .attr("x", function(d) {
-                        return ((locData[column].order) * 51);
+                        return ((locData[column].order) * (sqwidth+sqspacing));
                     })
                     .attr("y", function(d) {
                         return (51*(count+sqspacing) + 20);
@@ -502,35 +502,36 @@ draw = function(svg, data) {
                             .duration(1000)
                             .style("opacity", 0);
                     });
-                    
+
                 barChildren.append("rect") // drop down button for each pheno
                         .attr("x", function(d) {
-                            return (d.order * sqwidth);
+                            return ((locData[column].order) * (sqwidth+sqspacing));
                         })
-                        .attr("y", phenobarheight + sqheight - dropbuttonheight)
+                        .attr("y", (sqheight+sqspacing)*(count+1) + phenobarheight - dropbuttonheight + sqheight)
                         .attr("width", sqwidth)
                         .attr("height", dropbuttonheight)
                         .attr("class", "drop, inactive")
                         .attr("style", "fill: transparent")
                         .on("click", function(d) {
-                            if (d.active == 1) {
-                                var pheno = d3.select(this); // pheno is the drop button
-                                if (pheno.attr("class") == "drop, inactive" && !dropactive) {
-                                    pheno.attr("class", "drop, active");
-                                    activeColumn = d.order;
-                                    dropactive = true;
-                                    prepData(d);
-                                } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
-                                    // another is active, but we want this one
-                                    activeColumn = d.order;
-                                    prepData(d);
-                                } else {
-                                    dropactive = false;
-                                    activeColumn = -1;
-                                    pheno.attr("class", "drop, inactive");
-                                    draw(svg, data);
-                                }
-                            }
+                            // TODO: get it to activate the tree structure from this node.
+
+                            // console.log(d);
+                            // var pheno = d3.select(this); // pheno is the drop button
+                            // if (pheno.attr("class") == "drop, inactive" && !dropactive) {
+                            //     pheno.attr("class", "drop, active");
+                            //     activeColumn = d.order;
+                            //     dropactive = true;
+                            //     prepData(d);
+                            // } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
+                            //     // another is active, but we want this one
+                            //     activeColumn = d.order;
+                            //     prepData(d);
+                            // } else {
+                            //     dropactive = false;
+                            //     activeColumn = -1;
+                            //     pheno.attr("class", "drop, inactive");
+                            //     draw(svg, data);
+                            // }
                         });
 
                 barChildren.append("line") // -- \ in \/
