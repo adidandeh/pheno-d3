@@ -17,7 +17,7 @@ var activeColumn = -1,
     sqspacing = 0,
     treeWidth = 200,
     treeHeight = treeWidth,
-    height = 500 - margin.top - margin.bottom,
+    height = 2000 - margin.top - margin.bottom,
     width = 2060 - margin.right - margin.left,
     maxBoxHeight = 120;
 
@@ -31,7 +31,7 @@ var diagonal = d3.svg.diagonal()
 
 var svg = d3.select("#phenobar").append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", 800); // TODO: Dynamic height adjustment.
 
 var div = d3.select("body").append("div")
     .attr("class", "tooltip");
