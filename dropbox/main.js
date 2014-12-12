@@ -14,7 +14,7 @@ var activeColumn = -1,
     priorPheno = null,
     sqwidth = 50,
     sqheight = sqwidth,
-    sqspacing = 0,
+    sqspacing = 1,
     treeWidth = 200,
     treeHeight = treeWidth,
     height = 2000 - margin.top - margin.bottom,
@@ -320,7 +320,7 @@ draw = function(svg, data) {
 
     bar.append("rect") // top majority of phenotype box
         .attr("x", function(d) {
-            return (d.order * sqwidth) + 1;
+            return (d.order * sqwidth) + sqspacing;
         })
         .attr("y", phenobarheight)
         .attr("width", sqwidth)
@@ -427,11 +427,11 @@ draw = function(svg, data) {
 
     bar.append("line") // -- \ in \/
         .attr("x1", function(d) {
-            return d.order * (sqwidth + sqspacing) + 10;
+            return d.order * (sqwidth) + 10;
         })
         .attr("y1", phenobarheight + 40)
         .attr("x2", function(d) {
-            return d.order * (sqwidth + sqspacing) + 25;
+            return d.order * (sqwidth) + 25;
         })
         .attr("y2", phenobarheight + 45)
         .style("stroke", "black")
@@ -439,11 +439,11 @@ draw = function(svg, data) {
 
     bar.append("line") // -- / in \/
         .attr("x1", function(d) {
-            return d.order * (sqwidth + sqspacing) + 40;
+            return d.order * (sqwidth) + 40;
         })
         .attr("y1", phenobarheight + 40)
         .attr("x2", function(d) {
-            return d.order * (sqwidth + sqspacing) + 25;
+            return d.order * (sqwidth) + 25;
         })
         .attr("y2", phenobarheight + 45)
         .style("stroke", "black")
@@ -451,7 +451,7 @@ draw = function(svg, data) {
 
     bar.append("text") // phenotype name
         .attr("x", function(d) {
-            return (d.order * (sqwidth + sqspacing) + sqwidth / 2);
+            return (d.order * (sqwidth) + sqwidth / 2);
         })
         .attr("y", sqheight - 7) // hardcoded until better option is found
         .attr("dy", ".35em")
@@ -483,7 +483,7 @@ draw = function(svg, data) {
                         return ((locData[column].order) * 51);
                     })
                     .attr("y", function(d) {
-                        return (51*(count+1) + 20);
+                        return (51*(count+sqspacing) + 20);
                     })
                     .attr("width", sqwidth)
                     .attr("height", sqheight)
