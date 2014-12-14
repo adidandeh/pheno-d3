@@ -3,6 +3,7 @@ var activeColumn = -1,
     dropbuttonheight = 15,
     dropactive = false,
     duration = 300,
+    fullPhenotypes = null,
     i = 0,
     margin = {
         top: 20,
@@ -271,38 +272,55 @@ click = function(d) {
     }
 }
 
-prepData = function(d) {
-    d3.json("data.json", function(error, flare) {
-        root = flare;
+prepData = function(d, data) {
+    if(typeof d.x0 !== "undefined") { // if this is not the first time querying for data
+        root = d;
 
-        var children = root.children;
-        var child = null;
-        children.forEach(function(element) {
-            var tempchildname = element.name.toLowerCase();
-            if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
-                child = element;
-                return;
-            }
-        });
+        // function collapse(d) {
+        //     if (d.children) {
+        //         d._children = d.children;
+        //         d._children.forEach(collapse);
+        //         d.children = null;
+        //     }
+        // }
 
-        root = child;
+        // root.children.forEach(collapse);
 
-        root.x0 = d.order * sqwidth;
-        root.y0 = phenobarheight + sqheight - dropbuttonheight;
-
-        function collapse(d) {
-            if (d.children) {
-                d._children = d.children;
-                d._children.forEach(collapse);
-                d.children = null;
-            }
-        }
-
-        root.children.forEach(collapse);
         priorPheno = root;
         barStack.push(root);
         update(root);
-    });
+    } else {
+        d3.json("data.json", function(error, flare) {
+            root = flare;
+            var children = root.children;
+            var child = null;
+            
+            children.forEach(function(element) {
+                var tempchildname = element.name.toLowerCase();
+                if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
+                    child = element;
+                    return;
+                }
+            });
+            root = child;
+
+            root.x0 = d.order * sqwidth;
+            root.y0 = phenobarheight + sqheight - dropbuttonheight;
+
+            function collapse(d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d._children.forEach(collapse);
+                    d.children = null;
+                }
+            }
+
+            root.children.forEach(collapse);
+            priorPheno = root;
+            barStack.push(root);
+            update(root);
+        });  
+    }
 }
 
 
@@ -412,11 +430,11 @@ draw = function(svg, data) {
                     pheno.attr("class", "drop, active");
                     activeColumn = d.order;
                     dropactive = true;
-                    prepData(d);
+                    prepData(d, data);
                 } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                     // another is active, but we want this one
                     activeColumn = d.order;
-                    prepData(d);
+                    prepData(d, data);
                 } else {
                     dropactive = false;
                     activeColumn = -1;
@@ -516,23 +534,22 @@ draw = function(svg, data) {
                         .on("click", function(d) {
                             // TODO: get it to activate the tree structure from this node.
 
-                            // console.log(d);
-                            // var pheno = d3.select(this); // pheno is the drop button
-                            // if (pheno.attr("class") == "drop, inactive" && !dropactive) {
-                            //     pheno.attr("class", "drop, active");
-                            //     activeColumn = d.order;
-                            //     dropactive = true;
-                            //     prepData(d);
-                            // } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
-                            //     // another is active, but we want this one
-                            //     activeColumn = d.order;
-                            //     prepData(d);
-                            // } else {
-                            //     dropactive = false;
-                            //     activeColumn = -1;
-                            //     pheno.attr("class", "drop, inactive");
-                            //     draw(svg, data);
-                            // }
+                            var pheno = d3.select(this); // pheno is the drop button
+                            if (pheno.attr("class") == "drop, inactive" && !dropactive) {
+                                pheno.attr("class", "drop, active");
+                                activeColumn = d.order;
+                                dropactive = true;
+                                prepData(d, data);
+                            } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
+                                // another is active, but we want this one
+                                activeColumn = d.order;
+                                prepData(d, data);
+                            } else {
+                                dropactive = false;
+                                activeColumn = -1;
+                                pheno.attr("class", "drop, inactive");
+                                draw(svg, data);
+                            }
                         });
 
                 barChildren.append("line") // -- \ in \/
