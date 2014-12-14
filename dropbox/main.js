@@ -3,7 +3,6 @@ var activeColumn = -1,
     dropbuttonheight = 15,
     dropactive = false,
     duration = 300,
-    fullPhenotypes = null,
     i = 0,
     margin = {
         top: 20,
@@ -49,11 +48,19 @@ getNumOfActivePheno = function() {
 };
 
 //helper func
-findWithAttr = function(array, attr, value) {
-    for (var i = 0; i < array.length; i++) {
-        if (array[i][attr] === value) {
-            return i;
-        }
+findWithAttr = function(array, attr, value, ignoreCase) {
+    if(ignoreCase) {
+        for (var i = 0; i < array.length; i++) {
+            if (array[i][attr].ignoreCase === value.ignoreCase) {
+                return i;
+            }
+        }   
+    } else {
+        for (var i = 0; i < array.length; i++) {
+            if (array[i][attr] === value) {
+                return i;
+            }
+        }       
     }
 }
 
@@ -272,7 +279,22 @@ click = function(d) {
     }
 }
 
-prepData = function(d) {
+getPhenoParentRoot = function(d) {
+    if(typeof d.parent !== "undefined") {
+        var currentPheno = d;
+        var tempLineageStack = [currentPheno.name];
+
+        while (typeof currentPheno.parent !== "undefined") {
+            tempLineageStack.push(currentPheno.parent.name);
+            currentPheno = currentPheno.parent;
+        }
+        return tempLineageStack.pop();
+    } else { 
+        return null;
+    }
+}
+
+prepData = function(d, data) {
     d3.json("data.json", function(error, flare) {
         root = flare;
 
@@ -285,9 +307,17 @@ prepData = function(d) {
                 currentPheno = currentPheno.parent;
             }
 
+            var tempPhenoRoot = data[findWithAttr(data, 'name', 
+                tempLineageStack[tempLineageStack.length-1], true)];
+
+            // issue, always 50 b/c findWithAttr always returns 0. Matching issue.
+            var temp0x = tempPhenoRoot.order * sqwidth; 
+
             while(tempLineageStack.length > 0) {
-                root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop())];
+                root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
             }
+
+            root.x0 = 200; // TODO non-dynamic.
 
         } else {
             var children = root.children;
@@ -301,10 +331,9 @@ prepData = function(d) {
             });
 
             root = child;
+            root.x0 = d.order * sqwidth;
         }
-        // TODO: Change the hard data for the top level pheno roots to be back to their original form
-        // Thus allowing the code to better work with the name comparisons.
-        root.x0 = d.order * sqwidth;
+
         root.y0 = phenobarheight + sqheight - dropbuttonheight;
 
         function collapse(d) {
@@ -318,6 +347,8 @@ prepData = function(d) {
         root.children.forEach(collapse);
         priorPheno = root;
         barStack.push(root);
+
+        console.log(root);
         update(root);
     });  
 }
@@ -356,7 +387,7 @@ draw = function(svg, data) {
         })
         .on("click", function(d) {
             var rec = d3.select(this); // clicked rec
-            var removedArr = data.splice(findWithAttr(data, 'name', d.name), 1);
+            var removedArr = data.splice(findWithAttr(data, 'name', d.name, false), 1);
 
             // toggle color between two choices
             if (rec.style("fill") == "rgb(227, 92, 92)") {
@@ -429,11 +460,11 @@ draw = function(svg, data) {
                     pheno.attr("class", "drop, active");
                     activeColumn = d.order;
                     dropactive = true;
-                    prepData(d);
+                    prepData(d, data);
                 } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                     // another is active, but we want this one
                     activeColumn = d.order;
-                    prepData(d);
+                    prepData(d, data);
                 } else {
                     dropactive = false;
                     activeColumn = -1;
@@ -536,13 +567,14 @@ draw = function(svg, data) {
                             var pheno = d3.select(this); // pheno is the drop button
                             if (pheno.attr("class") == "drop, inactive" && !dropactive) {
                                 pheno.attr("class", "drop, active");
+                                console.log(getPhenoParentRoot(d));
                                 activeColumn = d.order;
                                 dropactive = true;
-                                prepData(d);
+                                prepData(d, data);
                             } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                                 // another is active, but we want this one
                                 activeColumn = d.order;
-                                prepData(d);
+                                prepData(d, data);
                             } else {
                                 dropactive = false;
                                 activeColumn = -1;
