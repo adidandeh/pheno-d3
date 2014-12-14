@@ -275,19 +275,35 @@ click = function(d) {
 prepData = function(d) {
     d3.json("data.json", function(error, flare) {
         root = flare;
-        var children = root.children;
-        var child = null;
 
-        // TODO: Have the "search" go to the desired child box pheno
-        children.forEach(function(element) {
-            var tempchildname = element.name.toLowerCase();
-            if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
-                child = element;
-                return;
+        if(typeof d.parent !== "undefined") {
+            var currentPheno = d;
+            var tempLineageStack = [currentPheno.name];
+
+            while (typeof currentPheno.parent !== "undefined") {
+                tempLineageStack.push(currentPheno.parent.name);
+                currentPheno = currentPheno.parent;
             }
-        });
-        root = child;
 
+            while(tempLineageStack.length > 0) {
+                root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop())];
+            }
+
+        } else {
+            var children = root.children;
+            var child = null;
+            children.forEach(function(element) {
+                var tempchildname = element.name.toLowerCase();
+                if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
+                    child = element;
+                    return;
+                }
+            });
+
+            root = child;
+        }
+        // TODO: Change the hard data for the top level pheno roots to be back to their original form
+        // Thus allowing the code to better work with the name comparisons.
         root.x0 = d.order * sqwidth;
         root.y0 = phenobarheight + sqheight - dropbuttonheight;
 
@@ -302,7 +318,6 @@ prepData = function(d) {
         root.children.forEach(collapse);
         priorPheno = root;
         barStack.push(root);
-        console.log(root);
         update(root);
     });  
 }
