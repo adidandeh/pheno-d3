@@ -479,7 +479,7 @@ draw = function(svg, data) {
         .style("text-anchor", "middle")
         .attr("pointer-events", "none")
         .text(function(d) {
-            return d.name.substring(0, 5);
+            return cleanName(d.name).substring(0, 5);
         });
 
     // attempt to create children boxes.
