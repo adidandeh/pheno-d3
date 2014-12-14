@@ -104,9 +104,4 @@ var data = [{
     "order": 21,
     "active": 0,
     "children": []
-}, {
-    "name": "Abnormality of Limbs",
-    "order": 22,
-    "active": 0,
-    "children": []
 }]
