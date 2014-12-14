@@ -272,55 +272,39 @@ click = function(d) {
     }
 }
 
-prepData = function(d, data) {
-    if(typeof d.x0 !== "undefined") { // if this is not the first time querying for data
-        root = d;
+prepData = function(d) {
+    d3.json("data.json", function(error, flare) {
+        root = flare;
+        var children = root.children;
+        var child = null;
 
-        // function collapse(d) {
-        //     if (d.children) {
-        //         d._children = d.children;
-        //         d._children.forEach(collapse);
-        //         d.children = null;
-        //     }
-        // }
+        // TODO: Have the "search" go to the desired child box pheno
+        children.forEach(function(element) {
+            var tempchildname = element.name.toLowerCase();
+            if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
+                child = element;
+                return;
+            }
+        });
+        root = child;
 
-        // root.children.forEach(collapse);
+        root.x0 = d.order * sqwidth;
+        root.y0 = phenobarheight + sqheight - dropbuttonheight;
 
+        function collapse(d) {
+            if (d.children) {
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+            }
+        }
+
+        root.children.forEach(collapse);
         priorPheno = root;
         barStack.push(root);
+        console.log(root);
         update(root);
-    } else {
-        d3.json("data.json", function(error, flare) {
-            root = flare;
-            var children = root.children;
-            var child = null;
-            
-            children.forEach(function(element) {
-                var tempchildname = element.name.toLowerCase();
-                if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
-                    child = element;
-                    return;
-                }
-            });
-            root = child;
-
-            root.x0 = d.order * sqwidth;
-            root.y0 = phenobarheight + sqheight - dropbuttonheight;
-
-            function collapse(d) {
-                if (d.children) {
-                    d._children = d.children;
-                    d._children.forEach(collapse);
-                    d.children = null;
-                }
-            }
-
-            root.children.forEach(collapse);
-            priorPheno = root;
-            barStack.push(root);
-            update(root);
-        });  
-    }
+    });  
 }
 
 
@@ -430,11 +414,11 @@ draw = function(svg, data) {
                     pheno.attr("class", "drop, active");
                     activeColumn = d.order;
                     dropactive = true;
-                    prepData(d, data);
+                    prepData(d);
                 } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                     // another is active, but we want this one
                     activeColumn = d.order;
-                    prepData(d, data);
+                    prepData(d);
                 } else {
                     dropactive = false;
                     activeColumn = -1;
@@ -539,11 +523,11 @@ draw = function(svg, data) {
                                 pheno.attr("class", "drop, active");
                                 activeColumn = d.order;
                                 dropactive = true;
-                                prepData(d, data);
+                                prepData(d);
                             } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                                 // another is active, but we want this one
                                 activeColumn = d.order;
-                                prepData(d, data);
+                                prepData(d);
                             } else {
                                 dropactive = false;
                                 activeColumn = -1;
