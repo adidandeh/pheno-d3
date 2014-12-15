@@ -279,13 +279,22 @@ click = function(d) {
     }
 }
 
+getColumnOrder = function(d, data) {
+    for(var i = 0; i < data.length; i++) {
+        if (findWithAttr(data[i].children, 'name', d.name)) {
+            return data[i].order;
+        }
+    }
+    return -1;
+}
+
 getPhenoParentRoot = function(d) {
     if(typeof d.parent !== "undefined") {
         var currentPheno = d;
-        var tempLineageStack = [currentPheno.name];
+        var tempLineageStack = [currentPheno];
 
         while (typeof currentPheno.parent !== "undefined") {
-            tempLineageStack.push(currentPheno.parent.name);
+            tempLineageStack.push(currentPheno.parent);
             currentPheno = currentPheno.parent;
         }
         return tempLineageStack.pop();
@@ -347,8 +356,6 @@ prepData = function(d, data) {
         root.children.forEach(collapse);
         priorPheno = root;
         barStack.push(root);
-
-        console.log(root);
         update(root);
     });  
 }
@@ -567,13 +574,12 @@ draw = function(svg, data) {
                             var pheno = d3.select(this); // pheno is the drop button
                             if (pheno.attr("class") == "drop, inactive" && !dropactive) {
                                 pheno.attr("class", "drop, active");
-                                console.log(getPhenoParentRoot(d));
-                                activeColumn = d.order;
+                                activeColumn = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
                                 dropactive = true;
                                 prepData(d, data);
                             } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                                 // another is active, but we want this one
-                                activeColumn = d.order;
+                                activeColumn = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
                                 prepData(d, data);
                             } else {
                                 dropactive = false;
