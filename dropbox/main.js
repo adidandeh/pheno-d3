@@ -430,7 +430,7 @@ draw = function(svg, data) {
             }
             draw(svg, data);
         })
-        .on("mouseover", function(d) { // tool tip   
+        .on("mouseover", function(d) { // tool tip  
             div.transition()
                 .duration(200)
                 .style("opacity", 10);
@@ -440,7 +440,7 @@ draw = function(svg, data) {
         })
         .on("mouseout", function(d) {
             div.transition()
-                .duration(1000)
+                .duration(200)
                 .style("opacity", 0);
         });
 
@@ -538,17 +538,17 @@ draw = function(svg, data) {
                     .attr("height", sqheight)
                     .attr("class", "child")
                     .style("fill", "#49B649")
-                    .on("mouseover", function(d) { // tool tip   
+                    .on("mouseover", function(d) { // tool tip 
                         div.transition()
                             .duration(200)
                             .style("opacity", 10);
-                        div.html("<h3>" + tempName + "</h3><br/>") // issue only remembers last name
+                        div.html("<h3>" + d.name + "</h3><br/>") // issue only remembers last name
                             .style("left", (d3.event.pageX - 0) + "px")
                             .style("top", (d3.event.pageY - 100) + "px");
                     })
                     .on("mouseout", function(d) {
                         div.transition()
-                            .duration(1000)
+                            .duration(200)
                             .style("opacity", 0);
                     });
 
