@@ -456,8 +456,8 @@ draw = function(svg, data) {
             return (d.order * sqwidth);
         })
         .attr("x", phenobarheight + sqheight - dropbuttonheight)
-        .attr("width", sqwidth)
-        .attr("height", dropbuttonheight)
+        .attr("height", sqwidth)
+        .attr("width", dropbuttonheight)
         .attr("class", "drop, inactive")
         .attr("style", "fill: transparent")
         .on("click", function(d) {
@@ -564,8 +564,8 @@ draw = function(svg, data) {
                             return ((locData[row].order) * (sqwidth+sqspacing));
                         })
                         .attr("x", (sqheight+sqspacing)*(count+1) + phenobarheight - dropbuttonheight + sqheight)
-                        .attr("width", sqwidth)
-                        .attr("height", dropbuttonheight)
+                        .attr("height", sqwidth)
+                        .attr("width", dropbuttonheight)
                         .attr("class", "drop, inactive")
                         .attr("style", "fill: transparent")
                         .on("click", function(d) {
