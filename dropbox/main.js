@@ -48,20 +48,12 @@ getNumOfActivePheno = function() {
 };
 
 //helper func
-findWithAttr = function(array, attr, value, ignoreCase) {
-    if(ignoreCase) {
-        for (var i = 0; i < array.length; i++) {
-            if (array[i][attr].ignoreCase === value.ignoreCase) {
-                return i;
-            }
-        }   
-    } else {
-        for (var i = 0; i < array.length; i++) {
-            if (array[i][attr] === value) {
-                return i;
-            }
-        }       
-    }
+findWithAttr = function(array, attr, value) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i][attr] === value) {
+            return i;
+        }
+    }       
 }
 
 getMaxChildren = function() {
@@ -270,7 +262,8 @@ getRowOrder = function(d, data, root) {
                 return data[i].order;
             }
         } else {
-            if (findWithAttr(data[i].children, 'name', d.name)) {
+            console.log(d);
+            if (findWithAttr(data[i], 'id', d.id)) {
                 return data[i].order;
             }
         }
@@ -305,12 +298,6 @@ prepData = function(d, data) {
                 tempLineageStack.push(currentPheno.parent.name);
                 currentPheno = currentPheno.parent;
             }
-
-            var tempPhenoRoot = data[findWithAttr(data, 'name', 
-                tempLineageStack[tempLineageStack.length-1], true)];
-
-            // issue, always 50 b/c findWithAttr always returns 0. Matching issue.
-            var temp0x = tempPhenoRoot.order * sqwidth; 
 
             while(tempLineageStack.length > 0) {
                 root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
@@ -438,7 +425,9 @@ draw = function(svg, data) {
                             .style("left", (d3.event.pageX - 0) + "px")
                             .style("top", (d3.event.pageY - 100) + "px");
 
-                        activerow = d.order;
+
+                        activerow = d.order; 
+                        console.log(getRowOrder(getPhenoParentRoot(d), data, false));
                         prepData(d, data);
                     })
                     .on("mouseout", function(d) {
