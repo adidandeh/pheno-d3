@@ -1,4 +1,4 @@
-var activeColumn = -1,
+var activerow = -1,
     barStack = [],
     dropbuttonheight = 15,
     dropactive = false,
@@ -100,7 +100,7 @@ update = function(source) {
     var nodes = tree.nodes(source).reverse(),
         links = tree.links(nodes);
     // Normalize for fixed-depth.
-    nodes.forEach(function(d) {
+    nodes.forEach(function(d) { // TODO: Swap?
         d.y = d.depth * treeWidth + 200; // horizontal
         d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + 20; // vertical height
     }); // How wide it gets
@@ -255,7 +255,7 @@ tooltopMouseOut = function(d) {
 }
 
 checkmarkClick = function(d) {
-    data[activeColumn-1].children.push(d);
+    data[activerow-1].children.push(d);
     draw(svg, data);
 }
 
@@ -279,7 +279,7 @@ click = function(d) {
     }
 }
 
-getColumnOrder = function(d, data) {
+getrowOrder = function(d, data) {
     for(var i = 0; i < data.length; i++) {
         if (findWithAttr(data[i].children, 'name', d.name)) {
             return data[i].order;
@@ -370,14 +370,14 @@ draw = function(svg, data) {
         })
         .enter().append("g")
         .attr("transform", function(d, i) {
-            return "translate(" + i + ", " + sqheight + ")";
+            return "translate(" + sqheight + ", " + i + ")";
         });
 
     bar.append("rect") // top majority of phenotype box
-        .attr("x", function(d) {
+        .attr("y", function(d) {
             return (d.order * sqwidth) + sqspacing;
         })
-        .attr("y", phenobarheight)
+        .attr("x", phenobarheight)
         .attr("width", sqwidth)
         .attr("height", sqheight)
         .attr("class", function(d) {
@@ -452,10 +452,10 @@ draw = function(svg, data) {
         });
 
     bar.append("rect") // drop down button for each pheno
-        .attr("x", function(d) {
+        .attr("y", function(d) {
             return (d.order * sqwidth);
         })
-        .attr("y", phenobarheight + sqheight - dropbuttonheight)
+        .attr("x", phenobarheight + sqheight - dropbuttonheight)
         .attr("width", sqwidth)
         .attr("height", dropbuttonheight)
         .attr("class", "drop, inactive")
@@ -465,16 +465,16 @@ draw = function(svg, data) {
                 var pheno = d3.select(this); // pheno is the drop button
                 if (pheno.attr("class") == "drop, inactive" && !dropactive) {
                     pheno.attr("class", "drop, active");
-                    activeColumn = d.order;
+                    activerow = d.order;
                     dropactive = true;
                     prepData(d, data);
                 } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                     // another is active, but we want this one
-                    activeColumn = d.order;
+                    activerow = d.order;
                     prepData(d, data);
                 } else {
                     dropactive = false;
-                    activeColumn = -1;
+                    activerow = -1;
                     pheno.attr("class", "drop, inactive");
                     draw(svg, data);
                 }
@@ -482,37 +482,37 @@ draw = function(svg, data) {
         });
 
     bar.append("line") // -- \ in \/
-        .attr("x1", function(d) {
+        .attr("y1", function(d) {
             return d.order * (sqwidth) + 10;
         })
-        .attr("y1", phenobarheight + 40)
-        .attr("x2", function(d) {
+        .attr("x1", phenobarheight + 40)
+        .attr("y2", function(d) {
             return d.order * (sqwidth) + 25;
         })
-        .attr("y2", phenobarheight + 45)
+        .attr("x2", phenobarheight + 45)
         .style("stroke", "black")
         .style("stroke-width", 1);
 
     bar.append("line") // -- / in \/
-        .attr("x1", function(d) {
+        .attr("y1", function(d) {
             return d.order * (sqwidth) + 40;
         })
-        .attr("y1", phenobarheight + 40)
-        .attr("x2", function(d) {
+        .attr("x1", phenobarheight + 40)
+        .attr("y2", function(d) {
             return d.order * (sqwidth) + 25;
         })
-        .attr("y2", phenobarheight + 45)
+        .attr("x2", phenobarheight + 45)
         .style("stroke", "black")
         .style("stroke-width", 1);
 
     bar.append("text") // phenotype name
-        .attr("x", function(d) {
+        .attr("y", function(d) {
             return (d.order * (sqwidth) + sqwidth / 2);
         })
-        .attr("y", sqheight - 7) // hardcoded until better option is found
+        .attr("x", sqheight - 7) // hardcoded until better option is found
         .attr("dy", ".35em")
         .style("font-size", function(d) {
-            return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
+            return Math.min(0.25 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
         })
         .style("text-anchor", "middle")
         .attr("pointer-events", "none")
@@ -522,23 +522,23 @@ draw = function(svg, data) {
 
     // attempt to create children boxes.
     var locData = data;
-    for(var column = 0; column < locData.length; column++) {
-        if (locData[column].children.length > 0) {
-            var barChildren = svg.selectAll(locData[column].name) // the bar which will hold the phenotype boxes.
-                .data(locData[column].children)
+    for(var row = 0; row < locData.length; row++) {
+        if (locData[row].children.length > 0) {
+            var barChildren = svg.selectAll(locData[row].name) // the bar which will hold the phenotype boxes.
+                .data(locData[row].children)
                 .enter().append("g")
                 .attr("transform", function(d, i) {
-                    return "translate(" + 0 + ", " + sqheight + ")";
+                    return "translate(" + sqheight + ", " + 0 + ")";
                 });
 
-            for(var count = 0; count < locData[column].children.length; count++) {
-                var tempName = locData[column].children[count].name;
+            for(var count = 0; count < locData[row].children.length; count++) {
+                var tempName = locData[row].children[count].name;
 
                 barChildren.append("rect") // top majority of phenotype box
-                    .attr("x", function(d) {
-                        return ((locData[column].order) * (sqwidth+sqspacing));
-                    })
                     .attr("y", function(d) {
+                        return ((locData[row].order) * (sqwidth+sqspacing));
+                    })
+                    .attr("x", function(d) {
                         return (51*(count+sqspacing) + 20);
                     })
                     .attr("width", sqwidth)
@@ -560,10 +560,10 @@ draw = function(svg, data) {
                     });
 
                 barChildren.append("rect") // drop down button for each pheno
-                        .attr("x", function(d) {
-                            return ((locData[column].order) * (sqwidth+sqspacing));
+                        .attr("y", function(d) {
+                            return ((locData[row].order) * (sqwidth+sqspacing));
                         })
-                        .attr("y", (sqheight+sqspacing)*(count+1) + phenobarheight - dropbuttonheight + sqheight)
+                        .attr("x", (sqheight+sqspacing)*(count+1) + phenobarheight - dropbuttonheight + sqheight)
                         .attr("width", sqwidth)
                         .attr("height", dropbuttonheight)
                         .attr("class", "drop, inactive")
@@ -574,50 +574,50 @@ draw = function(svg, data) {
                             var pheno = d3.select(this); // pheno is the drop button
                             if (pheno.attr("class") == "drop, inactive" && !dropactive) {
                                 pheno.attr("class", "drop, active");
-                                activeColumn = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
+                                activerow = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
                                 dropactive = true;
                                 prepData(d, data);
                             } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
                                 // another is active, but we want this one
-                                activeColumn = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
+                                activerow = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
                                 prepData(d, data);
                             } else {
                                 dropactive = false;
-                                activeColumn = -1;
+                                activerow = -1;
                                 pheno.attr("class", "drop, inactive");
                                 draw(svg, data);
                             }
                         });
 
                 barChildren.append("line") // -- \ in \/
-                    .attr("x1", function(d) {
-                        return locData[column].order * (sqwidth+sqspacing) + 10;
+                    .attr("y1", function(d) {
+                        return locData[row].order * (sqwidth+sqspacing) + 10;
                     })
-                    .attr("y1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
-                    .attr("x2", function(d) {
-                        return locData[column].order * (sqwidth+sqspacing) + 25;
+                    .attr("x1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
+                    .attr("y2", function(d) {
+                        return locData[row].order * (sqwidth+sqspacing) + 25;
                     })
-                    .attr("y2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
+                    .attr("x2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
                     .style("stroke", "black")
                     .style("stroke-width", 1);
 
                 barChildren.append("line") // -- / in \/
-                    .attr("x1", function(d) {
-                        return locData[column].order * (sqwidth+sqspacing) + 40;
+                    .attr("y1", function(d) {
+                        return locData[row].order * (sqwidth+sqspacing) + 40;
                     })
-                    .attr("y1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
-                    .attr("x2", function(d) {
-                        return locData[column].order * (sqwidth+sqspacing) + 25;
+                    .attr("x1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
+                    .attr("y2", function(d) {
+                        return locData[row].order * (sqwidth+sqspacing) + 25;
                     })
-                    .attr("y2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
+                    .attr("x2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
                     .style("stroke", "black")
                     .style("stroke-width", 1);
 
                 barChildren.append("text") // phenotype name
-                    .attr("x", function(d) {
-                        return ((locData[column].order) * (sqwidth + sqspacing) + sqwidth / 2);
+                    .attr("y", function(d) {
+                        return ((locData[row].order) * (sqwidth + sqspacing) + sqwidth / 2);
                     })
-                    .attr("y", 51*(count+1) + 42) // hardcoded until better option is found
+                    .attr("x", 51*(count+1) + 42) // hardcoded until better option is found
                     .attr("dy", ".35em")
                     .style("font-size", function(d) {
                         return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
@@ -625,7 +625,7 @@ draw = function(svg, data) {
                     .style("text-anchor", "middle")
                     .attr("pointer-events", "none")
                     .text(function(d) {
-                        return cleanName(locData[column].children[count].name).substring(0, 5);
+                        return cleanName(locData[row].children[count].name).substring(0, 5);
                     });
             }
         }
