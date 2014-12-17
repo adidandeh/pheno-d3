@@ -2,7 +2,7 @@ var activerow = -1,
     barStack = [],
     dropbuttonwidth = 15,
     dropactive = false,
-    duration = 500,
+    duration = 400,
     i = 0,
     margin = {
         top: 20,
@@ -88,20 +88,21 @@ cleanName = function(name) {
 }
 
 update = function(source) {
+    // dynamic tree height
     var levelWidth = [1];
     var childCount = function(level, n) {
         if(n.children && n.children.length > 0) {
-          if(levelWidth.length <= level + 1) levelWidth.push(0);
+            if(levelWidth.length <= level + 1) levelWidth.push(0);
           
-          levelWidth[level+1] += n.children.length;
-          n.children.forEach(function(d) {
-            childCount(level + 1, d);
-          });
+            levelWidth[level+1] += n.children.length;
+            n.children.forEach(function(d) {
+               childCount(level + 1, d);
+            });
         }
-      };
-      childCount(0, source);  
-      var newHeight = d3.max(levelWidth) * 20; // 20 pixels per line  
-      tree = tree.size([newHeight, treeWidth]);
+    };
+    childCount(0, source);  
+    var newHeight = d3.max(levelWidth) * 20; // 20 pixels per line  
+    tree = tree.size([newHeight, treeWidth]);
 
     // Compute the new tree layout.
     var nodes = tree.nodes(source).reverse(),
@@ -109,7 +110,7 @@ update = function(source) {
     // Normalize for fixed-depth.
 
     nodes.forEach(function(d) { // TODO: Swap?
-        d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 300; // horizontal
+        d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 350; // horizontal
         d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + 20; // vertical height
     }); // How wide it gets
 
@@ -246,7 +247,11 @@ tooltipMouseOut = function(d) {
 }
 
 checkmarkClick = function(d) {
-    data[activerow-1].children.push(d);
+    if(typeof data[activerow-1] == "undefined") {
+        // end node and other errors
+    } else if (typeof findWithAttr(data[activerow-1].children, "id", d.id) == "undefined") {
+        data[activerow-1].children.push(d);
+    }
     draw(svg, data);
 }
 
@@ -368,11 +373,15 @@ draw = function(svg, data) {
         .style("fill", function(d) {
             return "#49B649";
         })
+        .on("click", function(d) { // for now as the mouseover issues need to be addressed
+            activerow = d.order;
+            prepData(d, data);
+        })
         .on("mouseover", function(d) { // tool tip  
             tooltipMouseOver(d);
 
-            activerow = d.order;
-            prepData(d, data);
+            // activerow = d.order;
+            // prepData(d, data);
         })
         .on("mouseout", function(d) {
             tooltipMouseOut(d);
@@ -416,19 +425,24 @@ draw = function(svg, data) {
                     })
                     .attr("width", sqwidth)
                     .attr("height", sqheight)
-                    .attr("class", "child")
+                    .attr("class", count)
                     .style("fill", "#49B649")
+                    .on("click", function(d) { // for now as the mouseover issues need to be addressed
+                        activerow = getRowOrder(getPhenoParentRoot(d), data);
+                        prepData(d, data);
+                    })
                     .on("mouseover", function(d) { // tool tip 
+                        var tempColumn = d3.select(this).attr("class");
+
                         div.transition()
                             .duration(200)
                             .style("opacity", 10);
-                        div.html("<h3>" + d.name + "</h3><br/>") // issue only remembers last name
+                        div.html("<h3>" + data[activerow-1].children[tempColumn].name + "</h3><br/>") // issue only remembers last name
                             .style("left", (d3.event.pageX - 0) + "px")
                             .style("top", (d3.event.pageY - 100) + "px");
 
-
-                        activerow = getRowOrder(getPhenoParentRoot(d), data);
-                        prepData(d, data);
+                        // activerow = getRowOrder(getPhenoParentRoot(d), data);
+                        // prepData(d, data);
                     })
                     .on("mouseout", function(d) {
                         div.transition()
