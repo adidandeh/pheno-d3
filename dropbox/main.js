@@ -323,7 +323,9 @@ prepData = function(d, data) {
             }
 
             while(tempLineageStack.length > 0) {
-                root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
+                if(typeof root != "undefined") {
+                    root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
+                }
             }
 
             root.x0 = 200; // TODO non-dynamic.
