@@ -110,8 +110,8 @@ update = function(source) {
         .attr("transform", function(d) {
             return "translate(" + source.y0 + "," + source.x0 + ")";
         })
-        .on("mouseover", tooltopMouseOver)
-        .on("mouseout", tooltopMouseOut);
+        .on("mouseover", tooltipMouseOver)
+        .on("mouseout", tooltipMouseOut);
 
     nodeEnter.append("circle")
         .attr("r", 1e-6)
@@ -215,7 +215,7 @@ update = function(source) {
     });
 }
 
-tooltopMouseOver = function(d) { 
+tooltipMouseOver = function(d) { 
     div.transition()
         .duration(200)
         .style("opacity", 10);
@@ -224,7 +224,7 @@ tooltopMouseOver = function(d) {
         .style("top", (d3.event.pageY - 100) + "px");
 }
 
-tooltopMouseOut = function(d) {
+tooltipMouseOut = function(d) {
     div.transition()
         .duration(1000)
         .style("opacity", 0);
@@ -255,17 +255,10 @@ click = function(d) {
     }
 }
 
-getRowOrder = function(d, data, root) {
+getRowOrder = function(d, data) {
     for(var i = 0; i < data.length; i++) {
-        if(root) {
-            if (findWithAttr(data[i], 'name', d.name)) {
+        if(d.id == data[i].id) {
                 return data[i].order;
-            }
-        } else {
-            console.log(d);
-            if (findWithAttr(data[i], 'id', d.id)) {
-                return data[i].order;
-            }
         }
     }
     return -1;
@@ -320,7 +313,7 @@ prepData = function(d, data) {
             root.x0 = d.order * sqwidth;
         }
 
-        root.y0 = phenobarheight + sqheight - dropbuttonwidth;
+        root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
 
         function collapse(d) {
             if (d.children) {
@@ -361,20 +354,13 @@ draw = function(svg, data) {
             return "#49B649";
         })
         .on("mouseover", function(d) { // tool tip  
-            div.transition()
-                .duration(200)
-                .style("opacity", 10);
-            div.html("<h3>" + d.name + "</h3><br/>")
-                .style("left", (d3.event.pageX - 0) + "px")
-                .style("top", (d3.event.pageY - 100) + "px");
+            tooltipMouseOver(d);
 
             activerow = d.order;
             prepData(d, data);
         })
         .on("mouseout", function(d) {
-            div.transition()
-                .duration(200)
-                .style("opacity", 0);
+            tooltipMouseOut(d);
         });
 
     bar.append("text") // phenotype name
@@ -426,8 +412,7 @@ draw = function(svg, data) {
                             .style("top", (d3.event.pageY - 100) + "px");
 
 
-                        activerow = d.order; 
-                        console.log(getRowOrder(getPhenoParentRoot(d), data, false));
+                        activerow = getRowOrder(getPhenoParentRoot(d), data);
                         prepData(d, data);
                     })
                     .on("mouseout", function(d) {
