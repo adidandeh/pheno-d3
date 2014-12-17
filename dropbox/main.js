@@ -1,5 +1,6 @@
 var activerow = -1,
     barStack = [],
+    clickedNode = false,
     dropbuttonwidth = 15,
     dropactive = false,
     duration = 400,
@@ -134,8 +135,17 @@ update = function(source) {
         .style("fill", function(d) {
             return d._children ? "lightsteelblue" : "#fff";
         })   
-        .on("mouseout", click)
-        .on("click", checkmarkClick);
+        .on("mouseout", function(d) {
+            if(!clickedNode) {
+                click(d);
+            } else {
+                clickedNode = false;
+            }
+        })
+        .on("click", function(d){
+            clickedNode = true;
+            checkmarkClick(d);
+        });
 
     nodeEnter.append("text")
         .attr("class", "boxtext")
@@ -247,7 +257,7 @@ tooltipMouseOut = function(d) {
 }
 
 checkmarkClick = function(d) {
-    if(typeof data[activerow-1] == "undefined") {
+    if(typeof data[activerow-1] == "undefined" || typeof d.name == "undefined") {
         // end node and other errors
     } else if (typeof findWithAttr(data[activerow-1].children, "id", d.id) == "undefined") {
         data[activerow-1].children.push(d);
