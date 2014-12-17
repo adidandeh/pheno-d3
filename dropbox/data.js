@@ -78,7 +78,7 @@ var data = [{
     "active": 0,
     "children": []
 }, {
-    "name": "Abnormality of Metabolism/Homeostasis",
+    "name": "Abnormality of Metabolism",
     "order": 14,
     "id": "HP:0001939",
     "active": 0,

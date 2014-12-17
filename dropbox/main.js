@@ -337,6 +337,12 @@ prepData = function(d, data) {
 
         function collapse(d) {
             if (d.children) {
+                for(var i=0; i < d.children.length; i++) {
+                    if (typeof d.children[i].name == "undefined") {
+                        d.children.splice(i,1);
+                    }
+                }
+
                 d._children = d.children;
                 d._children.forEach(collapse);
                 d.children = null;
