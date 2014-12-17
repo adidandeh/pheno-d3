@@ -380,62 +380,62 @@ draw = function(svg, data) {
         .attr("x", phenobarheight)
         .attr("width", sqwidth)
         .attr("height", sqheight)
-        .attr("class", function(d) {
-            var name = d.name.replace("/", " "); // TODO: does not address selector issue
-            var name = d.name.replace("-", " ");
-            return "inactive, top, " + name;
-        })
+        // .attr("class", function(d) {
+        //     var name = d.name.replace("/", " "); // TODO: does not address selector issue
+        //     var name = d.name.replace("-", " ");
+        //     return "inactive, top, " + name;
+        // })
         .style("fill", function(d) {
-            if (d.active == 1) {
+            // if (d.active == 1) {
                 return "#49B649";
-            } else {
-                return "#E35C5C";
-            }
+            // } else {
+            //     return "#E35C5C";
+            // }
         })
         .on("click", function(d) {
-            var rec = d3.select(this); // clicked rec
-            var removedArr = data.splice(findWithAttr(data, 'name', d.name, false), 1);
+            // var rec = d3.select(this); // clicked rec
+            // var removedArr = data.splice(findWithAttr(data, 'name', d.name, false), 1);
 
-            // toggle color between two choices
-            if (rec.style("fill") == "rgb(227, 92, 92)") {
-                rec.style("fill", "#49B649");
-                rec.attr("class", "top, active");
-                var numOfActivePheno = getNumOfActivePheno();
+            // // toggle color between two choices
+            // if (rec.style("fill") == "rgb(227, 92, 92)") {
+            //     rec.style("fill", "#49B649");
+            //     rec.attr("class", "top, active");
+                // var numOfActivePheno = getNumOfActivePheno();
 
                 // reorder pheno data list
                 // make sure that the new pheno isn't already in the proper place.
-                if (removedArr[0].order != numOfActivePheno + 1) {
-                    data.forEach(function(pheno) { // if it isn't, bump the order of all the right obj elems
-                        if (pheno.order < removedArr[0].order + 1 && pheno.active == 0) {
-                            pheno.order++;
-                        }
-                    });
-                }
-                removedArr[0].active = 1; // adjust the pheno object for insertion
-                removedArr[0].order = numOfActivePheno + 1;
-                data.splice(numOfActivePheno, 0, removedArr[0]); // push the changed pheno into the data list at new place.
-            } else {
-                rec.style("fill", "#E35C5C");
-                rec.attr("class", "top, inactive");
-                // get number of phenos still active
-                var numOfActivePheno = getNumOfActivePheno();
+                // if (removedArr[0].order != numOfActivePheno + 1) {
+                //     data.forEach(function(pheno) { // if it isn't, bump the order of all the right obj elems
+                //         if (pheno.order < removedArr[0].order + 1 && pheno.active == 0) {
+                //             pheno.order++;
+                // //         }
+                // //     });
+                // // }
+                // removedArr[0].active = 1; // adjust the pheno object for insertion
+                // removedArr[0].order = numOfActivePheno + 1;
+                // data.splice(numOfActivePheno, 0, removedArr[0]); // push the changed pheno into the data list at new place.
+            // // } else {
+            //     rec.style("fill", "#E35C5C");
+            //     rec.attr("class", "top, inactive");
+            //     // get number of phenos still active
+            //     var numOfActivePheno = getNumOfActivePheno();
 
-                if (removedArr[0].order != numOfActivePheno + 1) {
-                    data.forEach(function(pheno) {
-                        if (pheno.order > removedArr[0].order && pheno.active == 1) {
-                            pheno.order--;
-                        }
-                    });
+                // if (removedArr[0].order != numOfActivePheno + 1) {
+                //     data.forEach(function(pheno) {
+                //         if (pheno.order > removedArr[0].order && pheno.active == 1) {
+                //             pheno.order--;
+                //         }
+                //     });
 
-                }
-                // put it's position at the leftmost inactive.
-                removedArr[0].active = 0;
-                removedArr[0].order = numOfActivePheno + 1;
-                removedArr[0].children = [];
-                // push the changed pheno into the data list at new place.
-                data.splice(numOfActivePheno, 0, removedArr[0]);
-            }
-            draw(svg, data);
+                // }
+                // // put it's position at the leftmost inactive.
+                // removedArr[0].active = 0;
+                // removedArr[0].order = numOfActivePheno + 1;
+                // removedArr[0].children = [];
+                // // push the changed pheno into the data list at new place.
+                // data.splice(numOfActivePheno, 0, removedArr[0]);
+            // }
+            prepData(d, data);
         })
         .on("mouseover", function(d) { // tool tip  
             div.transition()
@@ -451,39 +451,39 @@ draw = function(svg, data) {
                 .style("opacity", 0);
         });
 
-    bar.append("rect") // drop down button for each pheno
-        .attr("y", function(d) {
-            return (d.order * sqheight) + 1;
-        })
-        .attr("x", phenobarheight + sqwidth - dropbuttonwidth)
-        .attr("height", sqheight)
-        .attr("width", dropbuttonwidth)
-        .attr("class", "drop, inactive")
-        .attr("style", "fill: purple")
-        .on("click", function(d) {
-            if (d.active == 1) {
-                var pheno = d3.select(this); // pheno is the drop button
-                if (pheno.attr("class") == "drop, inactive" && !dropactive) {
-                    pheno.attr("class", "drop, active");
-                    activerow = d.order;
-                    dropactive = true;
-                    prepData(d, data);
-                } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
-                    // another is active, but we want this one
-                    activerow = d.order;
-                    prepData(d, data);
-                } else {
-                    dropactive = false;
-                    activerow = -1;
-                    pheno.attr("class", "drop, inactive");
-                    draw(svg, data);
-                }
-            }
-        });
+    // bar.append("rect") // drop down button for each pheno
+    //     .attr("y", function(d) {
+    //         return (d.order * sqheight) + 1;
+    //     })
+    //     .attr("x", phenobarheight + sqwidth - dropbuttonwidth)
+    //     .attr("height", sqheight)
+    //     .attr("width", dropbuttonwidth)
+    //     .attr("class", "drop, inactive")
+    //     .attr("style", "fill: purple")
+    //     .on("click", function(d) {
+    //         // if (d.active == 1) {
+    //             // var pheno = d3.select(this); // pheno is the drop button
+    //             // if (pheno.attr("class") == "drop, inactive" && !dropactive) {
+    //             //     pheno.attr("class", "drop, active");
+    //             //     activerow = d.order;
+    //             //     dropactive = true;
+    //                  prepData(d, data);
+    //             // } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
+    //             //     // another is active, but we want this one
+    //             //     activerow = d.order;
+    //             //     prepData(d, data);
+    //             // } else {
+    //             //     dropactive = false;
+    //             //     activerow = -1;
+    //             //     pheno.attr("class", "drop, inactive");
+    //                 //draw(svg, data);
+    //             // }
+    //         // }
+    //     });
 
     bar.append("text") // phenotype name
         .attr("y", function(d) {
-            return (d.order * (sqheight) + sqheight / 2);
+            return (d.order * (sqheight) + sqheight / 2) + 1;
         })
         .attr("x", sqwidth - 7) // hardcoded until better option is found
         .attr("dy", ".35em")
@@ -521,6 +521,9 @@ draw = function(svg, data) {
                     .attr("height", sqheight)
                     .attr("class", "child")
                     .style("fill", "#49B649")
+                    .on("click", function(d){
+                        prepData(d, data);
+                    })
                     .on("mouseover", function(d) { // tool tip 
                         div.transition()
                             .duration(200)
@@ -535,39 +538,39 @@ draw = function(svg, data) {
                             .style("opacity", 0);
                     });
 
-                barChildren.append("rect") // drop down button for each pheno
-                        .attr("y", function(d) {
-                            return ((locData[row].order) * (sqheight+sqspacing));
-                        })
-                        .attr("x", (sqwidth+sqspacing)*(count+1) + phenobarheight - dropbuttonwidth + sqwidth)
-                        .attr("height", sqheight)
-                        .attr("width", dropbuttonwidth)
-                        .attr("class", "drop, inactive")
-                        .attr("style", "fill: purple")
-                        .on("click", function(d) {
-                            // TODO: get it to activate the tree structure from this node.
+                // barChildren.append("rect") // drop down button for each pheno
+                //         .attr("y", function(d) {
+                //             return ((locData[row].order) * (sqheight+sqspacing));
+                //         })
+                //         .attr("x", (sqwidth+sqspacing)*(count+1) + phenobarheight - dropbuttonwidth + sqwidth)
+                //         .attr("height", sqheight)
+                //         .attr("width", dropbuttonwidth)
+                //         .attr("class", "drop, inactive")
+                //         .attr("style", "fill: purple")
+                //         .on("click", function(d) {
+                //             // TODO: get it to activate the tree structure from this node.
 
-                            var pheno = d3.select(this); // pheno is the drop button
-                            if (pheno.attr("class") == "drop, inactive" && !dropactive) {
-                                pheno.attr("class", "drop, active");
-                                activerow = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
-                                dropactive = true;
-                                prepData(d, data);
-                            } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
-                                // another is active, but we want this one
-                                activerow = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
-                                prepData(d, data);
-                            } else {
-                                dropactive = false;
-                                activerow = -1;
-                                pheno.attr("class", "drop, inactive");
-                                draw(svg, data);
-                            }
-                        });
+                //             var pheno = d3.select(this); // pheno is the drop button
+                //             if (pheno.attr("class") == "drop, inactive" && !dropactive) {
+                //                 pheno.attr("class", "drop, active");
+                //                 activerow = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
+                //                 dropactive = true;
+                //                 prepData(d, data);
+                //             } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
+                //                 // another is active, but we want this one
+                //                 activerow = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
+                //                 prepData(d, data);
+                //             } else {
+                //                 dropactive = false;
+                //                 activerow = -1;
+                //                 pheno.attr("class", "drop, inactive");
+                //                 draw(svg, data);
+                //             }
+                //         });
 
                 barChildren.append("text") // phenotype name
                     .attr("y", function(d) {
-                        return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2);
+                        return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2) + 1;
                     })
                     .attr("x", 51*(count+1) + 42) // hardcoded until better option is found
                     .attr("dy", ".35em")
