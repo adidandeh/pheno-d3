@@ -2,7 +2,7 @@ var activerow = -1,
     barStack = [],
     dropbuttonwidth = 15,
     dropactive = false,
-    duration = 300,
+    duration = 500,
     i = 0,
     margin = {
         top: 20,
@@ -31,7 +31,7 @@ var diagonal = d3.svg.diagonal()
 
 var svg = d3.select("#phenobar").append("svg")
     .attr("width", width)
-    .attr("height", 2000); // TODO: Dynamic height adjustment.
+    .attr("height", height); // TODO: Dynamic height adjustment.
 
 var div = d3.select("body").append("div")
     .attr("class", "tooltip");
@@ -100,6 +100,7 @@ update = function(source) {
     var nodes = tree.nodes(source).reverse(),
         links = tree.links(nodes);
     // Normalize for fixed-depth.
+
     nodes.forEach(function(d) { // TODO: Swap?
         d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 300; // horizontal
         d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + 20; // vertical height
@@ -262,10 +263,16 @@ click = function(d) {
     }
 }
 
-getrowOrder = function(d, data) {
+getRowOrder = function(d, data, root) {
     for(var i = 0; i < data.length; i++) {
-        if (findWithAttr(data[i].children, 'name', d.name)) {
-            return data[i].order;
+        if(root) {
+            if (findWithAttr(data[i], 'name', d.name)) {
+                return data[i].order;
+            }
+        } else {
+            if (findWithAttr(data[i].children, 'name', d.name)) {
+                return data[i].order;
+            }
         }
     }
     return -1;
