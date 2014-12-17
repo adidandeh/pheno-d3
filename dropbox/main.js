@@ -101,7 +101,7 @@ update = function(source) {
         links = tree.links(nodes);
     // Normalize for fixed-depth.
     nodes.forEach(function(d) { // TODO: Swap?
-        d.y = d.depth * treeWidth + 200; // horizontal
+        d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 300; // horizontal
         d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + 20; // vertical height
     }); // How wide it gets
 
@@ -125,24 +125,7 @@ update = function(source) {
         .style("fill", function(d) {
             return d._children ? "lightsteelblue" : "#fff";
         })   
-        .on("click", click);
-
-    nodeEnter.append("line") // -- \ in \/ of checkmark
-        .attr("x1", 10)
-        .attr("y1", 0)
-        .attr("x2", 15)
-        .attr("y2", 5)
-        .style("stroke", "green")
-        .style("stroke-width", 3)
-        .on("click", checkmarkClick);
-
-    nodeEnter.append("line") // -- / in \/ of checkmark
-        .attr("x1", 14)
-        .attr("y1", 5)
-        .attr("x2", 25)
-        .attr("y2", -8)
-        .style("stroke", "green")
-        .style("stroke-width", 3)
+        .on("mouseout", click)
         .on("click", checkmarkClick);
 
     nodeEnter.append("text")
@@ -383,10 +366,6 @@ draw = function(svg, data) {
         .style("fill", function(d) {
             return "#49B649";
         })
-        .on("click", function(d) {
-            activerow = d.order;
-            prepData(d, data);
-        })
         .on("mouseover", function(d) { // tool tip  
             div.transition()
                 .duration(200)
@@ -394,6 +373,9 @@ draw = function(svg, data) {
             div.html("<h3>" + d.name + "</h3><br/>")
                 .style("left", (d3.event.pageX - 0) + "px")
                 .style("top", (d3.event.pageY - 100) + "px");
+
+            activerow = d.order;
+            prepData(d, data);
         })
         .on("mouseout", function(d) {
             div.transition()
@@ -441,9 +423,6 @@ draw = function(svg, data) {
                     .attr("height", sqheight)
                     .attr("class", "child")
                     .style("fill", "#49B649")
-                    .on("click", function(d){
-                        prepData(d, data);
-                    })
                     .on("mouseover", function(d) { // tool tip 
                         div.transition()
                             .duration(200)
@@ -451,6 +430,9 @@ draw = function(svg, data) {
                         div.html("<h3>" + d.name + "</h3><br/>") // issue only remembers last name
                             .style("left", (d3.event.pageX - 0) + "px")
                             .style("top", (d3.event.pageY - 100) + "px");
+
+                        activerow = d.order;
+                        prepData(d, data);
                     })
                     .on("mouseout", function(d) {
                         div.transition()
