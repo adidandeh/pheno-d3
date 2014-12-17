@@ -31,7 +31,7 @@ var diagonal = d3.svg.diagonal()
 
 var svg = d3.select("#phenobar").append("svg")
     .attr("width", width)
-    .attr("height", 800); // TODO: Dynamic height adjustment.
+    .attr("height", 2000); // TODO: Dynamic height adjustment.
 
 var div = d3.select("body").append("div")
     .attr("class", "tooltip");
@@ -620,7 +620,7 @@ draw = function(svg, data) {
                     .attr("x", 51*(count+1) + 42) // hardcoded until better option is found
                     .attr("dy", ".35em")
                     .style("font-size", function(d) {
-                        return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
+                        return Math.min(0.25 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
                     })
                     .style("text-anchor", "middle")
                     .attr("pointer-events", "none")
