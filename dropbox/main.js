@@ -16,7 +16,7 @@ var activerow = -1,
     sqheight = sqwidth/2,
     sqspacing = 1,
     treeWidth = 200,
-    treeHeight = treeWidth,
+    treeHeight = 500,
     height = 2000 - margin.top - margin.bottom,
     width = 2060 - margin.right - margin.left,
     maxBoxHeight = 120;
@@ -88,6 +88,21 @@ cleanName = function(name) {
 }
 
 update = function(source) {
+    var levelWidth = [1];
+    var childCount = function(level, n) {
+        if(n.children && n.children.length > 0) {
+          if(levelWidth.length <= level + 1) levelWidth.push(0);
+          
+          levelWidth[level+1] += n.children.length;
+          n.children.forEach(function(d) {
+            childCount(level + 1, d);
+          });
+        }
+      };
+      childCount(0, source);  
+      var newHeight = d3.max(levelWidth) * 20; // 20 pixels per line  
+      tree = tree.size([newHeight, treeWidth]);
+
     // Compute the new tree layout.
     var nodes = tree.nodes(source).reverse(),
         links = tree.links(nodes);
