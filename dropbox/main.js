@@ -1,6 +1,6 @@
 var activerow = -1,
     barStack = [],
-    dropbuttonheight = 15,
+    dropbuttonwidth = 15,
     dropactive = false,
     duration = 300,
     i = 0,
@@ -13,7 +13,7 @@ var activerow = -1,
     phenobarheight = 20,
     priorPheno = null,
     sqwidth = 50,
-    sqheight = sqwidth,
+    sqheight = sqwidth/2,
     sqspacing = 1,
     treeWidth = 200,
     treeHeight = treeWidth,
@@ -343,7 +343,7 @@ prepData = function(d, data) {
             root.x0 = d.order * sqwidth;
         }
 
-        root.y0 = phenobarheight + sqheight - dropbuttonheight;
+        root.y0 = phenobarheight + sqheight - dropbuttonwidth;
 
         function collapse(d) {
             if (d.children) {
@@ -370,12 +370,12 @@ draw = function(svg, data) {
         })
         .enter().append("g")
         .attr("transform", function(d, i) {
-            return "translate(" + sqheight + ", " + i + ")";
+            return "translate(" + sqwidth + ", " + i + ")";
         });
 
     bar.append("rect") // top majority of phenotype box
         .attr("y", function(d) {
-            return (d.order * sqwidth) + sqspacing;
+            return (d.order * sqheight) + sqspacing;
         })
         .attr("x", phenobarheight)
         .attr("width", sqwidth)
@@ -453,13 +453,13 @@ draw = function(svg, data) {
 
     bar.append("rect") // drop down button for each pheno
         .attr("y", function(d) {
-            return (d.order * sqwidth);
+            return (d.order * sqheight) + 1;
         })
-        .attr("x", phenobarheight + sqheight - dropbuttonheight)
-        .attr("height", sqwidth)
-        .attr("width", dropbuttonheight)
+        .attr("x", phenobarheight + sqwidth - dropbuttonwidth)
+        .attr("height", sqheight)
+        .attr("width", dropbuttonwidth)
         .attr("class", "drop, inactive")
-        .attr("style", "fill: transparent")
+        .attr("style", "fill: purple")
         .on("click", function(d) {
             if (d.active == 1) {
                 var pheno = d3.select(this); // pheno is the drop button
@@ -481,35 +481,11 @@ draw = function(svg, data) {
             }
         });
 
-    bar.append("line") // -- \ in \/
-        .attr("y1", function(d) {
-            return d.order * (sqwidth) + 10;
-        })
-        .attr("x1", phenobarheight + 40)
-        .attr("y2", function(d) {
-            return d.order * (sqwidth) + 25;
-        })
-        .attr("x2", phenobarheight + 45)
-        .style("stroke", "black")
-        .style("stroke-width", 1);
-
-    bar.append("line") // -- / in \/
-        .attr("y1", function(d) {
-            return d.order * (sqwidth) + 40;
-        })
-        .attr("x1", phenobarheight + 40)
-        .attr("y2", function(d) {
-            return d.order * (sqwidth) + 25;
-        })
-        .attr("x2", phenobarheight + 45)
-        .style("stroke", "black")
-        .style("stroke-width", 1);
-
     bar.append("text") // phenotype name
         .attr("y", function(d) {
-            return (d.order * (sqwidth) + sqwidth / 2);
+            return (d.order * (sqheight) + sqheight / 2);
         })
-        .attr("x", sqheight - 7) // hardcoded until better option is found
+        .attr("x", sqwidth - 7) // hardcoded until better option is found
         .attr("dy", ".35em")
         .style("font-size", function(d) {
             return Math.min(0.25 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
@@ -528,7 +504,7 @@ draw = function(svg, data) {
                 .data(locData[row].children)
                 .enter().append("g")
                 .attr("transform", function(d, i) {
-                    return "translate(" + sqheight + ", " + 0 + ")";
+                    return "translate(" + sqwidth + ", " + 0 + ")";
                 });
 
             for(var count = 0; count < locData[row].children.length; count++) {
@@ -536,7 +512,7 @@ draw = function(svg, data) {
 
                 barChildren.append("rect") // top majority of phenotype box
                     .attr("y", function(d) {
-                        return ((locData[row].order) * (sqwidth+sqspacing));
+                        return ((locData[row].order) * (sqheight+sqspacing));
                     })
                     .attr("x", function(d) {
                         return (51*(count+sqspacing) + 20);
@@ -561,13 +537,13 @@ draw = function(svg, data) {
 
                 barChildren.append("rect") // drop down button for each pheno
                         .attr("y", function(d) {
-                            return ((locData[row].order) * (sqwidth+sqspacing));
+                            return ((locData[row].order) * (sqheight+sqspacing));
                         })
-                        .attr("x", (sqheight+sqspacing)*(count+1) + phenobarheight - dropbuttonheight + sqheight)
-                        .attr("height", sqwidth)
-                        .attr("width", dropbuttonheight)
+                        .attr("x", (sqwidth+sqspacing)*(count+1) + phenobarheight - dropbuttonwidth + sqwidth)
+                        .attr("height", sqheight)
+                        .attr("width", dropbuttonwidth)
                         .attr("class", "drop, inactive")
-                        .attr("style", "fill: transparent")
+                        .attr("style", "fill: purple")
                         .on("click", function(d) {
                             // TODO: get it to activate the tree structure from this node.
 
@@ -589,33 +565,9 @@ draw = function(svg, data) {
                             }
                         });
 
-                barChildren.append("line") // -- \ in \/
-                    .attr("y1", function(d) {
-                        return locData[row].order * (sqwidth+sqspacing) + 10;
-                    })
-                    .attr("x1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
-                    .attr("y2", function(d) {
-                        return locData[row].order * (sqwidth+sqspacing) + 25;
-                    })
-                    .attr("x2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
-                    .style("stroke", "black")
-                    .style("stroke-width", 1);
-
-                barChildren.append("line") // -- / in \/
-                    .attr("y1", function(d) {
-                        return locData[row].order * (sqwidth+sqspacing) + 40;
-                    })
-                    .attr("x1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
-                    .attr("y2", function(d) {
-                        return locData[row].order * (sqwidth+sqspacing) + 25;
-                    })
-                    .attr("x2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
-                    .style("stroke", "black")
-                    .style("stroke-width", 1);
-
                 barChildren.append("text") // phenotype name
                     .attr("y", function(d) {
-                        return ((locData[row].order) * (sqwidth + sqspacing) + sqwidth / 2);
+                        return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2);
                     })
                     .attr("x", 51*(count+1) + 42) // hardcoded until better option is found
                     .attr("dy", ".35em")
