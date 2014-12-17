@@ -435,6 +435,7 @@ draw = function(svg, data) {
                 // // push the changed pheno into the data list at new place.
                 // data.splice(numOfActivePheno, 0, removedArr[0]);
             // }
+            activerow = d.order;
             prepData(d, data);
         })
         .on("mouseover", function(d) { // tool tip  
