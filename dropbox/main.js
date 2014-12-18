@@ -265,6 +265,11 @@ checkmarkClick = function(d) {
     draw(svg, data);
 }
 
+removeChild = function(row, column) {
+    data[row-1].children.splice(column, 1);
+    draw(svg, data);
+}
+
 // Toggle children on click.
 click = function(d) {
     if (d.children) { // Going back a step
@@ -395,6 +400,9 @@ draw = function(svg, data) {
             activerow = d.order;
             prepData(d, data);
         })
+        .on("contextmenu", function(d){
+            d3.event.preventDefault();   
+        })
         .on("mouseover", function(d) { // tool tip  
             tooltipMouseOver(d);
 
@@ -448,6 +456,12 @@ draw = function(svg, data) {
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
                         activerow = getRowOrder(getPhenoParentRoot(d), data);
                         prepData(d, data);
+                    })
+                    .on("contextmenu", function(d){
+                        var tempColumn = d3.select(this).attr("class");
+                        
+                        removeChild(getRowOrder(getPhenoParentRoot(d), data), tempColumn);
+                        d3.event.preventDefault();   
                     })
                     .on("mouseover", function(d) { // tool tip 
                         var tempColumn = d3.select(this).attr("class");
