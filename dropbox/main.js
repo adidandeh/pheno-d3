@@ -460,17 +460,22 @@ draw = function(svg, data) {
                     })
                     .on("contextmenu", function(d){
                         d3.event.preventDefault();  
-                        console.log(tempColumn);
-                        console.log(tempRow);
+                        var tempColumn = d3.select(this).attr("id");
+                        var tempRow = d3.select(this).attr("class");
                         removeChild(tempRow, tempColumn);
                     })
                     .on("mouseover", function(d) { // tool tip 
                         var tempColumn = d3.select(this).attr("id");
+                        var tempName = "";
+
+                        if(typeof data[activerow-1].children[tempColumn] != "undefined") {
+                            tempName = data[activerow-1].children[tempColumn].name;
+                        }
 
                         div.transition()
                             .duration(200)
                             .style("opacity", 10);
-                        div.html("<h3>" + data[activerow-1].children[tempColumn].name + "</h3><br/>") // issue only remembers last name
+                        div.html("<h3>" + tempName + "</h3><br/>") // issue only remembers last name
                             .style("left", (d3.event.pageX - 0) + "px")
                             .style("top", (d3.event.pageY - 100) + "px");
 
