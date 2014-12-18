@@ -266,7 +266,7 @@ checkmarkClick = function(d) {
 }
 
 removeChild = function(row, column) {
-    data[row-1].children.splice(column, 1);
+    data[row].children.splice(column, 1);
     draw(svg, data);
 }
 
@@ -451,20 +451,21 @@ draw = function(svg, data) {
                     })
                     .attr("width", sqwidth)
                     .attr("height", sqheight)
-                    .attr("class", count)
+                    .attr("id", count)
+                    .attr("class", row)
                     .style("fill", "#49B649")
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
                         activerow = getRowOrder(getPhenoParentRoot(d), data);
                         prepData(d, data);
                     })
                     .on("contextmenu", function(d){
-                        var tempColumn = d3.select(this).attr("class");
-                        
-                        removeChild(getRowOrder(getPhenoParentRoot(d), data), tempColumn);
-                        d3.event.preventDefault();   
+                        d3.event.preventDefault();  
+                        console.log(tempColumn);
+                        console.log(tempRow);
+                        removeChild(tempRow, tempColumn);
                     })
                     .on("mouseover", function(d) { // tool tip 
-                        var tempColumn = d3.select(this).attr("class");
+                        var tempColumn = d3.select(this).attr("id");
 
                         div.transition()
                             .duration(200)
