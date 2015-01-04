@@ -335,6 +335,13 @@ prepData = function(d, data) {
             var currentPheno = d;
 
             console.log(root.children[findWithAttr(root.children, 'name', data[activerow].name, false)]);
+            // TODO: Find way to correctly place root node generation.
+            // So far the parent node is chosen, but need to find the correct child node in the 
+            // underlying tree system. Need to use currentPheno as guide for target root, 
+            // just need to cut away the unneeded layers from the generated tree structure.
+            // IDEA: Generate breadcrumbs during phenotree interaction, when a phenotree node is 
+            // selected to be added, save that generated breadcrumb array in that pheno item's object,
+            // which then can be referenced as a guide down the pheno tree from the original root.
 
             var tempLineageStack = [currentPheno.name];
             while (typeof currentPheno.parent !== "undefined") {
@@ -361,6 +368,7 @@ prepData = function(d, data) {
             root.x0 = d.order * sqwidth;
         }
 
+          //  root.y0 =(activerow+1) * (sqheight + sqspacing);
         root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
 
         function collapse(d) {
