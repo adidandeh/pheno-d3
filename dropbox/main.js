@@ -328,24 +328,24 @@ getPhenoParentRoot = function(d) {
 prepData = function(d, data) {
     d3.json("data.json", function(error, flare) {
         root = flare;
-
         if(typeof d.parent !== "undefined") {
             var currentPheno = d;
             var tempLineageStack = [currentPheno.name];
-
+            console.log("Before");
+            console.log(currentPheno);
+            console.log(tempLineageStack);
             while (typeof currentPheno.parent !== "undefined") {
-                tempLineageStack.push(currentPheno.parent.name);
+                tempLineageStack.push(currentPheno.parent.name); // issue, puts itself as parent.
                 currentPheno = currentPheno.parent;
             }
-
+            console.log("After");
+            console.log(currentPheno);
+            console.log(tempLineageStack);
             while(tempLineageStack.length > 0) {
-                if(typeof root != "undefined") {
-                    root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
-                }
+                root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
             }
 
             root.x0 = 200; // TODO non-dynamic.
-
         } else {
             var children = root.children;
             var child = null;
@@ -467,7 +467,8 @@ draw = function(svg, data) {
                     .style("fill", "#49B649")
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
                         activerow = getRowOrder(getPhenoParentRoot(d), data);
-                        prepData(d, data);
+                        if (d._children.length > 0) // won't open end nodes.
+                            prepData(d, data);
                     })
                     .on("contextmenu", function(d){
                         d3.event.preventDefault();  
