@@ -280,13 +280,15 @@ click = function(d) {
         d._children = d.children;
         d.children = null;
         update(barStack[barStack.length - 1]); // required to go back into tree
-    } else { // opening the nodes below
-        if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
-            barStack.push(d);
-            d.children = d._children;
-            d._children = null;
+    } else if(typeof d._children != "undefined") {
+        if(d._children.length > 1) { // opening the nodes below, don't open children endnodes
+            if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
+                barStack.push(d);
+                d.children = d._children;
+                d._children = null;
+            }
+            update(d); // required to delve further into tree.
         }
-      update(d); // required to delve further into tree.
     }
 }
 
