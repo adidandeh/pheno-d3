@@ -265,6 +265,9 @@ tooltipMouseOut = function(d) {
 checkmarkClick = function(d) {
     if(typeof data[activerow-1] == "undefined" || typeof d.name == "undefined") {
         // end node and other errors
+            console.log("error?");
+            console.log(d);
+            console.log(activerow-1);
     } else if (typeof findWithAttr(data[activerow-1].children, "id", d.id) == "undefined") {
         data[activerow-1].children.push(d);
     }
@@ -328,20 +331,19 @@ getPhenoParentRoot = function(d) {
 prepData = function(d, data) {
     d3.json("data.json", function(error, flare) {
         root = flare;
-        if(typeof d.parent !== "undefined") {
+        if(typeof d.parent !== "undefined") { // TODO Rewrite as errors finding root location
             var currentPheno = d;
             var tempLineageStack = [currentPheno.name];
-            console.log("Before");
-            console.log(currentPheno);
-            console.log(tempLineageStack);
             while (typeof currentPheno.parent !== "undefined") {
                 tempLineageStack.push(currentPheno.parent.name); // issue, puts itself as parent.
                 currentPheno = currentPheno.parent;
             }
-            console.log("After");
-            console.log(currentPheno);
-            console.log(tempLineageStack);
             while(tempLineageStack.length > 0) {
+                console.log("tempLineageStack");
+                console.log(tempLineageStack);
+                console.log("root");
+                console.log(root);
+
                 root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
             }
 
@@ -466,7 +468,7 @@ draw = function(svg, data) {
                     .attr("class", row)
                     .style("fill", "#49B649")
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
-                        activerow = getRowOrder(getPhenoParentRoot(d), data);
+                        activerow = d3.select(this).attr("class") + 1; 
                         if (d._children.length > 0) // won't open end nodes.
                             prepData(d, data);
                     })
@@ -480,7 +482,8 @@ draw = function(svg, data) {
                         var tempColumn = d3.select(this).attr("id");
                         var tempName = "";
 
-                        if(typeof data[activerow-1].children[tempColumn] != "undefined") {
+                        if(typeof data[activerow-1] !== "undefined" &&
+                           typeof data[activerow-1].children[tempColumn] !== "undefined") {
                             tempName = data[activerow-1].children[tempColumn].name;
                         }
 
