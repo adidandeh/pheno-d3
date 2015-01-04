@@ -51,7 +51,7 @@ getNumOfActivePheno = function() {
 //helper func
 findWithAttr = function(array, attr, value) {
     for (var i = 0; i < array.length; i++) {
-        if (array[i][attr] === value) {
+        if (array[i][attr].toUpperCase() === value.toUpperCase()) {
             return i;
         }
     }       
@@ -263,13 +263,13 @@ tooltipMouseOut = function(d) {
 }
 
 checkmarkClick = function(d) {
-    if(typeof data[activerow-1] == "undefined" || typeof d.name == "undefined") {
+    if(typeof data[activerow] == "undefined" || typeof d.name == "undefined") {
         // end node and other errors
             console.log("error?");
             console.log(d);
-            console.log(activerow-1);
-    } else if (typeof findWithAttr(data[activerow-1].children, "id", d.id) == "undefined") {
-        data[activerow-1].children.push(d);
+            console.log(activerow);
+    } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
+        data[activerow].children.push(d);
     }
     draw(svg, data);
 }
@@ -333,17 +333,15 @@ prepData = function(d, data) {
         root = flare;
         if(typeof d.parent !== "undefined") { // TODO Rewrite as errors finding root location
             var currentPheno = d;
+
+            console.log(root.children[findWithAttr(root.children, 'name', data[activerow].name, false)]);
+
             var tempLineageStack = [currentPheno.name];
             while (typeof currentPheno.parent !== "undefined") {
                 tempLineageStack.push(currentPheno.parent.name); // issue, puts itself as parent.
                 currentPheno = currentPheno.parent;
             }
             while(tempLineageStack.length > 0) {
-                console.log("tempLineageStack");
-                console.log(tempLineageStack);
-                console.log("root");
-                console.log(root);
-
                 root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
             }
 
@@ -410,7 +408,7 @@ draw = function(svg, data) {
             return "#49B649";
         })
         .on("click", function(d) { // for now as the mouseover issues need to be addressed
-            activerow = d.order;
+            activerow = d.order-1;
             prepData(d, data);
         })
         .on("contextmenu", function(d){
@@ -418,9 +416,6 @@ draw = function(svg, data) {
         })
         .on("mouseover", function(d) { // tool tip  
             tooltipMouseOver(d);
-
-            // activerow = d.order;
-            // prepData(d, data);
         })
         .on("mouseout", function(d) {
             tooltipMouseOut(d);
@@ -468,7 +463,7 @@ draw = function(svg, data) {
                     .attr("class", row)
                     .style("fill", "#49B649")
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
-                        activerow = d3.select(this).attr("class") + 1; 
+                        activerow = d3.select(this).attr("class"); 
                         if (d._children.length > 0) // won't open end nodes.
                             prepData(d, data);
                     })
@@ -482,9 +477,9 @@ draw = function(svg, data) {
                         var tempColumn = d3.select(this).attr("id");
                         var tempName = "";
 
-                        if(typeof data[activerow-1] !== "undefined" &&
-                           typeof data[activerow-1].children[tempColumn] !== "undefined") {
-                            tempName = data[activerow-1].children[tempColumn].name;
+                        if(typeof data[activerow] !== "undefined" &&
+                           typeof data[activerow].children[tempColumn] !== "undefined") {
+                            tempName = data[activerow].children[tempColumn].name;
                         }
 
                         div.transition()
@@ -493,9 +488,6 @@ draw = function(svg, data) {
                         div.html("<h3>" + tempName + "</h3><br/>") // issue only remembers last name
                             .style("left", (d3.event.pageX - 0) + "px")
                             .style("top", (d3.event.pageY - 100) + "px");
-
-                        // activerow = getRowOrder(getPhenoParentRoot(d), data);
-                        // prepData(d, data);
                     })
                     .on("mouseout", function(d) {
                         div.transition()
