@@ -265,12 +265,11 @@ tooltipMouseOut = function(d) {
 checkmarkClick = function(d) {
     if(typeof data[activerow] == "undefined" || typeof d.name == "undefined") {
         // end node and other errors
-            console.log("error?");
-            console.log(d);
-            console.log(activerow);
     } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
+        d["lineage"] = barStack; // TODO: parent / lineage seems to still work the same.
         data[activerow].children.push(d);
     }
+    barStack = [];
     draw(svg, data);
 }
 
@@ -329,27 +328,18 @@ getPhenoParentRoot = function(d) {
 }
 
 prepData = function(d, data) {
+    barStack = [];
     d3.json("data.json", function(error, flare) {
         root = flare;
         if(typeof d.parent !== "undefined") { // TODO Rewrite as errors finding root location
             var currentPheno = d;
+            var tempLineage = currentPheno["lineage"];
+            tempLineage.push(currentPheno);
 
-            console.log(root.children[findWithAttr(root.children, 'name', data[activerow].name, false)]);
-            // TODO: Find way to correctly place root node generation.
-            // So far the parent node is chosen, but need to find the correct child node in the 
-            // underlying tree system. Need to use currentPheno as guide for target root, 
-            // just need to cut away the unneeded layers from the generated tree structure.
-            // IDEA: Generate breadcrumbs during phenotree interaction, when a phenotree node is 
-            // selected to be added, save that generated breadcrumb array in that pheno item's object,
-            // which then can be referenced as a guide down the pheno tree from the original root.
-
-            var tempLineageStack = [currentPheno.name];
-            while (typeof currentPheno.parent !== "undefined") {
-                tempLineageStack.push(currentPheno.parent.name); // issue, puts itself as parent.
-                currentPheno = currentPheno.parent;
-            }
-            while(tempLineageStack.length > 0) {
-                root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
+            for(var x = 0; x < tempLineage.length-1; x++) {
+                if(typeof root.children !== "undefined") { // stops if at leaf
+                    root = root.children[findWithAttr(root.children, 'name', tempLineage[x].name, false)];
+                }
             }
 
             root.x0 = 200; // TODO non-dynamic.
