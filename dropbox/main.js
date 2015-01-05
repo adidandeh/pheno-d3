@@ -1,6 +1,7 @@
 var activerow = -1,
-    barStack = [],
-    clickedNode = false,
+    pastlineage = [], // diff between pastlineage and barStack is that
+    barStack = [],      // barstack deals with local lineage during phenotree
+    clickedNode = false, // and past lineage is grabbed from it's parent's lineage.
     dropbuttonwidth = 15,
     dropactive = false,
     duration = 400,
@@ -141,7 +142,7 @@ update = function(source) {
             .on("mouseout", function(d) {
                 if(!clickedNode) {
                     if (typeof d != "undefined") {
-                        click(d);
+                        move(d);
                     } 
                 } else {
                     clickedNode = false;
@@ -149,7 +150,7 @@ update = function(source) {
             })
             .on("click", function(d){
                 clickedNode = true;
-                checkmarkClick(d);
+                createPhenoBox(d);
             });
 
         nodeEnter.append("text")
@@ -167,7 +168,7 @@ update = function(source) {
             })
             .style("font-size", "10pt")
             .style("fill-opacity", 1e-6) // svg style
-            .on("click", click);
+            .on("click", move);
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
@@ -262,14 +263,23 @@ tooltipMouseOut = function(d) {
         .style("opacity", 0);
 }
 
-checkmarkClick = function(d) {
+createPhenoBox = function(d) {
+    // console.log(d);
+    // console.log("///// Entering createPhenoBox");
     if(typeof data[activerow] == "undefined" || typeof d.name == "undefined") {
         // end node and other errors
     } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
-        d["lineage"] = barStack; // TODO: parent / lineage seems to still work the same.
+        // console.log("pastlineage");
+        // console.log(pastlineage);
+        // console.log("barStack");
+        // console.log(barStack);
+
+        d["lineage"] = pastlineage.concat(barStack);
         data[activerow].children.push(d);
+        // console.log("//// Done createPhenoBox\n");
     }
     barStack = [];
+    pastlineage = [];
     draw(svg, data);
 }
 
@@ -279,7 +289,7 @@ removeChild = function(row, column) {
 }
 
 // Toggle children on click.
-click = function(d) {
+move = function(d) {
     if (d.children) { // Going back a step
         var tempRoot;
         do {
@@ -328,18 +338,31 @@ getPhenoParentRoot = function(d) {
 }
 
 prepData = function(d, data) {
+    // console.log("/// Entering prepData");
+    // console.log("data:");
+    // console.log(data);
     barStack = [];
+    pastlineage = [];
     d3.json("data.json", function(error, flare) {
         root = flare;
         if(typeof d.parent !== "undefined") { // TODO Rewrite as errors finding root location
             var currentPheno = d;
-            var tempLineage = currentPheno["lineage"];
-            tempLineage.push(currentPheno);
+            pastlineage = currentPheno["lineage"];
+            var tempLineage = pastlineage.concat(currentPheno);
+            // console.log("LOLOL");
+            // console.log(tempLineage);
+            // root.children[findWithAttr(root.children, 'name', data[activerow].name, false)]
 
-            for(var x = 0; x < tempLineage.length-1; x++) {
+            for(var x = 0; x < tempLineage.length; x++) {
+                // console.log("tempLineage:");
+                // console.log(tempLineage);
+                // console.log("Prior Root:");
+                // console.log(root);
                 if(typeof root.children !== "undefined") { // stops if at leaf
                     root = root.children[findWithAttr(root.children, 'name', tempLineage[x].name, false)];
                 }
+                // console.log("Post Root:");
+                // console.log(root);
             }
 
             root.x0 = 200; // TODO non-dynamic.
@@ -378,6 +401,8 @@ prepData = function(d, data) {
         root.children.forEach(collapse);
         priorPheno = root;
         barStack.push(root);
+
+        // console.log("/// Leaving prepData\n");
         update(root);
     });  
 }
@@ -462,8 +487,7 @@ draw = function(svg, data) {
                     .style("fill", "#49B649")
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
                         activerow = d3.select(this).attr("class"); 
-                        if (d._children.length > 0) // won't open end nodes.
-                            prepData(d, data);
+                        prepData(d, data);
                     })
                     .on("contextmenu", function(d){
                         d3.event.preventDefault();  
