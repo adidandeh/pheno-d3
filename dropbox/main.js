@@ -139,7 +139,6 @@ getMaxChildren = function() {
 } 
 
 
-// Toggle children on click.
 move = function(d) {
     if (d.children) { // Going back a step
         var tempRoot;
@@ -170,6 +169,12 @@ removeChild = function(row, column) {
     draw(svg, data);
 }
 
+tooltipMouseOut = function(d) {
+    div.transition()
+        .duration(1000)
+        .style("opacity", 0);
+}
+
 
 tooltipMouseOver = function(d) { 
     div.transition()
@@ -181,13 +186,7 @@ tooltipMouseOver = function(d) {
 }
 
 
-tooltipMouseOut = function(d) {
-    div.transition()
-        .duration(1000)
-        .style("opacity", 0);
-}
-
-
+// major functions
 update = function(source) {
     if(typeof source != "undefined") {
         // dynamic tree height
@@ -546,5 +545,6 @@ draw = function(svg, data) {
         }
     }
 }
+
 
 draw(svg, data);
