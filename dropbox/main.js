@@ -103,8 +103,8 @@ cleanName = function(name) {
 createPhenoBox = function(d) {
     // console.log(d);
     // console.log("///// Entering createPhenoBox");
-    if(typeof data[activerow] == "undefined" || typeof d.name == "undefined") {
-        // end node and other errors
+    if(typeof data[activerow] == "undefined" || typeof d.id == "undefined") {
+        console.log("Error in createPhenoBox!");
     } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
         // console.log("pastlineage");
         // console.log(pastlineage);
@@ -354,53 +354,33 @@ prepData = function(d, data) {
     console.log("/// Entering prepData");
     // console.log("data:");
     // console.log(data);
-    console.log(d.name);
+    console.log("+++++" + d.name);
     barStack = [];
     pastlineage = [];
     d3.json("data.json", function(error, flare) {
         root = flare;
-     //   if(typeof d.parent !== "undefined") { // TODO Rewrite as errors finding root location
-            var currentPheno = d;
-            pastlineage = currentPheno["lineage"];
-            var tempLineage = [];
-            if (typeof pastlineage !== "undefined") {
-                tempLineage = pastlineage.concat(currentPheno);
-            } else {
-                tempLineage = [currentPheno];
+        pastlineage = d["lineage"];
+
+        if (typeof pastlineage == "undefined") {
+            pastlineage = [];
+        }
+
+        var tempLineage = pastlineage.concat(d);
+
+        for(var x = 0; x < tempLineage.length; x++) {
+            // console.log("tempLineage:");
+            // console.log(tempLineage);
+            // console.log("Prior Root:");
+            // console.log(root);
+            if(typeof root.children !== "undefined") { // stops if at leaf
+                root = root.children[findWithAttr(root.children, 'id', tempLineage[x].id, false)];
             }
-            console.log("LOLOL");
-            console.log(tempLineage);
-            // root.children[findWithAttr(root.children, 'name', data[activerow].name, false)]
+            // console.log("Post Root:");
+            // console.log(root);
+        }
 
-            for(var x = 0; x < tempLineage.length; x++) {
-                console.log("tempLineage:");
-                console.log(tempLineage);
-                console.log("Prior Root:");
-                console.log(root);
-                if(typeof root.children !== "undefined") { // stops if at leaf
-                    root = root.children[findWithAttr(root.children, 'name', tempLineage[x].name, false)];
-                }
-                console.log("Post Root:");
-                console.log(root);
-            }
-
-            root.x0 = 200; // TODO non-dynamic.
-        // } else {
-        //     var children = root.children;
-        //     var child = null;
-        //     children.forEach(function(element) {
-        //         var tempchildname = element.name.toLowerCase();
-        //         if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
-        //             child = element;
-        //             return;
-        //         }
-        //     });
-
-        //     root = child;
-        //     root.x0 = d.order * sqwidth;
-        // }
-
-          //  root.y0 =(activerow+1) * (sqheight + sqspacing);
+        root.x0 = 200; // TODO non-dynamic.
+        //  root.y0 =(activerow+1) * (sqheight + sqspacing);
         root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
 
         function collapse(d) {
@@ -420,7 +400,6 @@ prepData = function(d, data) {
         root.children.forEach(collapse);
         priorPheno = root;
         barStack.push(root);
-
         console.log("/// Leaving prepData\n");
         update(root);
     });  
