@@ -1,8 +1,9 @@
-var activeColumn = -1,
+var activerow = -1,
     barStack = [],
-    dropbuttonheight = 15,
+    clickedNode = false,
+    dropbuttonwidth = 15,
     dropactive = false,
-    duration = 300,
+    duration = 400,
     i = 0,
     margin = {
         top: 20,
@@ -13,10 +14,10 @@ var activeColumn = -1,
     phenobarheight = 20,
     priorPheno = null,
     sqwidth = 50,
-    sqheight = sqwidth,
+    sqheight = sqwidth/2,
     sqspacing = 1,
     treeWidth = 200,
-    treeHeight = treeWidth,
+    treeHeight = 500,
     height = 2000 - margin.top - margin.bottom,
     width = 2060 - margin.right - margin.left,
     maxBoxHeight = 120;
@@ -31,7 +32,7 @@ var diagonal = d3.svg.diagonal()
 
 var svg = d3.select("#phenobar").append("svg")
     .attr("width", width)
-    .attr("height", 800); // TODO: Dynamic height adjustment.
+    .attr("height", height); // TODO: Dynamic height adjustment.
 
 var div = d3.select("body").append("div")
     .attr("class", "tooltip");
@@ -48,20 +49,12 @@ getNumOfActivePheno = function() {
 };
 
 //helper func
-findWithAttr = function(array, attr, value, ignoreCase) {
-    if(ignoreCase) {
-        for (var i = 0; i < array.length; i++) {
-            if (array[i][attr].ignoreCase === value.ignoreCase) {
-                return i;
-            }
-        }   
-    } else {
-        for (var i = 0; i < array.length; i++) {
-            if (array[i][attr] === value) {
-                return i;
-            }
-        }       
-    }
+findWithAttr = function(array, attr, value) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i][attr] === value) {
+            return i;
+        }
+    }       
 }
 
 getMaxChildren = function() {
@@ -96,12 +89,29 @@ cleanName = function(name) {
 }
 
 update = function(source) {
+    // dynamic tree height
+    var levelWidth = [1];
+    var childCount = function(level, n) {
+        if(n.children && n.children.length > 0) {
+            if(levelWidth.length <= level + 1) levelWidth.push(0);
+          
+            levelWidth[level+1] += n.children.length;
+            n.children.forEach(function(d) {
+               childCount(level + 1, d);
+            });
+        }
+    };
+    childCount(0, source);  
+    var newHeight = d3.max(levelWidth) * 20; // 20 pixels per line  
+    tree = tree.size([newHeight, treeWidth]);
+
     // Compute the new tree layout.
     var nodes = tree.nodes(source).reverse(),
         links = tree.links(nodes);
     // Normalize for fixed-depth.
-    nodes.forEach(function(d) {
-        d.y = d.depth * treeWidth + 200; // horizontal
+
+    nodes.forEach(function(d) { // TODO: Swap?
+        d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 350; // horizontal
         d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + 20; // vertical height
     }); // How wide it gets
 
@@ -117,33 +127,25 @@ update = function(source) {
         .attr("transform", function(d) {
             return "translate(" + source.y0 + "," + source.x0 + ")";
         })
-        .on("mouseover", tooltopMouseOver)
-        .on("mouseout", tooltopMouseOut);
+        .on("mouseover", tooltipMouseOver)
+        .on("mouseout", tooltipMouseOut);
 
     nodeEnter.append("circle")
         .attr("r", 1e-6)
         .style("fill", function(d) {
             return d._children ? "lightsteelblue" : "#fff";
         })   
-        .on("click", click);
-
-    nodeEnter.append("line") // -- \ in \/ of checkmark
-        .attr("x1", 10)
-        .attr("y1", 0)
-        .attr("x2", 15)
-        .attr("y2", 5)
-        .style("stroke", "green")
-        .style("stroke-width", 3)
-        .on("click", checkmarkClick);
-
-    nodeEnter.append("line") // -- / in \/ of checkmark
-        .attr("x1", 14)
-        .attr("y1", 5)
-        .attr("x2", 25)
-        .attr("y2", -8)
-        .style("stroke", "green")
-        .style("stroke-width", 3)
-        .on("click", checkmarkClick);
+        .on("mouseout", function(d) {
+            if(!clickedNode) {
+                click(d);
+            } else {
+                clickedNode = false;
+            }
+        })
+        .on("click", function(d){
+            clickedNode = true;
+            checkmarkClick(d);
+        });
 
     nodeEnter.append("text")
         .attr("class", "boxtext")
@@ -239,7 +241,7 @@ update = function(source) {
     });
 }
 
-tooltopMouseOver = function(d) { 
+tooltipMouseOver = function(d) { 
     div.transition()
         .duration(200)
         .style("opacity", 10);
@@ -248,14 +250,23 @@ tooltopMouseOver = function(d) {
         .style("top", (d3.event.pageY - 100) + "px");
 }
 
-tooltopMouseOut = function(d) {
+tooltipMouseOut = function(d) {
     div.transition()
         .duration(1000)
         .style("opacity", 0);
 }
 
 checkmarkClick = function(d) {
-    data[activeColumn-1].children.push(d);
+    if(typeof data[activerow-1] == "undefined" || typeof d.name == "undefined") {
+        // end node and other errors
+    } else if (typeof findWithAttr(data[activerow-1].children, "id", d.id) == "undefined") {
+        data[activerow-1].children.push(d);
+    }
+    draw(svg, data);
+}
+
+removeChild = function(row, column) {
+    data[row].children.splice(column, 1);
     draw(svg, data);
 }
 
@@ -279,10 +290,10 @@ click = function(d) {
     }
 }
 
-getColumnOrder = function(d, data) {
+getRowOrder = function(d, data) {
     for(var i = 0; i < data.length; i++) {
-        if (findWithAttr(data[i].children, 'name', d.name)) {
-            return data[i].order;
+        if(d.id == data[i].id) {
+                return data[i].order;
         }
     }
     return -1;
@@ -316,14 +327,10 @@ prepData = function(d, data) {
                 currentPheno = currentPheno.parent;
             }
 
-            var tempPhenoRoot = data[findWithAttr(data, 'name', 
-                tempLineageStack[tempLineageStack.length-1], true)];
-
-            // issue, always 50 b/c findWithAttr always returns 0. Matching issue.
-            var temp0x = tempPhenoRoot.order * sqwidth; 
-
             while(tempLineageStack.length > 0) {
-                root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
+                if(typeof root != "undefined") {
+                    root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
+                }
             }
 
             root.x0 = 200; // TODO non-dynamic.
@@ -343,10 +350,16 @@ prepData = function(d, data) {
             root.x0 = d.order * sqwidth;
         }
 
-        root.y0 = phenobarheight + sqheight - dropbuttonheight;
+        root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
 
         function collapse(d) {
             if (d.children) {
+                for(var i=0; i < d.children.length; i++) {
+                    if (typeof d.children[i].name == "undefined") {
+                        d.children.splice(i,1);
+                    }
+                }
+
                 d._children = d.children;
                 d._children.forEach(collapse);
                 d.children = null;
@@ -370,149 +383,44 @@ draw = function(svg, data) {
         })
         .enter().append("g")
         .attr("transform", function(d, i) {
-            return "translate(" + i + ", " + sqheight + ")";
+            return "translate(" + sqwidth + ", " + i + ")";
         });
 
     bar.append("rect") // top majority of phenotype box
-        .attr("x", function(d) {
-            return (d.order * sqwidth) + sqspacing;
+        .attr("y", function(d) {
+            return (d.order * sqheight) + sqspacing;
         })
-        .attr("y", phenobarheight)
+        .attr("x", phenobarheight)
         .attr("width", sqwidth)
         .attr("height", sqheight)
-        .attr("class", function(d) {
-            var name = d.name.replace("/", " "); // TODO: does not address selector issue
-            var name = d.name.replace("-", " ");
-            return "inactive, top, " + name;
-        })
         .style("fill", function(d) {
-            if (d.active == 1) {
-                return "#49B649";
-            } else {
-                return "#E35C5C";
-            }
+            return "#49B649";
         })
-        .on("click", function(d) {
-            var rec = d3.select(this); // clicked rec
-            var removedArr = data.splice(findWithAttr(data, 'name', d.name, false), 1);
-
-            // toggle color between two choices
-            if (rec.style("fill") == "rgb(227, 92, 92)") {
-                rec.style("fill", "#49B649");
-                rec.attr("class", "top, active");
-                var numOfActivePheno = getNumOfActivePheno();
-
-                // reorder pheno data list
-                // make sure that the new pheno isn't already in the proper place.
-                if (removedArr[0].order != numOfActivePheno + 1) {
-                    data.forEach(function(pheno) { // if it isn't, bump the order of all the right obj elems
-                        if (pheno.order < removedArr[0].order + 1 && pheno.active == 0) {
-                            pheno.order++;
-                        }
-                    });
-                }
-                removedArr[0].active = 1; // adjust the pheno object for insertion
-                removedArr[0].order = numOfActivePheno + 1;
-                data.splice(numOfActivePheno, 0, removedArr[0]); // push the changed pheno into the data list at new place.
-            } else {
-                rec.style("fill", "#E35C5C");
-                rec.attr("class", "top, inactive");
-                // get number of phenos still active
-                var numOfActivePheno = getNumOfActivePheno();
-
-                if (removedArr[0].order != numOfActivePheno + 1) {
-                    data.forEach(function(pheno) {
-                        if (pheno.order > removedArr[0].order && pheno.active == 1) {
-                            pheno.order--;
-                        }
-                    });
-
-                }
-                // put it's position at the leftmost inactive.
-                removedArr[0].active = 0;
-                removedArr[0].order = numOfActivePheno + 1;
-                removedArr[0].children = [];
-                // push the changed pheno into the data list at new place.
-                data.splice(numOfActivePheno, 0, removedArr[0]);
-            }
-            draw(svg, data);
+        .on("click", function(d) { // for now as the mouseover issues need to be addressed
+            activerow = d.order;
+            prepData(d, data);
+        })
+        .on("contextmenu", function(d){
+            d3.event.preventDefault();   
         })
         .on("mouseover", function(d) { // tool tip  
-            div.transition()
-                .duration(200)
-                .style("opacity", 10);
-            div.html("<h3>" + d.name + "</h3><br/>")
-                .style("left", (d3.event.pageX - 0) + "px")
-                .style("top", (d3.event.pageY - 100) + "px");
+            tooltipMouseOver(d);
+
+            // activerow = d.order;
+            // prepData(d, data);
         })
         .on("mouseout", function(d) {
-            div.transition()
-                .duration(200)
-                .style("opacity", 0);
+            tooltipMouseOut(d);
         });
-
-    bar.append("rect") // drop down button for each pheno
-        .attr("x", function(d) {
-            return (d.order * sqwidth);
-        })
-        .attr("y", phenobarheight + sqheight - dropbuttonheight)
-        .attr("width", sqwidth)
-        .attr("height", dropbuttonheight)
-        .attr("class", "drop, inactive")
-        .attr("style", "fill: transparent")
-        .on("click", function(d) {
-            if (d.active == 1) {
-                var pheno = d3.select(this); // pheno is the drop button
-                if (pheno.attr("class") == "drop, inactive" && !dropactive) {
-                    pheno.attr("class", "drop, active");
-                    activeColumn = d.order;
-                    dropactive = true;
-                    prepData(d, data);
-                } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
-                    // another is active, but we want this one
-                    activeColumn = d.order;
-                    prepData(d, data);
-                } else {
-                    dropactive = false;
-                    activeColumn = -1;
-                    pheno.attr("class", "drop, inactive");
-                    draw(svg, data);
-                }
-            }
-        });
-
-    bar.append("line") // -- \ in \/
-        .attr("x1", function(d) {
-            return d.order * (sqwidth) + 10;
-        })
-        .attr("y1", phenobarheight + 40)
-        .attr("x2", function(d) {
-            return d.order * (sqwidth) + 25;
-        })
-        .attr("y2", phenobarheight + 45)
-        .style("stroke", "black")
-        .style("stroke-width", 1);
-
-    bar.append("line") // -- / in \/
-        .attr("x1", function(d) {
-            return d.order * (sqwidth) + 40;
-        })
-        .attr("y1", phenobarheight + 40)
-        .attr("x2", function(d) {
-            return d.order * (sqwidth) + 25;
-        })
-        .attr("y2", phenobarheight + 45)
-        .style("stroke", "black")
-        .style("stroke-width", 1);
 
     bar.append("text") // phenotype name
-        .attr("x", function(d) {
-            return (d.order * (sqwidth) + sqwidth / 2);
+        .attr("y", function(d) {
+            return (d.order * (sqheight) + sqheight / 2) + 1;
         })
-        .attr("y", sqheight - 7) // hardcoded until better option is found
+        .attr("x", sqwidth - 7) // hardcoded until better option is found
         .attr("dy", ".35em")
         .style("font-size", function(d) {
-            return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
+            return Math.min(0.25 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
         })
         .style("text-anchor", "middle")
         .attr("pointer-events", "none")
@@ -522,36 +430,57 @@ draw = function(svg, data) {
 
     // attempt to create children boxes.
     var locData = data;
-    for(var column = 0; column < locData.length; column++) {
-        if (locData[column].children.length > 0) {
-            var barChildren = svg.selectAll(locData[column].name) // the bar which will hold the phenotype boxes.
-                .data(locData[column].children)
+    for(var row = 0; row < locData.length; row++) {
+        if (locData[row].children.length > 0) {
+            var barChildren = svg.selectAll(locData[row].name) // the bar which will hold the phenotype boxes.
+                .data(locData[row].children)
                 .enter().append("g")
                 .attr("transform", function(d, i) {
-                    return "translate(" + 0 + ", " + sqheight + ")";
+                    return "translate(" + sqwidth + ", " + 0 + ")";
                 });
 
-            for(var count = 0; count < locData[column].children.length; count++) {
-                var tempName = locData[column].children[count].name;
+            for(var count = 0; count < locData[row].children.length; count++) {
+                var tempName = locData[row].children[count].name;
 
                 barChildren.append("rect") // top majority of phenotype box
-                    .attr("x", function(d) {
-                        return ((locData[column].order) * (sqwidth+sqspacing));
-                    })
                     .attr("y", function(d) {
+                        return ((locData[row].order) * (sqheight+sqspacing));
+                    })
+                    .attr("x", function(d) {
                         return (51*(count+sqspacing) + 20);
                     })
                     .attr("width", sqwidth)
                     .attr("height", sqheight)
-                    .attr("class", "child")
+                    .attr("id", count)
+                    .attr("class", row)
                     .style("fill", "#49B649")
+                    .on("click", function(d) { // for now as the mouseover issues need to be addressed
+                        activerow = getRowOrder(getPhenoParentRoot(d), data);
+                        prepData(d, data);
+                    })
+                    .on("contextmenu", function(d){
+                        d3.event.preventDefault();  
+                        var tempColumn = d3.select(this).attr("id");
+                        var tempRow = d3.select(this).attr("class");
+                        removeChild(tempRow, tempColumn);
+                    })
                     .on("mouseover", function(d) { // tool tip 
+                        var tempColumn = d3.select(this).attr("id");
+                        var tempName = "";
+
+                        if(typeof data[activerow-1].children[tempColumn] != "undefined") {
+                            tempName = data[activerow-1].children[tempColumn].name;
+                        }
+
                         div.transition()
                             .duration(200)
                             .style("opacity", 10);
-                        div.html("<h3>" + d.name + "</h3><br/>") // issue only remembers last name
+                        div.html("<h3>" + tempName + "</h3><br/>") // issue only remembers last name
                             .style("left", (d3.event.pageX - 0) + "px")
                             .style("top", (d3.event.pageY - 100) + "px");
+
+                        // activerow = getRowOrder(getPhenoParentRoot(d), data);
+                        // prepData(d, data);
                     })
                     .on("mouseout", function(d) {
                         div.transition()
@@ -559,73 +488,19 @@ draw = function(svg, data) {
                             .style("opacity", 0);
                     });
 
-                barChildren.append("rect") // drop down button for each pheno
-                        .attr("x", function(d) {
-                            return ((locData[column].order) * (sqwidth+sqspacing));
-                        })
-                        .attr("y", (sqheight+sqspacing)*(count+1) + phenobarheight - dropbuttonheight + sqheight)
-                        .attr("width", sqwidth)
-                        .attr("height", dropbuttonheight)
-                        .attr("class", "drop, inactive")
-                        .attr("style", "fill: transparent")
-                        .on("click", function(d) {
-                            // TODO: get it to activate the tree structure from this node.
-
-                            var pheno = d3.select(this); // pheno is the drop button
-                            if (pheno.attr("class") == "drop, inactive" && !dropactive) {
-                                pheno.attr("class", "drop, active");
-                                activeColumn = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
-                                dropactive = true;
-                                prepData(d, data);
-                            } else if (pheno.attr("class") == "drop, inactive" && dropactive) {
-                                // another is active, but we want this one
-                                activeColumn = findWithAttr(data, 'id', getPhenoParentRoot(d).id)+ 1;
-                                prepData(d, data);
-                            } else {
-                                dropactive = false;
-                                activeColumn = -1;
-                                pheno.attr("class", "drop, inactive");
-                                draw(svg, data);
-                            }
-                        });
-
-                barChildren.append("line") // -- \ in \/
-                    .attr("x1", function(d) {
-                        return locData[column].order * (sqwidth+sqspacing) + 10;
-                    })
-                    .attr("y1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
-                    .attr("x2", function(d) {
-                        return locData[column].order * (sqwidth+sqspacing) + 25;
-                    })
-                    .attr("y2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
-                    .style("stroke", "black")
-                    .style("stroke-width", 1);
-
-                barChildren.append("line") // -- / in \/
-                    .attr("x1", function(d) {
-                        return locData[column].order * (sqwidth+sqspacing) + 40;
-                    })
-                    .attr("y1", (sqheight+sqspacing)*(count+1) + phenobarheight + 40)
-                    .attr("x2", function(d) {
-                        return locData[column].order * (sqwidth+sqspacing) + 25;
-                    })
-                    .attr("y2", (sqheight+sqspacing)*(count+1) + phenobarheight + 45)
-                    .style("stroke", "black")
-                    .style("stroke-width", 1);
-
                 barChildren.append("text") // phenotype name
-                    .attr("x", function(d) {
-                        return ((locData[column].order) * (sqwidth + sqspacing) + sqwidth / 2);
+                    .attr("y", function(d) {
+                        return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2) + 1;
                     })
-                    .attr("y", 51*(count+1) + 42) // hardcoded until better option is found
+                    .attr("x", 51*(count+1) + 42) // hardcoded until better option is found
                     .attr("dy", ".35em")
                     .style("font-size", function(d) {
-                        return Math.min(0.3 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
+                        return Math.min(0.25 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
                     })
                     .style("text-anchor", "middle")
                     .attr("pointer-events", "none")
                     .text(function(d) {
-                        return cleanName(locData[column].children[count].name).substring(0, 5);
+                        return cleanName(locData[row].children[count].name).substring(0, 5);
                     });
             }
         }
