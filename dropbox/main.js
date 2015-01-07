@@ -75,26 +75,7 @@ var div = d3.select("body").append("div")
 //     }
 // }
 
-//helper func
-findWithAttr = function(array, attr, value) {
-    for (var i = 0; i < array.length; i++) {
-        if (array[i][attr].toUpperCase() === value.toUpperCase()) {
-            return i;
-        }
-    }       
-}
-
-getMaxChildren = function() {
-    var children = 0;
-
-    data.forEach(function(rootPheno) {
-        if(rootPheno.children.length > children) {
-            children = rootPheno.children.length;
-        }
-    });
-    return children;
-} 
-
+//helper functions 
 cleanName = function(name) {
     try {
         name = name.replace("Abnormality of the ", "");
@@ -114,6 +95,98 @@ cleanName = function(name) {
 
     return name;
 }
+
+
+createPhenoBox = function(d) {
+    // console.log(d);
+    // console.log("///// Entering createPhenoBox");
+    if(typeof data[activerow] == "undefined" || typeof d.name == "undefined") {
+        // end node and other errors
+    } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
+        // console.log("pastlineage");
+        // console.log(pastlineage);
+        // console.log("barStack");
+        // console.log(barStack);
+
+        d["lineage"] = pastlineage.concat(barStack);
+        data[activerow].children.push(d);
+        // console.log("//// Done createPhenoBox\n");
+    }
+    barStack = [];
+    pastlineage = [];
+    draw(svg, data);
+}
+
+
+findWithAttr = function(array, attr, value) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i][attr].toUpperCase() === value.toUpperCase()) {
+            return i;
+        }
+    }       
+}
+
+
+getMaxChildren = function() {
+    var children = 0;
+
+    data.forEach(function(rootPheno) {
+        if(rootPheno.children.length > children) {
+            children = rootPheno.children.length;
+        }
+    });
+    return children;
+} 
+
+
+// Toggle children on click.
+move = function(d) {
+    if (d.children) { // Going back a step
+        var tempRoot;
+        do {
+            tempRoot = barStack.pop();
+        } while (tempRoot != d);
+        d._children = d.children;
+        d.children = null;
+
+        if(typeof d != "undefined") {
+            update(barStack[barStack.length - 1]); // required to go back into tree
+        }
+    } else if(typeof d._children != "undefined") {
+        if(d._children.length > 1) { // opening the nodes below, don't open children endnodes
+            if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
+                barStack.push(d);
+                d.children = d._children;
+                d._children = null;
+            }
+            update(d); // required to delve further into tree.
+        }
+    }
+}
+
+
+removeChild = function(row, column) {
+    data[row].children.splice(column, 1);
+    draw(svg, data);
+}
+
+
+tooltipMouseOver = function(d) { 
+    div.transition()
+        .duration(200)
+        .style("opacity", 10);
+    div.html("<h3>" + d.name + "</h3><br/>")
+        .style("left", (d3.event.pageX - 0) + "px")
+        .style("top", (d3.event.pageY - 100) + "px");
+}
+
+
+tooltipMouseOut = function(d) {
+    div.transition()
+        .duration(1000)
+        .style("opacity", 0);
+}
+
 
 update = function(source) {
     if(typeof source != "undefined") {
@@ -271,71 +344,6 @@ update = function(source) {
             d.x0 = d.x;
             d.y0 = d.y;
         });
-    }
-}
-
-tooltipMouseOver = function(d) { 
-    div.transition()
-        .duration(200)
-        .style("opacity", 10);
-    div.html("<h3>" + d.name + "</h3><br/>")
-        .style("left", (d3.event.pageX - 0) + "px")
-        .style("top", (d3.event.pageY - 100) + "px");
-}
-
-tooltipMouseOut = function(d) {
-    div.transition()
-        .duration(1000)
-        .style("opacity", 0);
-}
-
-createPhenoBox = function(d) {
-    // console.log(d);
-    // console.log("///// Entering createPhenoBox");
-    if(typeof data[activerow] == "undefined" || typeof d.name == "undefined") {
-        // end node and other errors
-    } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
-        // console.log("pastlineage");
-        // console.log(pastlineage);
-        // console.log("barStack");
-        // console.log(barStack);
-
-        d["lineage"] = pastlineage.concat(barStack);
-        data[activerow].children.push(d);
-        // console.log("//// Done createPhenoBox\n");
-    }
-    barStack = [];
-    pastlineage = [];
-    draw(svg, data);
-}
-
-removeChild = function(row, column) {
-    data[row].children.splice(column, 1);
-    draw(svg, data);
-}
-
-// Toggle children on click.
-move = function(d) {
-    if (d.children) { // Going back a step
-        var tempRoot;
-        do {
-            tempRoot = barStack.pop();
-        } while (tempRoot != d);
-        d._children = d.children;
-        d.children = null;
-
-        if(typeof d != "undefined") {
-            update(barStack[barStack.length - 1]); // required to go back into tree
-        }
-    } else if(typeof d._children != "undefined") {
-        if(d._children.length > 1) { // opening the nodes below, don't open children endnodes
-            if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
-                barStack.push(d);
-                d.children = d._children;
-                d._children = null;
-            }
-            update(d); // required to delve further into tree.
-        }
     }
 }
 
