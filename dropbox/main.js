@@ -38,16 +38,42 @@ var svg = d3.select("#phenobar").append("svg")
 var div = d3.select("body").append("div")
     .attr("class", "tooltip");
 
+// UNUSED/DEAD FUNCTIONS
+
 // helper func
-getNumOfActivePheno = function() {
-    var count = 0;
-    for (var i = 0, l = data.length; i < l; i++) {
-        if (data[i].active == 1) {
-            count++;
-        }
-    }
-    return count;
-};
+// getNumOfActivePheno = function() {
+//     var count = 0;
+//     for (var i = 0, l = data.length; i < l; i++) {
+//         if (data[i].active == 1) {
+//             count++;
+//         }
+//     }
+//     return count;
+// };
+
+// getRowOrder = function(d, data) {
+//     for(var i = 0; i < data.length; i++) {
+//         if(d.id == data[i].id) {
+//                 return data[i].order;
+//         }
+//     }
+//     return -1;
+// }
+
+// getPhenoParentRoot = function(d) {
+//     if(typeof d.parent !== "undefined") {
+//         var currentPheno = d;
+//         var tempLineageStack = [currentPheno];
+
+//         while (typeof currentPheno.parent !== "undefined") {
+//             tempLineageStack.push(currentPheno.parent);
+//             currentPheno = currentPheno.parent;
+//         }
+//         return tempLineageStack.pop();
+//     } else { 
+//         return null;
+//     }
+// }
 
 //helper func
 findWithAttr = function(array, attr, value) {
@@ -313,29 +339,6 @@ move = function(d) {
     }
 }
 
-getRowOrder = function(d, data) {
-    for(var i = 0; i < data.length; i++) {
-        if(d.id == data[i].id) {
-                return data[i].order;
-        }
-    }
-    return -1;
-}
-
-getPhenoParentRoot = function(d) {
-    if(typeof d.parent !== "undefined") {
-        var currentPheno = d;
-        var tempLineageStack = [currentPheno];
-
-        while (typeof currentPheno.parent !== "undefined") {
-            tempLineageStack.push(currentPheno.parent);
-            currentPheno = currentPheno.parent;
-        }
-        return tempLineageStack.pop();
-    } else { 
-        return null;
-    }
-}
 
 prepData = function(d, data) {
     // console.log("/// Entering prepData");
