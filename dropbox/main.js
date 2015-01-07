@@ -101,19 +101,12 @@ cleanName = function(name) {
 
 
 createPhenoBox = function(d) {
-    // console.log(d);
-    // console.log("///// Entering createPhenoBox");
+
     if(typeof data[activerow] == "undefined" || typeof d.id == "undefined") {
         console.log("Error in createPhenoBox!");
     } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
-        // console.log("pastlineage");
-        // console.log(pastlineage);
-        // console.log("barStack");
-        // console.log(barStack);
-
         d["lineage"] = pastlineage.concat(barStack);
         data[activerow].children.push(d);
-        // console.log("//// Done createPhenoBox\n");
     }
     barStack = [];
     pastlineage = [];
@@ -145,7 +138,6 @@ getMaxChildren = function() {
 
 
 move = function(d) {
-    console.log("///// Entering move");
     if (d.children) { // Going back a step
         var tempRoot;
         do {
@@ -153,7 +145,6 @@ move = function(d) {
         } while (tempRoot != d);
         d._children = d.children;
         d.children = null;
-
         if(typeof d != "undefined") {
             update(barStack[barStack.length - 1]); // required to go back into tree
         }
@@ -354,8 +345,6 @@ update = function(source) {
 
 
 prepData = function(d, data) {
-    console.log("/// Entering prepData");
-    console.log(d);
     barStack = [];
     pastlineage = [];
     d3.json("data.json", function(error, flare) {
@@ -369,16 +358,9 @@ prepData = function(d, data) {
         var tempLineage = pastlineage.concat(d);
 
         for(var x = 0; x < tempLineage.length; x++) {
-            console.log("tempLineage:");
-            console.log(tempLineage);
-            console.log("Prior Root:");
-            console.log(root);
-
             if(typeof root.children !== "undefined") { // stops if at leaf
                 root = root.children[findWithAttr(root.children, 'id', tempLineage[x].id, false)];
             }
-            console.log("Post Root:");
-            console.log(root);
         }
 
         root.x0 = 200;
@@ -402,7 +384,6 @@ prepData = function(d, data) {
         root.children.forEach(collapse);
         priorPheno = root;
         barStack.push(root);
-        console.log("/// Leaving prepData\n");
         update(root);
     });  
 }
