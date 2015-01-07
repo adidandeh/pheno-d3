@@ -123,8 +123,10 @@ createPhenoBox = function(d) {
 
 findWithAttr = function(array, attr, value) {
     for (var i = 0; i < array.length; i++) {
-        if (array[i][attr].toUpperCase() === value.toUpperCase()) {
-            return i;
+        if (typeof array[i][attr] !== "undefined") {
+            if (array[i][attr].toUpperCase() === value.toUpperCase()) {
+                return i;
+            }
         }
     }       
 }
@@ -352,9 +354,7 @@ update = function(source) {
 
 prepData = function(d, data) {
     console.log("/// Entering prepData");
-    // console.log("data:");
-    // console.log(data);
-    console.log("+++++" + d.name);
+    console.log(d);
     barStack = [];
     pastlineage = [];
     d3.json("data.json", function(error, flare) {
@@ -368,18 +368,19 @@ prepData = function(d, data) {
         var tempLineage = pastlineage.concat(d);
 
         for(var x = 0; x < tempLineage.length; x++) {
-            // console.log("tempLineage:");
-            // console.log(tempLineage);
-            // console.log("Prior Root:");
-            // console.log(root);
+            console.log("tempLineage:");
+            console.log(tempLineage);
+            console.log("Prior Root:");
+            console.log(root);
+
             if(typeof root.children !== "undefined") { // stops if at leaf
                 root = root.children[findWithAttr(root.children, 'id', tempLineage[x].id, false)];
             }
-            // console.log("Post Root:");
-            // console.log(root);
+            console.log("Post Root:");
+            console.log(root);
         }
 
-        root.x0 = 200; // TODO non-dynamic.
+        root.x0 = 200;
         //  root.y0 =(activerow+1) * (sqheight + sqspacing);
         root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
 
@@ -485,7 +486,9 @@ draw = function(svg, data) {
                     .style("fill", "#49B649")
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
                         activerow = d3.select(this).attr("class"); 
-                        prepData(d, data);
+                        activecolumn = d3.select(this).attr("id");
+                        pheno = data[activerow].children[activecolumn];
+                        prepData(pheno, data);
                     })
                     .on("contextmenu", function(d){
                         d3.event.preventDefault();  
