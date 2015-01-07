@@ -1,9 +1,12 @@
 var activerow = -1,
-    pastlineage = [], // diff between pastlineage and barStack is that
-    barStack = [],      // barstack deals with local lineage during phenotree
-    clickedNode = false, // and past lineage is grabbed from it's parent's lineage.
-    dropbuttonwidth = 15,
+    pastlineage = [], /* diff between pastlineage and barStack is that 
+    barstack deals with local lineage during phenotree and past lineage 
+    is grabbed from it's parent's lineage. */
+    barStack = [],
+    circleRadius = 6,
+    clickedNode = false, 
     dropactive = false,
+    dropbuttonwidth = 15,
     duration = 400,
     i = 0,
     margin = {
@@ -233,7 +236,7 @@ update = function(source) {
             .on("mouseout", tooltipMouseOut);
 
         nodeEnter.append("circle")
-            .attr("r", 1e-6)
+            .attr("r", circleRadius)
             .style("fill", function(d) {
                 return d._children ? "lightsteelblue" : "#fff";
             })   
@@ -276,7 +279,7 @@ update = function(source) {
             });
 
         nodeUpdate.select("circle")
-            .attr("r", 4.5)
+            .attr("r", circleRadius+0.5)
             .style("fill", function(d) {
                 return d._children ? "lightsteelblue" : "#fff";
             });
@@ -293,7 +296,7 @@ update = function(source) {
             .remove();
 
         nodeExit.select("circle")
-            .attr("r", 1e-6);
+            .attr("r", circleRadius);
 
         nodeExit.select("text")
             .style("fill-opacity", 1e-6);
@@ -348,9 +351,10 @@ update = function(source) {
 
 
 prepData = function(d, data) {
-    // console.log("/// Entering prepData");
+    console.log("/// Entering prepData");
     // console.log("data:");
     // console.log(data);
+    console.log(d.name);
     barStack = [];
     pastlineage = [];
     d3.json("data.json", function(error, flare) {
@@ -366,8 +370,8 @@ prepData = function(d, data) {
             for(var x = 0; x < tempLineage.length; x++) {
                 // console.log("tempLineage:");
                 // console.log(tempLineage);
-                // console.log("Prior Root:");
-                // console.log(root);
+                console.log("Prior Root:");
+                console.log(root);
                 if(typeof root.children !== "undefined") { // stops if at leaf
                     root = root.children[findWithAttr(root.children, 'name', tempLineage[x].name, false)];
                 }
@@ -412,7 +416,7 @@ prepData = function(d, data) {
         priorPheno = root;
         barStack.push(root);
 
-        // console.log("/// Leaving prepData\n");
+        console.log("/// Leaving prepData\n");
         update(root);
     });  
 }
