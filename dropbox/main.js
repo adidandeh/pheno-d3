@@ -145,6 +145,7 @@ getMaxChildren = function() {
 
 
 move = function(d) {
+    console.log("///// Entering move");
     if (d.children) { // Going back a step
         var tempRoot;
         do {
