@@ -359,41 +359,46 @@ prepData = function(d, data) {
     pastlineage = [];
     d3.json("data.json", function(error, flare) {
         root = flare;
-        if(typeof d.parent !== "undefined") { // TODO Rewrite as errors finding root location
+     //   if(typeof d.parent !== "undefined") { // TODO Rewrite as errors finding root location
             var currentPheno = d;
             pastlineage = currentPheno["lineage"];
-            var tempLineage = pastlineage.concat(currentPheno);
-            // console.log("LOLOL");
-            // console.log(tempLineage);
+            var tempLineage = [];
+            if (typeof pastlineage !== "undefined") {
+                tempLineage = pastlineage.concat(currentPheno);
+            } else {
+                tempLineage = [currentPheno];
+            }
+            console.log("LOLOL");
+            console.log(tempLineage);
             // root.children[findWithAttr(root.children, 'name', data[activerow].name, false)]
 
             for(var x = 0; x < tempLineage.length; x++) {
-                // console.log("tempLineage:");
-                // console.log(tempLineage);
+                console.log("tempLineage:");
+                console.log(tempLineage);
                 console.log("Prior Root:");
                 console.log(root);
                 if(typeof root.children !== "undefined") { // stops if at leaf
                     root = root.children[findWithAttr(root.children, 'name', tempLineage[x].name, false)];
                 }
-                // console.log("Post Root:");
-                // console.log(root);
+                console.log("Post Root:");
+                console.log(root);
             }
 
             root.x0 = 200; // TODO non-dynamic.
-        } else {
-            var children = root.children;
-            var child = null;
-            children.forEach(function(element) {
-                var tempchildname = element.name.toLowerCase();
-                if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
-                    child = element;
-                    return;
-                }
-            });
+        // } else {
+        //     var children = root.children;
+        //     var child = null;
+        //     children.forEach(function(element) {
+        //         var tempchildname = element.name.toLowerCase();
+        //         if (tempchildname.indexOf(d.name.toLowerCase()) > -1) {
+        //             child = element;
+        //             return;
+        //         }
+        //     });
 
-            root = child;
-            root.x0 = d.order * sqwidth;
-        }
+        //     root = child;
+        //     root.x0 = d.order * sqwidth;
+        // }
 
           //  root.y0 =(activerow+1) * (sqheight + sqspacing);
         root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
