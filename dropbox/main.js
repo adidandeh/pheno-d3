@@ -1,8 +1,12 @@
 var activerow = -1,
+    pastlineage = [], /* diff between pastlineage and barStack is that 
+    barstack deals with local lineage during phenotree and past lineage 
+    is grabbed from it's parent's lineage. */
     barStack = [],
-    clickedNode = false,
-    dropbuttonwidth = 15,
+    circleRadius = 6,
+    clickedNode = false, 
     dropactive = false,
+    dropbuttonwidth = 15,
     duration = 400,
     i = 0,
     margin = {
@@ -37,37 +41,44 @@ var svg = d3.select("#phenobar").append("svg")
 var div = d3.select("body").append("div")
     .attr("class", "tooltip");
 
+// UNUSED/DEAD FUNCTIONS
+
 // helper func
-getNumOfActivePheno = function() {
-    var count = 0;
-    for (var i = 0, l = data.length; i < l; i++) {
-        if (data[i].active == 1) {
-            count++;
-        }
-    }
-    return count;
-};
+// getNumOfActivePheno = function() {
+//     var count = 0;
+//     for (var i = 0, l = data.length; i < l; i++) {
+//         if (data[i].active == 1) {
+//             count++;
+//         }
+//     }
+//     return count;
+// };
 
-//helper func
-findWithAttr = function(array, attr, value) {
-    for (var i = 0; i < array.length; i++) {
-        if (array[i][attr] === value) {
-            return i;
-        }
-    }       
-}
+// getRowOrder = function(d, data) {
+//     for(var i = 0; i < data.length; i++) {
+//         if(d.id == data[i].id) {
+//                 return data[i].order;
+//         }
+//     }
+//     return -1;
+// }
 
-getMaxChildren = function() {
-    var children = 0;
+// getPhenoParentRoot = function(d) {
+//     if(typeof d.parent !== "undefined") {
+//         var currentPheno = d;
+//         var tempLineageStack = [currentPheno];
 
-    data.forEach(function(rootPheno) {
-        if(rootPheno.children.length > children) {
-            children = rootPheno.children.length;
-        }
-    });
-    return children;
-} 
+//         while (typeof currentPheno.parent !== "undefined") {
+//             tempLineageStack.push(currentPheno.parent);
+//             currentPheno = currentPheno.parent;
+//         }
+//         return tempLineageStack.pop();
+//     } else { 
+//         return null;
+//     }
+// }
 
+//helper functions 
 cleanName = function(name) {
     try {
         name = name.replace("Abnormality of the ", "");
@@ -88,158 +99,85 @@ cleanName = function(name) {
     return name;
 }
 
-update = function(source) {
-    // dynamic tree height
-    var levelWidth = [1];
-    var childCount = function(level, n) {
-        if(n.children && n.children.length > 0) {
-            if(levelWidth.length <= level + 1) levelWidth.push(0);
-          
-            levelWidth[level+1] += n.children.length;
-            n.children.forEach(function(d) {
-               childCount(level + 1, d);
-            });
-        }
-    };
-    childCount(0, source);  
-    var newHeight = d3.max(levelWidth) * 20; // 20 pixels per line  
-    tree = tree.size([newHeight, treeWidth]);
 
-    // Compute the new tree layout.
-    var nodes = tree.nodes(source).reverse(),
-        links = tree.links(nodes);
-    // Normalize for fixed-depth.
+createPhenoBox = function(d) {
+    // console.log(d);
+    // console.log("///// Entering createPhenoBox");
+    if(typeof data[activerow] == "undefined" || typeof d.name == "undefined") {
+        // end node and other errors
+    } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
+        // console.log("pastlineage");
+        // console.log(pastlineage);
+        // console.log("barStack");
+        // console.log(barStack);
 
-    nodes.forEach(function(d) { // TODO: Swap?
-        d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 350; // horizontal
-        d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + 20; // vertical height
-    }); // How wide it gets
-
-    // Update the nodes…
-    var node = svg.selectAll("g.node")
-        .data(nodes, function(d) {
-            return d.id || (d.id = ++i);
-        });
-
-    // Enter any new nodes at the parent's previous position.
-    var nodeEnter = node.enter().append("g")
-        .attr("class", "node")
-        .attr("transform", function(d) {
-            return "translate(" + source.y0 + "," + source.x0 + ")";
-        })
-        .on("mouseover", tooltipMouseOver)
-        .on("mouseout", tooltipMouseOut);
-
-    nodeEnter.append("circle")
-        .attr("r", 1e-6)
-        .style("fill", function(d) {
-            return d._children ? "lightsteelblue" : "#fff";
-        })   
-        .on("mouseout", function(d) {
-            if(!clickedNode) {
-                click(d);
-            } else {
-                clickedNode = false;
-            }
-        })
-        .on("click", function(d){
-            clickedNode = true;
-            checkmarkClick(d);
-        });
-
-    nodeEnter.append("text")
-        .attr("class", "boxtext")
-        .attr("x", function(d) {
-            return d.children || d._children ? -10 : 10;
-        })
-        .attr("dy", ".35em")
-        .attr("text-anchor", function(d) {
-            return d.children || d._children ? "end" : "start";
-        })
-        .text(function(d) {
-            var name = d.name;
-            return cleanName(name);
-        })
-        .style("font-size", "10pt")
-        .style("fill-opacity", 1e-6) // svg style
-        .on("click", click);
-
-    // Transition nodes to their new position.
-    var nodeUpdate = node.transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-            return "translate(" + d.y + "," + d.x + ")";
-        });
-
-    nodeUpdate.select("circle")
-        .attr("r", 4.5)
-        .style("fill", function(d) {
-            return d._children ? "lightsteelblue" : "#fff";
-        });
-
-    nodeUpdate.select("text")
-        .style("fill-opacity", 1);
-
-    // Transition exiting nodes to the parent's new position.
-    var nodeExit = node.exit().transition()
-        .duration(duration)
-        .attr("transform", function(d) {
-            return "translate(" + source.y + "," + source.x + ")";
-        })
-        .remove();
-
-    nodeExit.select("circle")
-        .attr("r", 1e-6);
-
-    nodeExit.select("text")
-        .style("fill-opacity", 1e-6);
-
-    // Update the links…
-    var link = svg.selectAll("path.link")
-        .data(links, function(d) {
-            return d.target.id;
-        });
-
-    // Enter any new links at the parent's previous position.
-    link.enter().insert("path", "g")
-        .attr("class", "link")
-        .attr("d", function(d) {
-            var o = {
-                x: source.x0,
-                y: source.y0
-            };
-            return diagonal({
-                source: o,
-                target: o
-            });
-        });
-
-    // Transition links to their new position.
-    link.transition()
-        .duration(duration)
-        .attr("d", diagonal);
-
-    // Transition exiting nodes to the parent's new position.
-    link.exit().transition()
-        .duration(duration)
-        .attr("d", function(d) {
-            var o = {
-                x: source.x,
-                y: source.y
-            };
-            return diagonal({
-                source: o,
-                target: o
-            });
-        })
-        .remove();
-
-    // Stash the old positions for transition.
-    nodes.forEach(function(d) {
-        d.x0 = d.x;
-        d.y0 = d.y;
-    });
+        d["lineage"] = pastlineage.concat(barStack);
+        data[activerow].children.push(d);
+        // console.log("//// Done createPhenoBox\n");
+    }
+    barStack = [];
+    pastlineage = [];
+    draw(svg, data);
 }
+
+
+findWithAttr = function(array, attr, value) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i][attr].toUpperCase() === value.toUpperCase()) {
+            return i;
+        }
+    }       
+}
+
+
+getMaxChildren = function() {
+    var children = 0;
+
+    data.forEach(function(rootPheno) {
+        if(rootPheno.children.length > children) {
+            children = rootPheno.children.length;
+        }
+    });
+    return children;
+} 
+
+
+move = function(d) {
+    if (d.children) { // Going back a step
+        var tempRoot;
+        do {
+            tempRoot = barStack.pop();
+        } while (tempRoot != d);
+        d._children = d.children;
+        d.children = null;
+
+        if(typeof d != "undefined") {
+            update(barStack[barStack.length - 1]); // required to go back into tree
+        }
+    } else if(typeof d._children != "undefined") {
+        if(d._children.length > 1) { // opening the nodes below, don't open children endnodes
+            if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
+                barStack.push(d);
+                d.children = d._children;
+                d._children = null;
+            }
+            update(d); // required to delve further into tree.
+        }
+    }
+}
+
+
+removeChild = function(row, column) {
+    data[row].children.splice(column, 1);
+    draw(svg, data);
+}
+
+tooltipMouseOut = function(d) {
+    div.transition()
+        .duration(1000)
+        .style("opacity", 0);
+}
+
 
 tooltipMouseOver = function(d) { 
     div.transition()
@@ -250,91 +188,198 @@ tooltipMouseOver = function(d) {
         .style("top", (d3.event.pageY - 100) + "px");
 }
 
-tooltipMouseOut = function(d) {
-    div.transition()
-        .duration(1000)
-        .style("opacity", 0);
-}
 
-checkmarkClick = function(d) {
-    if(typeof data[activerow-1] == "undefined" || typeof d.name == "undefined") {
-        // end node and other errors
-    } else if (typeof findWithAttr(data[activerow-1].children, "id", d.id) == "undefined") {
-        data[activerow-1].children.push(d);
+// major functions
+update = function(source) {
+    if(typeof source != "undefined") {
+        // dynamic tree height
+        var levelWidth = [1];
+        var childCount = function(level, n) {
+            if(n.children && n.children.length > 0) {
+                if(levelWidth.length <= level + 1) levelWidth.push(0);
+              
+                levelWidth[level+1] += n.children.length;
+                n.children.forEach(function(d) {
+                   childCount(level + 1, d);
+                });
+            }
+        };
+        
+        childCount(0, source);  
+
+        var newHeight = d3.max(levelWidth) * 20; // 20 pixels per line  
+        tree = tree.size([newHeight, treeWidth]);
+
+        // Compute the new tree layout.
+        var nodes = tree.nodes(source).reverse(),
+            links = tree.links(nodes);
+        // Normalize for fixed-depth.
+
+        nodes.forEach(function(d) { // TODO: Swap?
+            d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 350; // horizontal
+            d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + 20; // vertical height
+        }); // How wide it gets
+
+        // Update the nodes…
+        var node = svg.selectAll("g.node")
+            .data(nodes, function(d) {
+                return d.id || (d.id = ++i);
+            });
+
+        // Enter any new nodes at the parent's previous position.
+        var nodeEnter = node.enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                return "translate(" + source.y0 + "," + source.x0 + ")";
+            })
+            .on("mouseover", tooltipMouseOver)
+            .on("mouseout", tooltipMouseOut);
+
+        nodeEnter.append("circle")
+            .attr("r", circleRadius)
+            .style("fill", function(d) {
+                return d._children ? "lightsteelblue" : "#fff";
+            })   
+            .on("mouseout", function(d) {
+                if(!clickedNode) {
+                    if (typeof d != "undefined") {
+                        move(d);
+                    } 
+                } else {
+                    clickedNode = false;
+                }
+            })
+            .on("click", function(d){
+                clickedNode = true;
+                createPhenoBox(d);
+            });
+
+        nodeEnter.append("text")
+            .attr("class", "boxtext")
+            .attr("x", function(d) {
+                return d.children || d._children ? -10 : 10;
+            })
+            .attr("dy", ".35em")
+            .attr("text-anchor", function(d) {
+                return d.children || d._children ? "end" : "start";
+            })
+            .text(function(d) {
+                var name = d.name;
+                return cleanName(name);
+            })
+            .style("font-size", "10pt")
+            .style("fill-opacity", 1e-6) // svg style
+            .on("click", move);
+
+        // Transition nodes to their new position.
+        var nodeUpdate = node.transition()
+            .duration(duration)
+            .attr("transform", function(d) {
+                return "translate(" + d.y + "," + d.x + ")";
+            });
+
+        nodeUpdate.select("circle")
+            .attr("r", circleRadius+0.5)
+            .style("fill", function(d) {
+                return d._children ? "lightsteelblue" : "#fff";
+            });
+
+        nodeUpdate.select("text")
+            .style("fill-opacity", 1);
+
+        // Transition exiting nodes to the parent's new position.
+        var nodeExit = node.exit().transition()
+            .duration(duration)
+            .attr("transform", function(d) {
+                return "translate(" + source.y + "," + source.x + ")";
+            })
+            .remove();
+
+        nodeExit.select("circle")
+            .attr("r", circleRadius);
+
+        nodeExit.select("text")
+            .style("fill-opacity", 1e-6);
+
+        // Update the links…
+        var link = svg.selectAll("path.link")
+            .data(links, function(d) {
+                return d.target.id;
+            });
+
+        // Enter any new links at the parent's previous position.
+        link.enter().insert("path", "g")
+            .attr("class", "link")
+            .attr("d", function(d) {
+                var o = {
+                    x: source.x0,
+                    y: source.y0
+                };
+                return diagonal({
+                    source: o,
+                    target: o
+                });
+            });
+
+        // Transition links to their new position.
+        link.transition()
+            .duration(duration)
+            .attr("d", diagonal);
+
+        // Transition exiting nodes to the parent's new position.
+        link.exit().transition()
+            .duration(duration)
+            .attr("d", function(d) {
+                var o = {
+                    x: source.x,
+                    y: source.y
+                };
+                return diagonal({
+                    source: o,
+                    target: o
+                });
+            })
+            .remove();
+
+        // Stash the old positions for transition.
+        nodes.forEach(function(d) {
+            d.x0 = d.x;
+            d.y0 = d.y;
+        });
     }
-    draw(svg, data);
 }
 
-removeChild = function(row, column) {
-    data[row].children.splice(column, 1);
-    draw(svg, data);
-}
-
-// Toggle children on click.
-click = function(d) {
-    if (d.children) { // Going back a step
-        var tempRoot;
-        do {
-            tempRoot = barStack.pop();
-        } while (tempRoot != d);
-        d._children = d.children;
-        d.children = null;
-        update(barStack[barStack.length - 1]); // required to go back into tree
-    } else { // opening the nodes below
-        if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
-            barStack.push(d);
-            d.children = d._children;
-            d._children = null;
-        }
-      update(d); // required to delve further into tree.
-    }
-}
-
-getRowOrder = function(d, data) {
-    for(var i = 0; i < data.length; i++) {
-        if(d.id == data[i].id) {
-                return data[i].order;
-        }
-    }
-    return -1;
-}
-
-getPhenoParentRoot = function(d) {
-    if(typeof d.parent !== "undefined") {
-        var currentPheno = d;
-        var tempLineageStack = [currentPheno];
-
-        while (typeof currentPheno.parent !== "undefined") {
-            tempLineageStack.push(currentPheno.parent);
-            currentPheno = currentPheno.parent;
-        }
-        return tempLineageStack.pop();
-    } else { 
-        return null;
-    }
-}
 
 prepData = function(d, data) {
+    console.log("/// Entering prepData");
+    // console.log("data:");
+    // console.log(data);
+    console.log(d.name);
+    barStack = [];
+    pastlineage = [];
     d3.json("data.json", function(error, flare) {
         root = flare;
-
-        if(typeof d.parent !== "undefined") {
+        if(typeof d.parent !== "undefined") { // TODO Rewrite as errors finding root location
             var currentPheno = d;
-            var tempLineageStack = [currentPheno.name];
+            pastlineage = currentPheno["lineage"];
+            var tempLineage = pastlineage.concat(currentPheno);
+            // console.log("LOLOL");
+            // console.log(tempLineage);
+            // root.children[findWithAttr(root.children, 'name', data[activerow].name, false)]
 
-            while (typeof currentPheno.parent !== "undefined") {
-                tempLineageStack.push(currentPheno.parent.name);
-                currentPheno = currentPheno.parent;
-            }
-
-            while(tempLineageStack.length > 0) {
-                if(typeof root != "undefined") {
-                    root = root.children[findWithAttr(root.children, 'name', tempLineageStack.pop(), false)];
+            for(var x = 0; x < tempLineage.length; x++) {
+                // console.log("tempLineage:");
+                // console.log(tempLineage);
+                console.log("Prior Root:");
+                console.log(root);
+                if(typeof root.children !== "undefined") { // stops if at leaf
+                    root = root.children[findWithAttr(root.children, 'name', tempLineage[x].name, false)];
                 }
+                // console.log("Post Root:");
+                // console.log(root);
             }
 
             root.x0 = 200; // TODO non-dynamic.
-
         } else {
             var children = root.children;
             var child = null;
@@ -350,6 +395,7 @@ prepData = function(d, data) {
             root.x0 = d.order * sqwidth;
         }
 
+          //  root.y0 =(activerow+1) * (sqheight + sqspacing);
         root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
 
         function collapse(d) {
@@ -369,6 +415,8 @@ prepData = function(d, data) {
         root.children.forEach(collapse);
         priorPheno = root;
         barStack.push(root);
+
+        console.log("/// Leaving prepData\n");
         update(root);
     });  
 }
@@ -397,7 +445,7 @@ draw = function(svg, data) {
             return "#49B649";
         })
         .on("click", function(d) { // for now as the mouseover issues need to be addressed
-            activerow = d.order;
+            activerow = d.order-1;
             prepData(d, data);
         })
         .on("contextmenu", function(d){
@@ -405,9 +453,6 @@ draw = function(svg, data) {
         })
         .on("mouseover", function(d) { // tool tip  
             tooltipMouseOver(d);
-
-            // activerow = d.order;
-            // prepData(d, data);
         })
         .on("mouseout", function(d) {
             tooltipMouseOut(d);
@@ -455,7 +500,7 @@ draw = function(svg, data) {
                     .attr("class", row)
                     .style("fill", "#49B649")
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
-                        activerow = getRowOrder(getPhenoParentRoot(d), data);
+                        activerow = d3.select(this).attr("class"); 
                         prepData(d, data);
                     })
                     .on("contextmenu", function(d){
@@ -468,8 +513,9 @@ draw = function(svg, data) {
                         var tempColumn = d3.select(this).attr("id");
                         var tempName = "";
 
-                        if(typeof data[activerow-1].children[tempColumn] != "undefined") {
-                            tempName = data[activerow-1].children[tempColumn].name;
+                        if(typeof data[activerow] !== "undefined" &&
+                           typeof data[activerow].children[tempColumn] !== "undefined") {
+                            tempName = data[activerow].children[tempColumn].name;
                         }
 
                         div.transition()
@@ -478,9 +524,6 @@ draw = function(svg, data) {
                         div.html("<h3>" + tempName + "</h3><br/>") // issue only remembers last name
                             .style("left", (d3.event.pageX - 0) + "px")
                             .style("top", (d3.event.pageY - 100) + "px");
-
-                        // activerow = getRowOrder(getPhenoParentRoot(d), data);
-                        // prepData(d, data);
                     })
                     .on("mouseout", function(d) {
                         div.transition()
@@ -506,5 +549,6 @@ draw = function(svg, data) {
         }
     }
 }
+
 
 draw(svg, data);
