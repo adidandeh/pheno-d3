@@ -250,7 +250,7 @@ update = function(source) {
         nodeEnter.append("circle")
             .attr("r", circleRadius)
             .style("fill", function(d) {
-                return d._children ? "lightgreen" : "#fff";
+                return d._children ? "#33CC33" : "#fff";
             })   
             .on("mouseout", function(d) {
                 if(!clickedNode) {
@@ -293,7 +293,7 @@ update = function(source) {
         nodeUpdate.select("circle")
             .attr("r", circleRadius+0.5)
             .style("fill", function(d) {
-                return d._children ? "lightgreen" : "#fff";
+                return d._children ? "#33CC33" : "#fff";
             });
 
         nodeUpdate.select("text")
