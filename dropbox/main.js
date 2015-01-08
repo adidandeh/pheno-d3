@@ -376,6 +376,7 @@ prepData = function(d, data) {
         var tempLineage = pastlineage.concat(d);
 
         for(var x = 0; x < tempLineage.length; x++) {
+            if(typeof root == "undefined") break // leaf node
             if(typeof root.children !== "undefined") { // stops if at leaf
                 root = root.children[findWithAttr(root.children, 'id', tempLineage[x].id, false)];
             }
