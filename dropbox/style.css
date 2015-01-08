@@ -31,7 +31,7 @@ div.tooltip {
 
 .node circle { /* the circle around the node, but not the inside */
   fill: #fff;
-  stroke: steelblue;
+  stroke: green;
   stroke-width: 1.5px;
 }
 
