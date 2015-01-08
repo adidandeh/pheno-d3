@@ -137,37 +137,22 @@ getMaxChildren = function() {
 } 
 
 generateBreadCrumb = function(d) {
-    var text = "";
     var tempLineageArr = [];
-    console.log("d:");
-    console.log(d);
-    console.log("Lineage: ");
-    console.log(d["lineage"]);
-    console.log("barStack: ");
-    console.log(barStack);
+    var temptext = "";
 
     if (typeof d["lineage"] !== "undefined") {
         tempLineageArr = tempLineageArr.concat(d["lineage"]);
-        // var lineage = d["lineage"];
-        // for (var x = 0; x < lineage.length(); x++) {
-        //     text = text + lineage[x].name + " > ";
-        // }
-    } else if (barStack.length > 0){
-        // for (var y = 0; y < barStack.length; y++) {
-        //     text = text + barStack[y].name + " > ";
-        // }  
+    } else if (barStack.length > 0){ 
     }
     tempLineageArr.push(d);
-        console.log(tempLineageArr);
-    var temptext = "";
+
     for (var x = 0; x < tempLineageArr.length; x++) {
-        temptext = temptext + tempLineageArr[x].name + " > ";
+        if (x < tempLineageArr.length && x != 0) {
+            temptext = temptext + " > ";
+        }
+        temptext = temptext + tempLineageArr[x].name;
     }
-    console.log(temptext);
-    text = text + d.name; 
-
-
-    return text;
+    return temptext;
 }
 
 move = function(d) {
@@ -524,8 +509,8 @@ draw = function(svg, data) {
                             .duration(200)
                             .style("opacity", 10);
                         div.html("<h3>" + generateBreadCrumb(tempName) + "</h3><br/>") // issue only remembers last name
-                            .style("left", (d3.event.pageX - 0) + "px")
-                            .style("top", (d3.event.pageY - 100) + "px");
+                            .style("left", /*(d3.event.pageX + 10)*/ 100 + "px") // horizontal
+                            .style("top", /*(d3.event.pageY - 20)*/ 50 + "px"); // vertical
                     })
                     .on("mouseout", function(d) {
                         div.transition()
