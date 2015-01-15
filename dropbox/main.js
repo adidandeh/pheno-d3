@@ -106,7 +106,6 @@ color = function(d){
 }
 
 createPhenoBox = function(d) {
-
     if(typeof data[activerow] == "undefined" || typeof d.id == "undefined") {
         console.log("Error in createPhenoBox!");
     } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
@@ -379,6 +378,7 @@ update = function(source, row) {
 
 
 prepData = function(d, data, row) {
+    console.log(data);
     barStack = [];
     pastlineage = [];
     d3.json("data.json", function(error, flare) {
