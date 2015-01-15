@@ -228,7 +228,7 @@ update = function(source) {
         // Normalize for fixed-depth.
 
         nodes.forEach(function(d) { // TODO: Change based odd number of nodes.
-            d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 300; // horizontal
+            d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 270; // horizontal
             d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + ((sqheight + sqspacing)*(activerow+1)) - 120; // vertical height
         }); // How wide it gets
 
