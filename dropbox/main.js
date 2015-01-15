@@ -99,6 +99,11 @@ cleanName = function(name) {
     return name;
 }
 
+color = function(d){
+    console.log(d);
+    return "#FFFFFF";
+    //return "#49B649";
+}
 
 createPhenoBox = function(d) {
 
@@ -202,7 +207,7 @@ tooltipMouseOver = function(d) {
 
 
 // major functions
-update = function(source) {
+update = function(source, row) {
     if(typeof source != "undefined") {
         var levelWidth = [1];
         var childCount = function(level, n) {
@@ -225,10 +230,11 @@ update = function(source) {
         var nodes = tree.nodes(source).reverse(),
             links = tree.links(nodes);
         // Normalize for fixed-depth.
-
         nodes.forEach(function(d) { // TODO: Change based odd number of nodes.
             d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 270; // horizontal
-            d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + ((sqheight + sqspacing)*(activerow+1)) - 120; // vertical height
+            //d.x += maxBoxHeight + ((row+1) * (sqheight+sqspacing)) - 120;
+            d.x += maxBoxHeight - 50;
+           // d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + ((sqheight + sqspacing)*(activerow+1)) - 120; // vertical height
         });
 
         // Update the nodes…
@@ -280,7 +286,10 @@ update = function(source) {
             })
             .style("font-size", "8pt")
             .style("fill-opacity", 1e-6) // svg style
-            .on("click", move);
+            .on("click", function(d){                
+                clickedNode = true;
+                createPhenoBox(d);}
+                );
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
@@ -361,7 +370,7 @@ update = function(source) {
 }
 
 
-prepData = function(d, data) {
+prepData = function(d, data, row) {
     barStack = [];
     pastlineage = [];
     d3.json("data.json", function(error, flare) {
@@ -401,12 +410,13 @@ prepData = function(d, data) {
         root.children.forEach(collapse);
         priorPheno = root;
         barStack.push(root);
-        update(root);
+        update(root, row);
     });  
 }
 
 
 draw = function(svg, data) {
+    console.log(data);
     svg.selectAll("*").remove();
 
     var bar = svg.selectAll("g") // the bar which will hold the phenotype boxes.
@@ -425,12 +435,12 @@ draw = function(svg, data) {
         .attr("x", phenobarheight)
         .attr("width", sqwidth)
         .attr("height", sqheight)
-        .style("fill", function(d) {
-            return "#49B649";
-        })
+        .style("fill", "#CCCCCC"/*color*/)
+        .style("stroke-width", "1px")
+        .style("stroke", "black")
         .on("click", function(d) { // for now as the mouseover issues need to be addressed
             activerow = d.order-1;
-            prepData(d, data);
+            prepData(d, data, activerow);
         })
         .on("contextmenu", function(d){
             d3.event.preventDefault();   
@@ -482,12 +492,14 @@ draw = function(svg, data) {
                     .attr("height", sqheight)
                     .attr("id", count)
                     .attr("class", row)
-                    .style("fill", "#49B649")
+        .style("fill", "#CCCCCC"/*color*/)
+        .style("stroke-width", "1px")
+        .style("stroke", "black")
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
-                        activerow = d3.select(this).attr("class"); 
-                        activecolumn = d3.select(this).attr("id");
-                        pheno = data[activerow].children[activecolumn];
-                        prepData(pheno, data);
+                        var tempColumn = d3.select(this).attr("id");
+                        var tempRow = d3.select(this).attr("class"); 
+                        pheno = data[tempRow].children[tempColumn];
+                        prepData(pheno, data, tempRow);
                     })
                     .on("contextmenu", function(d){
                         d3.event.preventDefault();  
