@@ -18,7 +18,7 @@ var activerow = -1,
     phenobarheight = 20,
     priorPheno = null,
     sqwidth = 50,
-    sqheight = sqwidth/2,
+    sqheight = 25,
     sqspacing = 1,
     treeWidth = 200,
     treeHeight = 500,
@@ -100,9 +100,9 @@ cleanName = function(name) {
 }
 
 color = function(d){
-    console.log(d);
-    return "#FFFFFF";
-    //return "#49B649";
+    // insert generation function.
+    return "#D8C6C6";
+    //return "#49B649"; // green
 }
 
 createPhenoBox = function(d) {
@@ -258,6 +258,18 @@ update = function(source, row) {
                 return d._children ? "#33CC33" : "#fff";
             })   
             .on("mouseout", function(d) {
+                // if(!clickedNode) {
+                //     if (typeof d != "undefined") {
+                //         move(d);
+                //     } 
+                // } else {
+                //     clickedNode = false;
+                // }
+            })
+            .on("click", function(d){
+                // clickedNode = true;
+                // createPhenoBox(d);
+
                 if(!clickedNode) {
                     if (typeof d != "undefined") {
                         move(d);
@@ -265,10 +277,6 @@ update = function(source, row) {
                 } else {
                     clickedNode = false;
                 }
-            })
-            .on("click", function(d){
-                clickedNode = true;
-                createPhenoBox(d);
             });
 
         nodeEnter.append("text")
@@ -435,9 +443,9 @@ draw = function(svg, data) {
         .attr("x", phenobarheight)
         .attr("width", sqwidth)
         .attr("height", sqheight)
-        .style("fill", "#CCCCCC"/*color*/)
-        .style("stroke-width", "1px")
-        .style("stroke", "black")
+        .style("fill", color)
+        // .style("stroke-width", "0.1px")
+        // .style("stroke", "black")
         .on("click", function(d) { // for now as the mouseover issues need to be addressed
             activerow = d.order-1;
             prepData(d, data, activerow);
@@ -454,7 +462,7 @@ draw = function(svg, data) {
 
     bar.append("text") // phenotype name
         .attr("y", function(d) {
-            return (d.order * (sqheight) + sqheight / 2) + 1;
+            return ((d.order * sqheight) + sqheight / 2) + 1;
         })
         .attr("x", sqwidth - 7) // hardcoded until better option is found
         .attr("dy", ".35em")
@@ -492,9 +500,9 @@ draw = function(svg, data) {
                     .attr("height", sqheight)
                     .attr("id", count)
                     .attr("class", row)
-        .style("fill", "#CCCCCC"/*color*/)
-        .style("stroke-width", "1px")
-        .style("stroke", "black")
+                    .style("fill", color)
+                    // .style("stroke-width", "0.1px")
+                    // .style("stroke", "black")
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
                         var tempColumn = d3.select(this).attr("id");
                         var tempRow = d3.select(this).attr("class"); 
