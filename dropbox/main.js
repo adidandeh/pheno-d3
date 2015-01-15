@@ -500,10 +500,10 @@ draw = function(svg, data) {
                     .on("mouseover", function(d) { // tool tip 
                         var tempColumn = d3.select(this).attr("id");
                         var tempName = "";
-
-                        if(typeof data[activerow] !== "undefined" &&
-                           typeof data[activerow].children[tempColumn] !== "undefined") {
-                            tempName = data[activerow].children[tempColumn]/*.name*/;
+                        var tempRow = d3.select(this).attr("class");
+                        if(typeof data[tempRow] !== "undefined" &&
+                           typeof data[tempRow].children[tempColumn] !== "undefined") {
+                            tempName = data[tempRow].children[tempColumn]/*.name*/;
                         }
 
                         div.transition()
