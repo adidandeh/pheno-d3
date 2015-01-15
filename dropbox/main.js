@@ -229,7 +229,7 @@ update = function(source) {
 
         nodes.forEach(function(d) { // TODO: Change based odd number of nodes.
             d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 300; // horizontal
-            d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) - 90; // vertical height
+            d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + ((sqheight + sqspacing)*(activerow+1)) - 120; // vertical height
         }); // How wide it gets
 
         // Update the nodes…
