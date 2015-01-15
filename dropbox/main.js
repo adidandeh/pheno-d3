@@ -204,7 +204,6 @@ tooltipMouseOver = function(d) {
 // major functions
 update = function(source) {
     if(typeof source != "undefined") {
-        // dynamic tree height
         var levelWidth = [1];
         var childCount = function(level, n) {
             if(n.children && n.children.length > 0) {
@@ -230,7 +229,7 @@ update = function(source) {
         nodes.forEach(function(d) { // TODO: Change based odd number of nodes.
             d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 270; // horizontal
             d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + ((sqheight + sqspacing)*(activerow+1)) - 120; // vertical height
-        }); // How wide it gets
+        });
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
@@ -383,7 +382,6 @@ prepData = function(d, data) {
         }
 
         root.x0 = 200;
-        //  root.y0 =(activerow+1) * (sqheight + sqspacing);
         root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
 
         function collapse(d) {
