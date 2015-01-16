@@ -1,3 +1,14 @@
+/* 
+
+#98DDD3
+#E2B8CC
+#A3E0A4
+#D5D481
+#C6D2D7
+#EDAA84
+
+*/
+
 var activerow = -1,
     pastlineage = [], /* diff between pastlineage and barStack is that 
     barstack deals with local lineage during phenotree and past lineage 
@@ -5,6 +16,12 @@ var activerow = -1,
     barStack = [],
     circleRadius = 6,
     clickedNode = false, 
+    colorArr = ["#98DDD3",
+                "#E2B8CC",
+                "#A3E0A4",
+                "#D5D481",
+                "#C6D2D7",
+                "#EDAA84"],
     dropactive = false,
     dropbuttonwidth = 15,
     duration = 400,
@@ -100,8 +117,12 @@ cleanName = function(name) {
 }
 
 color = function(d){
+
+    var random = Math.floor(Math.random() * 5) + 0;
+
+    return colorArr[random];
     // insert generation function.
-    return "#D8C6C6";
+    //return "#D8C6C6";
     //return "#49B649"; // green
 }
 
