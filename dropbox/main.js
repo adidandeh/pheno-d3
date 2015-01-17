@@ -258,7 +258,7 @@ tooltipMouseOver = function(d) {
 
 // major functions
 update = function(source, row) {
-    console.log(source);
+    //console.log(source);
     if(typeof source != "undefined") {
         if(typeof drill !== "undefined") {
           if (!drill) {
@@ -285,7 +285,7 @@ update = function(source, row) {
         }
 
         //barChildrenNum.push(levelWidth);
-        console.log(childrenNumStack);
+        //console.log(childrenNumStack);
         // console.log(currentDrillLevel);
 
         var newHeight = d3.max(childrenNumStack) * (sqheight + 1);
@@ -458,22 +458,22 @@ update = function(source, row) {
 
 prepData = function(d, data, row) {    
     // barStack = [];
-   // pastlineage = [];
+   pastlineage = [];
     d3.json("data.json", function(error, flare) {
         root = flare;
-    //    pastlineage = d["lineage"];
+       pastlineage = d["lineage"];
+       console.log(d);
+        if (typeof pastlineage == "undefined") {
+            pastlineage = [];
+        }
 
-        // if (typeof pastlineage == "undefined") {
-        //     pastlineage = [];
-        // }
-
-      //  var tempLineage = pastlineage.concat(d);
-        // for(var x = 0; x < tempLineage.length; x++) {
-        //     if(typeof root == "undefined") break // leaf node
-        //     if(typeof root.children !== "undefined") { // stops if at leaf
-        //         root = root.children[findWithAttr(root.children, 'id', tempLineage[x].id, false)];
-        //     }
-        // }
+       var tempLineage = pastlineage.concat(d);
+        for(var x = 0; x < tempLineage.length; x++) {
+            if(typeof root == "undefined") break // leaf node
+            if(typeof root.children !== "undefined") { // stops if at leaf
+                root = root.children[findWithAttr(root.children, 'id', tempLineage[x].id, false)];
+            }
+        }
 
         root.x0 = 200;
         root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
