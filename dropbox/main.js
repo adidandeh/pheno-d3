@@ -398,9 +398,7 @@ update = function(source, row) {
 }
 
 
-prepData = function(d, data, row) {
-    console.log(data);
-    barStack = [];
+prepData = function(d, data, row) {    barStack = [];
     pastlineage = [];
     d3.json("data.json", function(error, flare) {
         root = flare;
