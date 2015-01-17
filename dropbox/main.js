@@ -15,6 +15,8 @@ var activerow = -1,
     is grabbed from it's parent's lineage. */
     barStack = [],
     circleRadius = 6,
+    childrenNumStack = [1];
+    currentTreeData = {},
     clickedNode = false, 
     colorArr = ["#98DDD3",
                 "#E2B8CC",
@@ -25,6 +27,8 @@ var activerow = -1,
     dropactive = false,
     dropbuttonwidth = 15,
     duration = 400,
+    depth = 0;
+    drill = undefined;
     i = 0,
     margin = {
         top: 20,
@@ -181,26 +185,52 @@ generateBreadCrumb = function(d) {
 }
 
 move = function(d) {
-    if (d.children) { // Going back a step
-        var tempRoot;
-        do {
-            tempRoot = barStack.pop();
-        } while (tempRoot != d);
+
+    console.log(d.depth);
+
+    if(d.depth > depth) { // going down into children
+        console.log("going down into children");
+    } else if (d.depth == depth) { // same level 
+        console.log("same level");
+    } else { // going back up to parent
+        console.log("back to parent");
+    }
+
+    depth = d.depth;
+
+      if (d.children) {
+        drill = false; // up to the parent
         d._children = d.children;
         d.children = null;
-        if(typeof d != "undefined") {
-            update(barStack[barStack.length - 1]); // required to go back into tree
-        }
-    } else if(typeof d._children != "undefined") {
-        if(d._children.length > 1) { // opening the nodes below, don't open children endnodes
-            if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
-                barStack.push(d);
-                d.children = d._children;
-                d._children = null;
-            }
-            update(d); // required to delve further into tree.
-        }
-    }
+      } else {
+          drill = true; // down to the children
+          d.children = d._children;
+          d._children = null;
+      }
+      update(d);
+    // if (d.children) { // Going back a step
+
+    //         drill = false; // up to the parent
+    //     var tempRoot;
+    //     do {
+    //         tempRoot = barStack.pop();
+    //     } while (tempRoot != d);
+    //     d._children = d.children;
+    //     d.children = null;
+    //     if(typeof d != "undefined") {
+    //         update(barStack[barStack.length - 1]); // required to go back into tree
+    //     }
+    // } else if(typeof d._children != "undefined") {
+    //           drill = true; // down to the children
+    //     if(d._children.length > 1) { // opening the nodes below, don't open children endnodes
+    //         if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
+    //             barStack.push(d);
+    //             d.children = d._children;
+    //             d._children = null;
+    //         }
+    //         update(d); // required to delve further into tree.
+    //     }
+    // }
 }
 
 
@@ -228,7 +258,13 @@ tooltipMouseOver = function(d) {
 
 // major functions
 update = function(source, row) {
+    console.log(source);
     if(typeof source != "undefined") {
+        if(typeof drill !== "undefined") {
+          if (!drill) {
+            childrenNumStack.pop();
+          }
+        }
         var levelWidth = [1];
         var childCount = function(level, n) {
             if(n.children && n.children.length > 0) {
@@ -241,19 +277,29 @@ update = function(source, row) {
             }
         };
         
-        childCount(0, source);  
+        if (typeof source.children !== "undefined") {
+         childCount(0, source);
+         if (typeof levelWidth[1] !== "undefined") {  
+            childrenNumStack.push(levelWidth[1]);
+          }
+        }
 
-        var newHeight = d3.max(levelWidth) * 20; // 20 pixels per line  
-        tree = tree.size([newHeight, treeWidth]);
+        //barChildrenNum.push(levelWidth);
+        console.log(childrenNumStack);
+        // console.log(currentDrillLevel);
+
+        var newHeight = d3.max(childrenNumStack) * (sqheight + 1);
+        tree = tree.size([Math.max(newHeight), treeWidth]);
 
         // Compute the new tree layout.
-        var nodes = tree.nodes(source).reverse(),
+        var nodes = tree.nodes(currentTreeData).reverse(),
             links = tree.links(nodes);
         // Normalize for fixed-depth.
         nodes.forEach(function(d) { // TODO: Change based odd number of nodes.
-            d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 270; // horizontal
+            d.y = d.depth * (sqwidth+1) + 200; 
+            //d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 270; // horizontal
             //d.x += maxBoxHeight + ((row+1) * (sqheight+sqspacing)) - 120;
-            d.x += maxBoxHeight - 50;
+          //  d.x += maxBoxHeight - 50;
            // d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + ((sqheight + sqspacing)*(activerow+1)) - 120; // vertical height
         });
 
@@ -270,66 +316,95 @@ update = function(source, row) {
                 return "translate(" + source.y0 + "," + source.x0 + ")";
             })
             .on("mouseover", tooltipMouseOver)
-            .on("mouseout", tooltipMouseOut);
-
-        nodeEnter.append("circle")
-            .attr("r", circleRadius)
-            .style("fill", function(d) {
-                return d._children ? "#33CC33" : "#fff";
-            })   
-            .on("mouseout", function(d) {
-                // if(!clickedNode) {
-                //     if (typeof d != "undefined") {
-                //         move(d);
-                //     } 
-                // } else {
-                //     clickedNode = false;
-                // }
-            })
+            .on("mouseout", tooltipMouseOut)
             .on("click", function(d){
                 // clickedNode = true;
                 // createPhenoBox(d);
 
-                if(!clickedNode) {
+                // if(!clickedNode) {
                     if (typeof d != "undefined") {
                         move(d);
                     } 
-                } else {
-                    clickedNode = false;
-                }
+                // } else {
+                //     clickedNode = false;
+                // }
             });
 
-        nodeEnter.append("text")
-            .attr("class", "boxtext")
-            .attr("x", function(d) {
-                return d.children || d._children ? -10 : 10;
+        nodeEnter.append("rect") // top majority of phenotype box
+            .attr("y", function(d) {
+                return (/*d.order * sqheight*/0) + sqspacing;
             })
-            .attr("dy", ".35em")
-            .attr("text-anchor", function(d) {
-                return d.children || d._children ? "end" : "start";
-            })
-            .text(function(d) {
-                var name = d.name;
-                return cleanName(name);
-            })
-            .style("font-size", "8pt")
-            .style("fill-opacity", 1e-6) // svg style
-            .on("click", function(d){                
-                clickedNode = true;
-                createPhenoBox(d);}
-                );
+            .attr("x", phenobarheight)
+            .attr("width", sqwidth)
+            .attr("height", sqheight)
+            .style("fill", color);
+
+        // nodeEnter.append("circle")
+        //     .attr("r", circleRadius)
+        //     .style("fill", function(d) {
+        //         return d._children ? "#33CC33" : "#fff";
+        //     })   
+        //     .on("mouseout", function(d) {
+        //         // if(!clickedNode) {
+        //         //     if (typeof d != "undefined") {
+        //         //         move(d);
+        //         //     } 
+        //         // } else {
+        //         //     clickedNode = false;
+        //         // }
+        //     })
+        //     .on("click", function(d){
+        //         // clickedNode = true;
+        //         // createPhenoBox(d);
+
+        //         if(!clickedNode) {
+        //             if (typeof d != "undefined") {
+        //                 move(d);
+        //             } 
+        //         } else {
+        //             clickedNode = false;
+        //         }
+        //     });
+
+    nodeEnter.append("text")
+        .attr("y", sqheight/2)
+        .attr("x", function(d) { return d.children || d._children ? 80 : 80; })
+        .attr("dy", ".35em")
+        .attr("text-anchor", "end")
+        .text(function(d) {
+          try {
+           return cleanName(d.name).substring(0, 10);
+          } catch (e) {
+            return "Pheno Error!";
+          }
+        })
+        .style("fill-opacity", 1e-6);
+
+        // nodeEnter.append("text")
+        //     .attr("class", "boxtext")
+        //     .attr("x", function(d) {
+        //         return d.children || d._children ? -10 : 10;
+        //     })
+        //     .attr("dy", ".35em")
+        //     .attr("text-anchor", function(d) {
+        //         return d.children || d._children ? "end" : "start";
+        //     })
+        //     .text(function(d) {
+        //         var name = d.name;
+        //         return cleanName(name);
+        //     })
+        //     .style("font-size", "8pt")
+        //     .style("fill-opacity", 1e-6) // svg style
+        //     .on("click", function(d){                
+        //         clickedNode = true;
+        //         createPhenoBox(d);}
+        //         );
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
             .duration(duration)
             .attr("transform", function(d) {
                 return "translate(" + d.y + "," + d.x + ")";
-            });
-
-        nodeUpdate.select("circle")
-            .attr("r", circleRadius+0.5)
-            .style("fill", function(d) {
-                return d._children ? "#33CC33" : "#fff";
             });
 
         nodeUpdate.select("text")
@@ -343,9 +418,6 @@ update = function(source, row) {
             })
             .remove();
 
-        nodeExit.select("circle")
-            .attr("r", circleRadius);
-
         nodeExit.select("text")
             .style("fill-opacity", 1e-6);
 
@@ -353,20 +425,6 @@ update = function(source, row) {
         var link = svg.selectAll("path.link")
             .data(links, function(d) {
                 return d.target.id;
-            });
-
-        // Enter any new links at the parent's previous position.
-        link.enter().insert("path", "g")
-            .attr("class", "link")
-            .attr("d", function(d) {
-                var o = {
-                    x: source.x0,
-                    y: source.y0
-                };
-                return diagonal({
-                    source: o,
-                    target: o
-                });
             });
 
         // Transition links to their new position.
@@ -398,35 +456,35 @@ update = function(source, row) {
 }
 
 
-prepData = function(d, data, row) {    barStack = [];
-    pastlineage = [];
+prepData = function(d, data, row) {    
+    // barStack = [];
+   // pastlineage = [];
     d3.json("data.json", function(error, flare) {
         root = flare;
-        pastlineage = d["lineage"];
+    //    pastlineage = d["lineage"];
 
-        if (typeof pastlineage == "undefined") {
-            pastlineage = [];
-        }
+        // if (typeof pastlineage == "undefined") {
+        //     pastlineage = [];
+        // }
 
-        var tempLineage = pastlineage.concat(d);
-
-        for(var x = 0; x < tempLineage.length; x++) {
-            if(typeof root == "undefined") break // leaf node
-            if(typeof root.children !== "undefined") { // stops if at leaf
-                root = root.children[findWithAttr(root.children, 'id', tempLineage[x].id, false)];
-            }
-        }
+      //  var tempLineage = pastlineage.concat(d);
+        // for(var x = 0; x < tempLineage.length; x++) {
+        //     if(typeof root == "undefined") break // leaf node
+        //     if(typeof root.children !== "undefined") { // stops if at leaf
+        //         root = root.children[findWithAttr(root.children, 'id', tempLineage[x].id, false)];
+        //     }
+        // }
 
         root.x0 = 200;
         root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
 
         function collapse(d) {
             if (d.children) {
-                for(var i=0; i < d.children.length; i++) {
-                    if (typeof d.children[i].name == "undefined") {
-                        d.children.splice(i,1);
-                    }
-                }
+                // for(var i=0; i < d.children.length; i++) { // trying to cut out the junk ones.
+                //     if (typeof d.children[i].name == "undefined") {
+                //         d.children.splice(i,1);
+                //     }
+                // }
 
                 d._children = d.children;
                 d._children.forEach(collapse);
@@ -435,15 +493,15 @@ prepData = function(d, data, row) {    barStack = [];
         }
 
         root.children.forEach(collapse);
-        priorPheno = root;
-        barStack.push(root);
-        update(root, row);
+     //   priorPheno = root;
+     //   barStack.push(root);
+        currentTreeData = root;
+        update(currentTreeData, row);
     });  
 }
 
 
 draw = function(svg, data) {
-    console.log(data);
     svg.selectAll("*").remove();
 
     var bar = svg.selectAll("g") // the bar which will hold the phenotype boxes.
