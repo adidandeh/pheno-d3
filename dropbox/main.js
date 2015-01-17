@@ -34,7 +34,7 @@ var activerow = -1,
     },
     phenobarheight = 20,
     priorPheno = null,
-    sqwidth = 50,
+    sqwidth = 70,
     sqheight = 25,
     sqspacing = 1,
     treeWidth = 200,
@@ -118,7 +118,7 @@ cleanName = function(name) {
 
 color = function(d){
 
-    var random = Math.floor(Math.random() * 5) + 0;
+    var random = Math.floor(Math.random() * colorArr.length) + 0;
 
     return colorArr[random];
     // insert generation function.
@@ -485,15 +485,15 @@ draw = function(svg, data) {
         .attr("y", function(d) {
             return ((d.order * sqheight) + sqheight / 2) + 1;
         })
-        .attr("x", sqwidth - 7) // hardcoded until better option is found
+        .attr("x", sqwidth - 15) // hardcoded until better option is found
         .attr("dy", ".35em")
         .style("font-size", function(d) {
-            return Math.min(0.25 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
+            return 0.15 * sqwidth + "px";
         })
         .style("text-anchor", "middle")
         .attr("pointer-events", "none")
         .text(function(d) {
-            return cleanName(d.name).substring(0, 5);
+            return cleanName(d.name).substring(0, 10);
         });
 
     // attempt to create children boxes.
@@ -515,7 +515,7 @@ draw = function(svg, data) {
                         return ((locData[row].order) * (sqheight+sqspacing));
                     })
                     .attr("x", function(d) {
-                        return (51*(count+sqspacing) + 20);
+                        return (sqwidth*(count+1) + 21 + (count));
                     })
                     .attr("width", sqwidth)
                     .attr("height", sqheight)
@@ -562,15 +562,15 @@ draw = function(svg, data) {
                     .attr("y", function(d) {
                         return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2) + 1;
                     })
-                    .attr("x", 51*(count+1) + 42) // hardcoded until better option is found
+                    .attr("x", 51*(count+1) + 75 + (count*20)) // hardcoded until better option is found
                     .attr("dy", ".35em")
                     .style("font-size", function(d) {
-                        return Math.min(0.25 * sqwidth, (2 * sqwidth - 8) / this.getComputedTextLength() * 20) + "px";
+                        return 0.15 * sqwidth + "px";
                     })
                     .style("text-anchor", "middle")
                     .attr("pointer-events", "none")
                     .text(function(d) {
-                        return cleanName(locData[row].children[count].name).substring(0, 5);
+                        return cleanName(locData[row].children[count].name).substring(0, 10);
                     });
             }
         }
