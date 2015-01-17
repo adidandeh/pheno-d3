@@ -11,6 +11,7 @@ var activerow = -1,
     barstack deals with local lineage during phenotree and past lineage 
     is grabbed from it's parent's lineage. */
     barStack = [],
+    childrenNumStack = [1];
     circleRadius = 6,
     clickedNode = false, 
     colorArr = ["#98DDD3",
@@ -19,6 +20,8 @@ var activerow = -1,
                 "#D5D481",
                 "#C6D2D7",
                 "#EDAA84"],
+    depth = 2;
+    drill = undefined;
     dropactive = false,
     dropbuttonwidth = 15,
     duration = 400,
@@ -103,129 +106,154 @@ color = function(d){
 }
 
 function update(source) {
-        // var levelWidth = [1];
-        // var childCount = function(level, n) {
-        //     if(n.children && n.children.length > 0) {
-        //         if(levelWidth.length <= level + 1) levelWidth.push(0);
-              
-        //         levelWidth[level+1] += n.children.length;
-        //         n.children.forEach(function(d) {
-        //            childCount(level + 1, d);
-        //         });
-        //     }
-        // };
-        
-        // childCount(0, source);  
-  // Compute the new tree layout.
-        // var newHeight = d3.max(levelWidth) * sqheight; // 20 pixels per line  
-        // tree = tree.size([newHeight, treeWidth]);
+  if (typeof source !== "undefined") {
+    if(typeof drill !== "undefined") {
+      if (!drill) {
+        childrenNumStack.pop();
+      }
+    }
 
-tree = tree.size([550, treeWidth]);
-  var nodes = tree.nodes(root).reverse(),
-      links = tree.links(nodes);
+    var levelWidth = [1];
+    var childCount = function(level, n) {
+        if(n.children && n.children.length > 0) {
+            if(levelWidth.length <= level + 1) levelWidth.push(0);
+          
+            levelWidth[level+1] += n.children.length;
+            n.children.forEach(function(d) {
+               childCount(level + 1, d);
+            });
+        }
+    };
+  
+    if (typeof source.children !== "undefined") {
+     childCount(0, source);
+     if (typeof levelWidth[1] !== "undefined") {  
+        childrenNumStack.push(levelWidth[1]);
+      }
+    }
 
-  // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * (sqwidth+1); }); // How wide it gets
+    //barChildrenNum.push(levelWidth);
+    console.log(childrenNumStack);
+    console.log(d3.max(childrenNumStack));
+    // console.log(currentDrillLevel);
 
-  // Update the nodes…
-  var node = svg.selectAll("g.node")
-      .data(nodes, function(d) { return d.id || (d.id = ++i); });
+    var newHeight = d3.max(childrenNumStack) * (sqheight + 1);
+    tree = tree.size([Math.max(newHeight,550), treeWidth]);
 
-  // Enter any new nodes at the parent's previous position.
-  var nodeEnter = node.enter().append("g")
-      .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-      .on("click", click);
+    //tree = tree.size([550, treeWidth]);
+    var nodes = tree.nodes(root).reverse(),
+        links = tree.links(nodes);
 
-  nodeEnter.append("rect") // top majority of phenotype box
-      .attr("y", function(d) {
-          return (d.order * sqheight) + sqspacing;
-      })
-      .attr("x", phenobarheight)
-      .attr("width", sqwidth)
-      .attr("height", sqheight)
-      .style("fill", color);
+    // Normalize for fixed-depth.
+    nodes.forEach(function(d) { d.y = d.depth * (sqwidth+1); }); // How wide it gets
 
-  // nodeEnter.append("circle")
-  //     .attr("r", 1e-6)
-  //     .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+    // Update the nodes…
+    var node = svg.selectAll("g.node")
+        .data(nodes, function(d) { return d.id || (d.id = ++i); });
 
-  nodeEnter.append("text")
-      .attr("y", sqheight/2)
-      .attr("x", function(d) { return d.children || d._children ? 80 : 80; })
-      .attr("dy", ".35em")
-      .attr("text-anchor", "end")
-      //.attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-      .text(function(d) {
-         return cleanName(d.name).substring(0, 10);
-      })
-      .style("fill-opacity", 1e-6);
+    // Enter any new nodes at the parent's previous position.
+    var nodeEnter = node.enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+        .on("click", function(d) {
+            click(d);
+        });
 
-  // Transition nodes to their new position.
-  var nodeUpdate = node.transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+    nodeEnter.append("rect") // top majority of phenotype box
+        .attr("y", function(d) {
+            return (/*d.order * sqheight*/0) + sqspacing;
+        })
+        .attr("x", phenobarheight)
+        .attr("width", sqwidth)
+        .attr("height", sqheight)
+        .style("fill", color);
 
-  // nodeUpdate.select("circle")
-  //     .attr("r", 4.5)
-  //     .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+    // nodeEnter.append("circle")
+    //     .attr("r", 1e-6)
+    //     .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
-  nodeUpdate.select("text")
-      .style("fill-opacity", 1);
+    nodeEnter.append("text")
+        .attr("y", sqheight/2)
+        .attr("x", function(d) { return d.children || d._children ? 80 : 80; })
+        .attr("dy", ".35em")
+        .attr("text-anchor", "end")
+        .text(function(d) {
+          try {
+           return cleanName(d.name).substring(0, 10);
+          } catch (e) {
+            return "Pheno Error!";
+          }
+        })
+        .style("fill-opacity", 1e-6);
 
-  // Transition exiting nodes to the parent's new position.
-  var nodeExit = node.exit().transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
-      .remove();
+    // Transition nodes to their new position.
+    var nodeUpdate = node.transition()
+        .duration(duration)
+        .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
-  // nodeExit.select("circle")
-  //     .attr("r", 1e-6);
+    // nodeUpdate.select("circle")
+    //     .attr("r", 4.5)
+    //     .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
-  nodeExit.select("text")
-      .style("fill-opacity", 1e-6);
+    nodeUpdate.select("text")
+        .style("fill-opacity", 1);
 
-  // Update the links…
-  var link = svg.selectAll("path.link")
-      .data(links, function(d) { return d.target.id; });
+    // Transition exiting nodes to the parent's new position.
+    var nodeExit = node.exit().transition()
+        .duration(duration)
+        .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+        .remove();
 
-  // Enter any new links at the parent's previous position.
-  link.enter().insert("path", "g")
-      .attr("class", "link")
-      .attr("d", function(d) {
-        var o = {x: source.x0, y: source.y0};
-        return diagonal({source: o, target: o});
-      });
+    // nodeExit.select("circle")
+    //     .attr("r", 1e-6);
 
-  // Transition links to their new position.
-  link.transition()
-      .duration(duration)
-      .attr("d", diagonal);
+    nodeExit.select("text")
+        .style("fill-opacity", 1e-6);
 
-  // Transition exiting nodes to the parent's new position.
-  link.exit().transition()
-      .duration(duration)
-      .attr("d", function(d) {
-        var o = {x: source.x, y: source.y};
-        return diagonal({source: o, target: o});
-      })
-      .remove();
+    // Update the links…
+    var link = svg.selectAll("path.link")
+        .data(links, function(d) { return d.target.id; });
 
-  // Stash the old positions for transition.
-  nodes.forEach(function(d) {
-    d.x0 = d.x;
-    d.y0 = d.y;
-  });
+    // Enter any new links at the parent's previous position.
+    link.enter().insert("path", "g")
+        .attr("class", "link")
+        .attr("d", function(d) {
+          var o = {x: source.x0, y: source.y0};
+          return diagonal({source: o, target: o});
+        });
+
+    // Transition links to their new position.
+    link.transition()
+        .duration(duration)
+        .attr("d", diagonal);
+
+    // Transition exiting nodes to the parent's new position.
+    link.exit().transition()
+        .duration(duration)
+        .attr("d", function(d) {
+          var o = {x: source.x, y: source.y};
+          return diagonal({source: o, target: o});
+        })
+        .remove();
+
+    // Stash the old positions for transition.
+    nodes.forEach(function(d) {
+      d.x0 = d.x;
+      d.y0 = d.y;
+    });
+  }
 }
 
 // Toggle children on click.
 function click(d) {
   if (d.children) {
+    drill = false; // up to the parent
     d._children = d.children;
     d.children = null;
   } else {
-    d.children = d._children;
-    d._children = null;
+      drill = true; // down to the children
+      d.children = d._children;
+      d._children = null;
   }
   update(d);
 }
