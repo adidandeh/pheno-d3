@@ -184,29 +184,48 @@ generateBreadCrumb = function(d) {
     return temptext;
 }
 
+// http://stackoverflow.com/questions/19167890/d3-js-tree-layout-collapsing-other-nodes-when-expanding-one/19168311#19168311
+function collapse(d) {
+  if (d.children) {
+    d._children = d.children;
+    d._children.forEach(collapse);
+    d.children = null;
+  }
+}
+
 move = function(d) {
 
-    console.log(d.depth);
+  //  console.log(d.depth);
 
-    if(d.depth > depth) { // going down into children
-        console.log("going down into children");
-    } else if (d.depth == depth) { // same level 
-        console.log("same level");
-    } else { // going back up to parent
-        console.log("back to parent");
-    }
+    // if(d.depth > depth) { // going down into children
+    //     console.log("going down into children");
+    // } else if (d.depth == depth) { // same level 
+    //     console.log("same level");
+    // } else { // going back up to parent
+    //     console.log("back to parent");
+    // }
 
     depth = d.depth;
 
-      if (d.children) {
-        drill = false; // up to the parent
-        d._children = d.children;
-        d.children = null;
-      } else {
-          drill = true; // down to the children
-          d.children = d._children;
-          d._children = null;
+  if (d.children) {
+    drill = false; // up to the parent
+    d._children = d.children;
+    d.children = null;
+  } else {
+      drill = true; // down to the children
+      d.children = d._children;
+      d._children = null;
+  }
+
+    // http://stackoverflow.com/questions/19167890/d3-js-tree-layout-collapsing-other-nodes-when-expanding-one/19168311#19168311
+    if (d.parent) {
+        d.parent.children.forEach(function(element) {
+          if (d !== element) {
+            collapse(element);
+          }
+        });
       }
+
       update(d);
     // if (d.children) { // Going back a step
 
