@@ -119,9 +119,7 @@ cleanName = function(name) {
 }
 
 color = function(d){
-
     var random = Math.floor(Math.random() * colorArr.length) + 0;
-
     return colorArr[random];
     // insert generation function.
     //return "#D8C6C6";
@@ -162,6 +160,16 @@ getMaxChildren = function() {
     });
     return children;
 } 
+
+getLineage = function(d) {
+    var lineage = [];
+        var temp = d;
+        while (temp.hasOwnProperty("parent")) {
+            lineage.push(temp.parent);
+            temp = temp.parent;
+        }
+    return lineage;
+}
 
 generateBreadCrumb = function(d) {
     var tempLineageArr = [];
@@ -237,8 +245,16 @@ tooltipMouseOver = function(d) {
 }
 
 cursor = function(d) {
-    if (cursorData != null && cursorData.id == d.id) {
-        return "black";
+    if(cursorData) {
+        if (cursorData.id == d.id) {
+            return "black";
+        }
+        var lineage = getLineage(cursorData);
+        for(var i = 0; i < lineage.length; i++){
+            if(lineage[i].id == d.id) {
+                return "grey";
+            }
+        }
     }
     return "";
 }
