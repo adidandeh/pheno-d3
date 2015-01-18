@@ -284,23 +284,26 @@ update = function(source, row) {
           }
         }
 
-        //barChildrenNum.push(levelWidth);
-        //console.log(childrenNumStack);
-        // console.log(currentDrillLevel);
-
+        // console.log(childrenNumStack);
+        // console.log(d3.max(childrenNumStack));
         var newHeight = d3.max(childrenNumStack) * (sqheight + 1);
-        tree = tree.size([Math.max(newHeight), treeWidth]);
+        // console.log(newHeight);
+
+        tree = tree.size([newHeight, treeWidth]);
 
         // Compute the new tree layout.
         var nodes = tree.nodes(currentTreeData).reverse(),
             links = tree.links(nodes);
         // Normalize for fixed-depth.
         nodes.forEach(function(d) { // TODO: Change based odd number of nodes.
-            d.y = d.depth * (sqwidth+1) + 200; 
-            //d.y = d.depth * treeWidth + getMaxChildren()*(sqwidth+sqspacing) + 270; // horizontal
-            //d.x += maxBoxHeight + ((row+1) * (sqheight+sqspacing)) - 120;
-          //  d.x += maxBoxHeight - 50;
-           // d.x += maxBoxHeight + getMaxChildren()*(sqheight+sqspacing) + ((sqheight + sqspacing)*(activerow+1)) - 120; // vertical height
+           // d.y = d.depth * (sqwidth+1) + 70; // final positioning
+            d.y = d.depth * (sqwidth+1) +150; // dev
+            
+           if (d.children != null) {
+                d.children.forEach(function (d, i) {
+                   d.x = sqheight + i*(sqheight+1);
+                });
+            }
         });
 
         // Update the nodes…
@@ -337,7 +340,9 @@ update = function(source, row) {
             .attr("x", phenobarheight)
             .attr("width", sqwidth)
             .attr("height", sqheight)
-            .style("fill", color);
+            .style("fill", function(d) {
+                return color(d);
+            });
 
         // nodeEnter.append("circle")
         //     .attr("r", circleRadius)
