@@ -13,18 +13,16 @@ var activerow = -1,
     pastlineage = [], /* diff between pastlineage and barStack is that 
     barstack deals with local lineage during phenotree and past lineage 
     is grabbed from it's parent's lineage. */
-    barStack = [],
-    circleRadius = 6,
     childrenNumStack = [1];
     currentTreeData = {},
-    clickedNode = false, 
+    cursorPheno = "",
+    cursorData = null,
     colorArr = ["#98DDD3",
                 "#E2B8CC",
                 "#A3E0A4",
                 "#D5D481",
                 "#C6D2D7",
                 "#EDAA84"],
-    dropactive = false,
     dropbuttonwidth = 15,
     duration = 400,
     depth = 0;
@@ -57,7 +55,7 @@ var diagonal = d3.svg.diagonal()
 
 var svg = d3.select("#phenobar").append("svg")
     .attr("width", width)
-    .attr("height", height); // TODO: Dynamic height adjustment.
+    .attr("height", height);
 
 var div = d3.select("body").append("div")
     .attr("class", "tooltip");
@@ -130,16 +128,16 @@ color = function(d){
     //return "#49B649"; // green
 }
 
-createPhenoBox = function(d) {
-    if(typeof data[activerow] == "undefined" || typeof d.id == "undefined") {
-        console.log("Error in createPhenoBox!");
-    } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
-        d["lineage"] = pastlineage.concat(barStack);
-        data[activerow].children.push(d);
-    }
-    barStack = [];
-    pastlineage = [];
-    draw(svg, data);
+createPhenoBox = function(d) { // use cursorData parent chain-up
+    // if(typeof data[activerow] == "undefined" || typeof d.id == "undefined") {
+    //     console.log("Error in createPhenoBox!");
+    // } else if (typeof findWithAttr(data[activerow].children, "id", d.id) == "undefined") {
+    //     d["lineage"] = pastlineage.concat(barStack);
+    //     data[activerow].children.push(d);
+    // }
+    // barStack = [];
+    // pastlineage = [];
+    // draw(svg, data);
 }
 
 
@@ -171,8 +169,8 @@ generateBreadCrumb = function(d) {
 
     if (typeof d["lineage"] !== "undefined") {
         tempLineageArr = tempLineageArr.concat(d["lineage"]);
-    } else if (barStack.length > 0){ 
-    }
+    } //else if (barStack.length > 0){ 
+    // }
     tempLineageArr.push(d);
 
     for (var x = 0; x < tempLineageArr.length; x++) {
@@ -194,19 +192,7 @@ function collapse(d) {
 }
 
 move = function(d) {
-
-  //  console.log(d.depth);
-
-    // if(d.depth > depth) { // going down into children
-    //     console.log("going down into children");
-    // } else if (d.depth == depth) { // same level 
-    //     console.log("same level");
-    // } else { // going back up to parent
-    //     console.log("back to parent");
-    // }
-
-    depth = d.depth;
-
+    cursorData = d;
   if (d.children) {
     drill = false; // up to the parent
     d._children = d.children;
@@ -225,31 +211,7 @@ move = function(d) {
           }
         });
       }
-
       update(d);
-    // if (d.children) { // Going back a step
-
-    //         drill = false; // up to the parent
-    //     var tempRoot;
-    //     do {
-    //         tempRoot = barStack.pop();
-    //     } while (tempRoot != d);
-    //     d._children = d.children;
-    //     d.children = null;
-    //     if(typeof d != "undefined") {
-    //         update(barStack[barStack.length - 1]); // required to go back into tree
-    //     }
-    // } else if(typeof d._children != "undefined") {
-    //           drill = true; // down to the children
-    //     if(d._children.length > 1) { // opening the nodes below, don't open children endnodes
-    //         if (barStack[barStack.length - 1] !== d || barStack.length == 1) { // stopping same node from being repeat added.
-    //             barStack.push(d);
-    //             d.children = d._children;
-    //             d._children = null;
-    //         }
-    //         update(d); // required to delve further into tree.
-    //     }
-    // }
 }
 
 
@@ -274,10 +236,15 @@ tooltipMouseOver = function(d) {
         .style("top", /*(d3.event.pageY - 20)*/ 50 + "px"); // vertical
 }
 
+cursor = function(d) {
+    if (cursorData != null && cursorData.id == d.id) {
+        return "black";
+    }
+    return "";
+}
 
 // major functions
 update = function(source, row) {
-    //console.log(source);
     if(typeof source != "undefined") {
         if(typeof drill !== "undefined") {
           if (!drill) {
@@ -303,11 +270,7 @@ update = function(source, row) {
           }
         }
 
-        // console.log(childrenNumStack);
-        // console.log(d3.max(childrenNumStack));
         var newHeight = d3.max(childrenNumStack) * (sqheight + 1);
-        // console.log(newHeight);
-
         tree = tree.size([newHeight, treeWidth]);
 
         // Compute the new tree layout.
@@ -340,16 +303,9 @@ update = function(source, row) {
             .on("mouseover", tooltipMouseOver)
             .on("mouseout", tooltipMouseOut)
             .on("click", function(d){
-                // clickedNode = true;
-                // createPhenoBox(d);
-
-                // if(!clickedNode) {
-                    if (typeof d != "undefined") {
-                        move(d);
-                    } 
-                // } else {
-                //     clickedNode = false;
-                // }
+                if (typeof d != "undefined") {
+                    move(d);
+                } 
             });
 
         nodeEnter.append("rect") // top majority of phenotype box
@@ -361,68 +317,23 @@ update = function(source, row) {
             .attr("height", sqheight)
             .style("fill", function(d) {
                 return color(d);
-            });
-
-        // nodeEnter.append("circle")
-        //     .attr("r", circleRadius)
-        //     .style("fill", function(d) {
-        //         return d._children ? "#33CC33" : "#fff";
-        //     })   
-        //     .on("mouseout", function(d) {
-        //         // if(!clickedNode) {
-        //         //     if (typeof d != "undefined") {
-        //         //         move(d);
-        //         //     } 
-        //         // } else {
-        //         //     clickedNode = false;
-        //         // }
-        //     })
-        //     .on("click", function(d){
-        //         // clickedNode = true;
-        //         // createPhenoBox(d);
-
-        //         if(!clickedNode) {
-        //             if (typeof d != "undefined") {
-        //                 move(d);
-        //             } 
-        //         } else {
-        //             clickedNode = false;
-        //         }
-        //     });
+            })
+            .style("stroke-width", "1px")
+            .style("stroke", cursor);
 
     nodeEnter.append("text")
         .attr("y", sqheight/2)
-        .attr("x", function(d) { return d.children || d._children ? 80 : 80; })
+        .attr("x", function(d) { return d.children || d._children ? 55 : 55; })
         .attr("dy", ".35em")
-        .attr("text-anchor", "end")
+        .style("text-anchor", "middle")
         .text(function(d) {
           try {
            return cleanName(d.name).substring(0, 10);
           } catch (e) {
-            return "Pheno Error!";
+            return "Empty Pheno!";
           }
         })
         .style("fill-opacity", 1e-6);
-
-        // nodeEnter.append("text")
-        //     .attr("class", "boxtext")
-        //     .attr("x", function(d) {
-        //         return d.children || d._children ? -10 : 10;
-        //     })
-        //     .attr("dy", ".35em")
-        //     .attr("text-anchor", function(d) {
-        //         return d.children || d._children ? "end" : "start";
-        //     })
-        //     .text(function(d) {
-        //         var name = d.name;
-        //         return cleanName(name);
-        //     })
-        //     .style("font-size", "8pt")
-        //     .style("fill-opacity", 1e-6) // svg style
-        //     .on("click", function(d){                
-        //         clickedNode = true;
-        //         createPhenoBox(d);}
-        //         );
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
@@ -433,6 +344,10 @@ update = function(source, row) {
 
         nodeUpdate.select("text")
             .style("fill-opacity", 1);
+
+        nodeUpdate.select("rect")
+                        .style("stroke-width", "1px")
+            .style("stroke", cursor);
 
         // Transition exiting nodes to the parent's new position.
         var nodeExit = node.exit().transition()
@@ -481,12 +396,10 @@ update = function(source, row) {
 
 
 prepData = function(d, data, row) {    
-    // barStack = [];
    pastlineage = [];
     d3.json("data.json", function(error, flare) {
         root = flare;
        pastlineage = d["lineage"];
-       console.log(d);
         if (typeof pastlineage == "undefined") {
             pastlineage = [];
         }
@@ -517,8 +430,6 @@ prepData = function(d, data, row) {
         }
 
         root.children.forEach(collapse);
-     //   priorPheno = root;
-     //   barStack.push(root);
         currentTreeData = root;
         update(currentTreeData, row);
     });  
@@ -545,10 +456,11 @@ draw = function(svg, data) {
         .attr("width", sqwidth)
         .attr("height", sqheight)
         .style("fill", color)
-        // .style("stroke-width", "0.1px")
-        // .style("stroke", "black")
+        .style("stroke-width", "1px")
+        .style("stroke", cursor)
         .on("click", function(d) { // for now as the mouseover issues need to be addressed
             activerow = d.order-1;
+            cursorData = d;
             prepData(d, data, activerow);
         })
         .on("contextmenu", function(d){
@@ -602,11 +514,12 @@ draw = function(svg, data) {
                     .attr("id", count)
                     .attr("class", row)
                     .style("fill", color)
-                    // .style("stroke-width", "0.1px")
-                    // .style("stroke", "black")
+                    .style("stroke-width", "1px")
+                    .style("stroke", cursor)
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
                         var tempColumn = d3.select(this).attr("id");
                         var tempRow = d3.select(this).attr("class"); 
+                        cursorData = d;
                         pheno = data[tempRow].children[tempColumn];
                         prepData(pheno, data, tempRow);
                     })
@@ -629,8 +542,8 @@ draw = function(svg, data) {
                             .duration(200)
                             .style("opacity", 10);
                         div.html("<h3>" + generateBreadCrumb(tempName) + "</h3><br/>") // issue only remembers last name
-                            .style("left", /*(d3.event.pageX + 10)*/ 100 + "px") // horizontal
-                            .style("top", /*(d3.event.pageY - 20)*/ 50 + "px"); // vertical
+                            .style("left", 100 + "px") // horizontal
+                            .style("top", 50 + "px"); // vertical
                     })
                     .on("mouseout", function(d) {
                         div.transition()
