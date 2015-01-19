@@ -119,10 +119,10 @@ cleanName = function(name) {
 
 color = function(d){
     var random = Math.floor(Math.random() * colorArr.length) + 0;
-    return colorArr[random];
+    //return colorArr[random];
     // insert generation function.
     //return "#D8C6C6";
-    //return "#49B649"; // green
+    return "#49B649"; // green
 }
 
 createPhenoBox = function(d) { // use cursorData parent chain-up
@@ -372,6 +372,29 @@ update = function(source, row) {
             .style("stroke", cursor)
             .style("visibility", function(d) {
                 return d.parent == null ? "hidden" : "visible";
+            })
+            .style("opacity", function(d) {
+                if(cursorData.id == d.id) {
+                    return 1.0;
+                }
+
+                var lineage = getLineage(cursorData);
+                for(var i = 0; i < lineage.length; i++) {
+                    if (d.id == lineage[i].id) {
+                        return 1.0
+                    }
+                }
+
+                var children = cursorData["children"];
+
+                if(children) {
+                    for (var i = 0; i < children.length; i++) {
+                        if(d.id == children[i].id) {
+                            return 1.0;
+                        }
+                    }
+                }
+                                    return 0.6;
             });
 
         // Transition exiting nodes to the parent's new position.
