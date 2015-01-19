@@ -496,11 +496,13 @@ draw = function(svg, data) {
             activerow = d.order-1;
             cursorData = d;
 
-            var rootPhenos = d3.selectAll(".rootPheno");
+            var rootPhenos = d3.selectAll(".rootPheno"); // CSS adjustments
             for(var i = 0; i < rootPhenos[0].length; i++) {
                rootPhenos[0][i].style["stroke"] = "";
+               rootPhenos[0][i].style["opacity"] = 0.6;
             }
             this.style["stroke"] = "grey";
+            this.style["opacity"] = 1.0;
 
             prepData(d, data, activerow);
         })
@@ -561,6 +563,15 @@ draw = function(svg, data) {
                         var tempColumn = d3.select(this).attr("id");
                         var tempRow = d3.select(this).attr("class"); 
                         cursorData = d;
+
+                        var rootPhenos = d3.selectAll(".rootPheno"); // CSS adjustments
+                        for(var i = 0; i < rootPhenos[0].length; i++) {
+                           rootPhenos[0][i].style["stroke"] = "";
+                           rootPhenos[0][i].style["opacity"] = 0.6;
+                        }
+                        this.style["stroke"] = "grey";
+                        this.style["opacity"] = 1.0;
+
                         pheno = data[tempRow].children[tempColumn];
                         prepData(pheno, data, tempRow);
                     })
