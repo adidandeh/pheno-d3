@@ -35,7 +35,6 @@ var activerow = -1,
         left: 120
     },
     phenobarheight = 20,
-    priorPheno = null,
     sqwidth = 70,
     sqheight = 25,
     sqspacing = 1,
@@ -487,14 +486,22 @@ draw = function(svg, data) {
             return (d.order * sqheight) + sqspacing;
         })
         .attr("x", phenobarheight)
+        .attr("class", "rootPheno")
         .attr("width", sqwidth)
         .attr("height", sqheight)
         .style("fill", color)
-        .style("stroke-width", "1px")
-        .style("stroke", cursor)
+        // .style("stroke-width", "1px")
+        // .style("stroke", cursor)
         .on("click", function(d) { // for now as the mouseover issues need to be addressed
             activerow = d.order-1;
             cursorData = d;
+
+            var rootPhenos = d3.selectAll(".rootPheno");
+            for(var i = 0; i < rootPhenos[0].length; i++) {
+               rootPhenos[0][i].style["stroke"] = "";
+            }
+            this.style["stroke"] = "grey";
+
             prepData(d, data, activerow);
         })
         .on("contextmenu", function(d){
