@@ -467,8 +467,8 @@ prepData = function(d, data, row) {
             }
         }
 
-        root.x0 = 200;
-        root.y0 = phenobarheight + sqheight - dropbuttonwidth; 
+        root.x0 = (row+1) * sqheight;
+        root.y0 = phenobarheight + sqheight + 25; 
 
         function collapse(d) {
             if (d.children) {
