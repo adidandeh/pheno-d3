@@ -292,11 +292,9 @@ update = function(source, row) {
         // Compute the new tree layout.
         var nodes = tree.nodes(currentTreeData).reverse(),
             links = tree.links(nodes);
-        // Normalize for fixed-depth.
-        nodes.forEach(function(d) { // TODO: Change based odd number of nodes.
-           // d.y = d.depth * (sqwidth+1) + 70; // final positioning
-            d.y = d.depth * (sqwidth+1) +150; // dev
-            
+
+        nodes.forEach(function(d) {
+            d.y = d.depth * (sqwidth+1) + 70; // final positioning
            if (d.children != null) {
                 d.children.forEach(function (d, i) {
                    d.x = sqheight + i*(sqheight+1);
@@ -326,7 +324,7 @@ update = function(source, row) {
 
         nodeEnter.append("rect") // top majority of phenotype box
             .attr("y", function(d) {
-                return (/*d.order * sqheight*/0) + sqspacing;
+                return sqspacing;
             })
             .attr("x", phenobarheight)
             .attr("width", sqwidth)
@@ -334,22 +332,28 @@ update = function(source, row) {
             .style("fill", function(d) {
                 return color(d);
             })
+            .style("visibility", function(d) {
+                return d.parent == null ? "hidden" : "visible";
+            })
             .style("stroke-width", "1px")
             .style("stroke", cursor);
 
-    nodeEnter.append("text")
-        .attr("y", sqheight/2)
-        .attr("x", function(d) { return d.children || d._children ? 55 : 55; })
-        .attr("dy", ".35em")
-        .style("text-anchor", "middle")
-        .text(function(d) {
-          try {
-           return cleanName(d.name).substring(0, 10);
-          } catch (e) {
-            return "Empty Pheno!";
-          }
-        })
-        .style("fill-opacity", 1e-6);
+        nodeEnter.append("text")
+            .attr("y", sqheight/2)
+            .attr("x", function(d) { return d.children || d._children ? 55 : 55; })
+            .attr("dy", ".35em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+              try {
+               return cleanName(d.name).substring(0, 10);
+              } catch (e) {
+                return "Empty Pheno!";
+              }
+            })
+            .style("fill-opacity", 1e-6)
+            .style("visibility", function(d) {
+                return d.parent == null ? "hidden" : "visible";
+            });
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
@@ -359,11 +363,17 @@ update = function(source, row) {
             });
 
         nodeUpdate.select("text")
-            .style("fill-opacity", 1);
+            .style("fill-opacity", 1)
+            .style("visibility", function(d) {
+                return d.parent == null ? "hidden" : "visible";
+            });
 
         nodeUpdate.select("rect")
-                        .style("stroke-width", "1px")
-            .style("stroke", cursor);
+            .style("stroke-width", "1px")
+            .style("stroke", cursor)
+            .style("visibility", function(d) {
+                return d.parent == null ? "hidden" : "visible";
+            });
 
         // Transition exiting nodes to the parent's new position.
         var nodeExit = node.exit().transition()
@@ -374,8 +384,15 @@ update = function(source, row) {
             .remove();
 
         nodeExit.select("text")
-            .style("fill-opacity", 1e-6);
+            .style("fill-opacity", 1e-6)            
+            .style("visibility", function(d) {
+                return d.parent == null ? "hidden" : "visible";
+            });
 
+        nodeExit.select("rect")
+            .style("visibility", function(d) {
+                return d.parent == null ? "hidden" : "visible";
+            })
         // Update the links…
         var link = svg.selectAll("path.link")
             .data(links, function(d) {
@@ -433,11 +450,12 @@ prepData = function(d, data, row) {
 
         function collapse(d) {
             if (d.children) {
-                // for(var i=0; i < d.children.length; i++) { // trying to cut out the junk ones.
-                //     if (typeof d.children[i].name == "undefined") {
-                //         d.children.splice(i,1);
-                //     }
-                // }
+                //for(var i=0; i < d.children.length; i++) { // trying to cut out the junk ones.
+                    //console.log(d.children);
+                    // if (typeof d.children[i].name == "undefined") {
+                    //     d.children.splice(i,1);
+                    // }
+               // }
 
                 d._children = d.children;
                 d._children.forEach(collapse);
