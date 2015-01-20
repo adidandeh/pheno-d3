@@ -16,7 +16,6 @@ var activerow = -1,
     childrenNumStack = [1];
     currentTreeData = {},
     cursorElement = null,
-    cursorPheno = null,
     cursorData = null,
     colorArr = ["#98DDD3",
                 "#E2B8CC",
@@ -86,9 +85,19 @@ d3.select("body").on("keydown", function (d) {
 
                     cursorElement["element"].style["stroke"] = "";
                     cursorElement["element"].style["opacity"] = 0.6;
+                    cursorElement["element"].id = "";
                     cursorElement["element"] = next;
                     cursorElement["element"].style["stroke"] = "black";
                     cursorElement["element"].style["opacity"] = 1.0;
+                    cursorElement["element"].id = "cursor";
+
+                    var l = document.getElementById('cursor');
+                    if(cursorElement["location"] == "list") {
+                        moveSignal(l);
+                    } else if(cursorElement["location"] == "tree"){
+                        moveSignal(l.parentNode);
+                    }
+
                 } catch(e){}
                 break; 
             case 39: // right
@@ -109,10 +118,18 @@ d3.select("body").on("keydown", function (d) {
 
                     cursorElement["element"].style["stroke"] = "";
                     cursorElement["element"].style["opacity"] = 0.6;
-
+                    cursorElement["element"].id = "";
                     cursorElement["element"] = next;
+                    cursorElement["element"].id = "cursor";
                     cursorElement["element"].style["stroke"] = "black";
                     cursorElement["element"].style["opacity"] = 1.0;
+
+                    var l = document.getElementById('cursor');
+                    if(cursorElement["location"] == "list") {
+                        moveSignal(l);
+                    } else if(cursorElement["location"] == "tree"){
+                        moveSignal(l.parentNode);
+                    }
                 } catch(e){}
                 break; 
         }
@@ -216,6 +233,11 @@ findWithAttr = function(array, attr, value) {
     }       
 }
 
+moveSignal = function(target) {
+    var event = document.createEvent('MouseEvents');
+    event.initMouseEvent('click');
+    target.dispatchEvent(event);
+};
 
 getMaxChildren = function() {
     var children = 0;
@@ -394,7 +416,9 @@ update = function(source, row) {
             .on("mouseover", tooltipMouseOver)
             .on("mouseout", tooltipMouseOut)
             .on("click", function(d){
-                cursorPheno = d;
+                cursorData = d;
+                cursorElement["element"].id = "";
+                this.children[0].id = "cursor";
                 cursorElement = {"element":this.children[0], "location":"tree"};
                 if (typeof d != "undefined") {
                     move(d);
@@ -461,7 +485,7 @@ update = function(source, row) {
                 var lineage = getLineage(cursorData);
                 for(var i = 0; i < lineage.length; i++) {
                     if (d.id == lineage[i].id) {
-                        return 1.0
+                        return 1.0;
                     }
                 }
 
@@ -474,7 +498,12 @@ update = function(source, row) {
                         }
                     }
                 }
-                                    return 0.6;
+
+                if(typeof cursorData.parent == "undefined") {
+                    return 1.0;
+                }
+                
+                return 0.6;
             });
 
         // Transition exiting nodes to the parent's new position.
@@ -599,7 +628,11 @@ draw = function(svg, data) {
             treeActive = true;
             activerow = d.order-1;
             cursorData = d;
-            cursorPheno = d;
+            if (cursorElement != null) {
+                cursorElement["element"].id = "";
+            }
+
+            this.id = "cursor";
             cursorElement = {"element":this, "location":"list"};
             var rootPhenos = d3.selectAll(".rootPheno"); // CSS adjustments
             for(var i = 0; i < rootPhenos[0].length; i++) {
@@ -669,6 +702,9 @@ draw = function(svg, data) {
                         var tempColumn = d3.select(this).attr("id");
                         var tempRow = d3.select(this).attr("class"); 
                         cursorData = d;
+
+                        cursorElement["element"].id = "";
+                        this.id = "cursor";
                         cursorElement = {"element":this, "location":"list"};
 
                         var rootPhenos = d3.selectAll(".rootPheno"); // CSS adjustments
