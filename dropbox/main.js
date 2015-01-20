@@ -235,12 +235,17 @@ tooltipMouseOut = function(d) {
 
 
 tooltipMouseOver = function(d) { 
+    var defn = " : " + d.defn;
+    if (typeof d.defn == "undefined" || d.defn == null) {
+        defn = "";
+    }
+
     div.transition()
         .duration(200)
         .style("opacity", 10);
-    div.html("<h3>" + generateBreadCrumb(d) /*d.name*/ + "</h3><br/>")
+    div.html("<h3>" + generateBreadCrumb(d) + defn /*d.name*/ + "</h3><br/>")
         .style("left", /*(d3.event.pageX + 10)*/ 100 + "px") // horizontal
-        .style("top", /*(d3.event.pageY - 20)*/ 50 + "px"); // vertical
+        .style("top", /*(d3.event.pageY - 20)*/ 40 + "px"); // vertical
 }
 
 cursor = function(d) {
