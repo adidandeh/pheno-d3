@@ -24,7 +24,7 @@ var activerow = -1,
                 "#C6D2D7",
                 "#EDAA84"],
     dropbuttonwidth = 15,
-    duration = 400,
+    duration = 200,
     depth = 0;
     drill = undefined;
     i = 0,
@@ -69,6 +69,26 @@ d3.select("body").on("keydown", function (d) {
             case 13: // enter
                 break;
             case 37: // left
+                try {
+                    var next = document.querySelector('[hpid="'+cursorData.parent["id"]+'"]');
+                    cursorElement["element"].style["stroke"] = "";
+                    cursorElement["element"].style["opacity"] = 0.6;
+                    cursorElement["element"].id = "";
+                    cursorElement["element"] = next;
+                    cursorElement["element"].style["stroke"] = "black";
+                    cursorElement["element"].style["opacity"] = 1.0;
+                    cursorElement["element"].id = "cursor";
+                    if (typeof cursorData.parent.parent == "undefined") { // going back into root phenos
+                        cursorElement["location"] = "list";
+                    } 
+
+                    var l = document.getElementById('cursor');
+                    if(cursorElement["location"] == "list") {
+                        moveSignal(l);
+                    } else if(cursorElement["location"] == "tree"){
+                        moveSignal(l.parentNode);
+                    }
+                } catch (e) {}
                 break;
             case 38: // up
                 try {
@@ -101,6 +121,27 @@ d3.select("body").on("keydown", function (d) {
                 } catch(e){}
                 break; 
             case 39: // right
+                try {
+                    var next;
+                    if(cursorElement["location"] == "list") {
+                        next = cursorElement["element"].parentNode.parentNode.lastChild.previousSibling.childNodes[0];
+                    } else if (cursorElement["location"] == "tree") {
+                        if(cursorData.children.length <= 0) break;
+                        next = cursorElement["element"].parentNode.parentNode.lastChild.childNodes[0];
+                    }
+
+                    cursorElement["element"].id = "";
+                    cursorElement["element"].style["stroke"] = "grey";
+                    cursorElement["element"] = next;
+
+                    cursorElement["location"] = "tree";
+                    cursorElement["element"].id = "cursor";
+                    cursorElement["element"].style["stroke"] = "black";
+                    cursorElement["element"].style["opacity"] = 1.0;
+
+                    var l = document.getElementById('cursor');
+                    moveSignal(l.parentNode);
+                } catch(e){}
                 break; 
             case 40: // down
                 try {
@@ -418,6 +459,7 @@ update = function(source, row) {
             .on("click", function(d){
                 cursorData = d;
                 cursorElement["element"].id = "";
+                cursorElement["element"].style["stroke"] = "grey";
                 this.children[0].id = "cursor";
                 cursorElement = {"element":this.children[0], "location":"tree"};
                 if (typeof d != "undefined") {
@@ -432,6 +474,9 @@ update = function(source, row) {
             .attr("x", phenobarheight)
             .attr("width", sqwidth)
             .attr("height", sqheight)
+            .attr("hpid", function(d){
+                return d.id;
+            })
             .style("fill", function(d) {
                 return color(d);
             })
@@ -621,10 +666,11 @@ draw = function(svg, data) {
         .attr("class", "rootPheno")
         .attr("width", sqwidth)
         .attr("height", sqheight)
+        .attr("hpid", function(d) {
+            return d.id;
+        })
         .style("fill", color)
-        // .style("stroke-width", "1px")
-        // .style("stroke", cursor)
-        .on("click", function(d) { // for now as the mouseover issues need to be addressed
+        .on("click", function(d) {
             treeActive = true;
             activerow = d.order-1;
             cursorData = d;
@@ -639,7 +685,7 @@ draw = function(svg, data) {
                rootPhenos[0][i].style["stroke"] = "";
                rootPhenos[0][i].style["opacity"] = 0.6;
             }
-            this.style["stroke"] = "grey";
+            this.style["stroke"] = "black";
             this.style["opacity"] = 1.0;
 
             prepData(d, data, activerow);
@@ -694,6 +740,9 @@ draw = function(svg, data) {
                     .attr("height", sqheight)
                     .attr("id", count)
                     .attr("class", row)
+                    .attr("hpid", function(d) {
+                        return d.id;
+                    })
                     .style("fill", color)
                     .style("stroke-width", "1px")
                     .style("stroke", cursor)
@@ -703,7 +752,9 @@ draw = function(svg, data) {
                         var tempRow = d3.select(this).attr("class"); 
                         cursorData = d;
 
-                        cursorElement["element"].id = "";
+                        if (cursorElement != null) {
+                            cursorElement["element"].id = "";
+                        }
                         this.id = "cursor";
                         cursorElement = {"element":this, "location":"list"};
 
@@ -712,7 +763,7 @@ draw = function(svg, data) {
                            rootPhenos[0][i].style["stroke"] = "";
                            rootPhenos[0][i].style["opacity"] = 0.6;
                         }
-                        this.style["stroke"] = "grey";
+                        this.style["stroke"] = "black";
                         this.style["opacity"] = 1.0;
 
                         pheno = data[tempRow].children[tempColumn];
