@@ -15,7 +15,8 @@ var activerow = -1,
     is grabbed from it's parent's lineage. */
     childrenNumStack = [1];
     currentTreeData = {},
-    cursorPheno = "",
+    cursorElement = null,
+    cursorPheno = null,
     cursorData = null,
     colorArr = ["#98DDD3",
                 "#E2B8CC",
@@ -38,6 +39,7 @@ var activerow = -1,
     sqwidth = 70,
     sqheight = 25,
     sqspacing = 1,
+    treeActive = false;
     treeWidth = 200,
     treeHeight = 500,
     height = 2000 - margin.top - margin.bottom,
@@ -58,6 +60,72 @@ var svg = d3.select("#phenobar").append("svg")
 
 var div = d3.select("body").append("div")
     .attr("class", "tooltip");
+
+d3.select("body").on("keydown", function (d) {
+    if(treeActive) {
+        var keyCode = d3.event.keyCode;
+        d3.event.preventDefault(); 
+    
+        switch(keyCode) {
+            case 13: // enter
+                break;
+            case 37: // left
+                break;
+            case 38: // up
+                try {
+                    var next;
+                    if(cursorElement["location"] == "list") { // list and tree are inverted.
+                        next = cursorElement["element"].parentNode.previousSibling.childNodes[0];
+                    } else if (cursorElement["location"] == "tree") {
+                        next = cursorElement["element"].parentNode.nextSibling.childNodes[0];
+                        if (cursorElement["element"].parentNode.transform.animVal[0].matrix.e 
+                            != next.parentNode.transform.animVal[0].matrix.e) {
+                            break; // stop from scroll off the bottom of the tree list
+                        }
+                    }
+
+                    cursorElement["element"].style["stroke"] = "";
+                    cursorElement["element"].style["opacity"] = 0.6;
+                    cursorElement["element"] = next;
+                    cursorElement["element"].style["stroke"] = "black";
+                    cursorElement["element"].style["opacity"] = 1.0;
+                } catch(e){}
+                break; 
+            case 39: // right
+                break; 
+            case 40: // down
+                try {
+                    var next;
+                    if(cursorElement["location"] == "list") { // list and tree are inverted.
+                        next = cursorElement["element"].parentNode.nextSibling.childNodes[0];
+                        if (next.className.animVal != "rootPheno") break; // stop from scroll off the bottom of the list
+                    } else if (cursorElement["location"] == "tree") {
+                        next = cursorElement["element"].parentNode.previousSibling.childNodes[0];
+                        if (cursorElement["element"].parentNode.transform.animVal[0].matrix.e 
+                            != next.parentNode.transform.animVal[0].matrix.e) {
+                             break; // stop from scroll off the bottom of the tree list
+                        }
+                    }
+
+                    cursorElement["element"].style["stroke"] = "";
+                    cursorElement["element"].style["opacity"] = 0.6;
+
+                    cursorElement["element"] = next;
+                    cursorElement["element"].style["stroke"] = "black";
+                    cursorElement["element"].style["opacity"] = 1.0;
+                } catch(e){}
+                break; 
+        }
+
+        //console.log(cursorElement);
+    }  
+});
+
+d3.select("body").on("keypress", function () { 
+    if(treeActive) {
+        d3.event.preventDefault();  
+    }
+});
 
 // UNUSED/DEAD FUNCTIONS
 
@@ -326,6 +394,8 @@ update = function(source, row) {
             .on("mouseover", tooltipMouseOver)
             .on("mouseout", tooltipMouseOut)
             .on("click", function(d){
+                cursorPheno = d;
+                cursorElement = {"element":this.children[0], "location":"tree"};
                 if (typeof d != "undefined") {
                     move(d);
                 } 
@@ -526,9 +596,11 @@ draw = function(svg, data) {
         // .style("stroke-width", "1px")
         // .style("stroke", cursor)
         .on("click", function(d) { // for now as the mouseover issues need to be addressed
+            treeActive = true;
             activerow = d.order-1;
             cursorData = d;
-
+            cursorPheno = d;
+            cursorElement = {"element":this, "location":"list"};
             var rootPhenos = d3.selectAll(".rootPheno"); // CSS adjustments
             for(var i = 0; i < rootPhenos[0].length; i++) {
                rootPhenos[0][i].style["stroke"] = "";
@@ -593,9 +665,11 @@ draw = function(svg, data) {
                     .style("stroke-width", "1px")
                     .style("stroke", cursor)
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed
+                        treeActive = true;
                         var tempColumn = d3.select(this).attr("id");
                         var tempRow = d3.select(this).attr("class"); 
                         cursorData = d;
+                        cursorElement = {"element":this, "location":"list"};
 
                         var rootPhenos = d3.selectAll(".rootPheno"); // CSS adjustments
                         for(var i = 0; i < rootPhenos[0].length; i++) {
