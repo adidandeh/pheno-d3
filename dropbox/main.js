@@ -299,7 +299,7 @@ function collapse(d) {
 }
 
 move = function(d) {
-    cursorData = d;
+  cursorData = d;
   if (d.children) {
     drill = false; // up to the parent
     d._children = d.children;
@@ -317,8 +317,9 @@ move = function(d) {
             collapse(element);
           }
         });
-      }
-      update(d);
+    }
+    tooltipMouseOver(d);
+    update(d);
 }
 
 removeChild = function(row, column) {
