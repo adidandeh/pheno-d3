@@ -1,14 +1,3 @@
-/* 
-
-#98DDD3
-#E2B8CC
-#A3E0A4
-#D5D481
-#C6D2D7
-#EDAA84
-
-*/
-
 var activerow = -1,
     childrenNumStack = [1];
     currentTreeData = {},
@@ -196,7 +185,9 @@ cleanName = function(name) {
             tempEnd = "...";
         }
         name = name.substring(0, tempTextLength) + tempEnd;
-    } catch (e) {}
+    } catch (e) {
+        name = "Error."
+    }
 
     return name;
 }

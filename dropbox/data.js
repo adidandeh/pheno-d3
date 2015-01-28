@@ -78,50 +78,62 @@ var data = [{
     "active": 0,
     "children": []
 }, {
-    "name": "Abnormality of Metabolism",
+    "name": "Abnormality of Limbs",
     "order": 14,
+    "id": "HP:0040064",
+    "active": 0,
+    "children": []
+}, {
+    "name": "Abnormality of Metabolism",
+    "order": 15,
     "id": "HP:0001939",
     "active": 0,
     "children": []
 }, {
     "name": "Abnormality of the Musculature",
-    "order": 15,
+    "order": 16,
     "id": "HP:0003011",
     "active": 0,
     "children": []
 },  {
     "name": "Neoplasm",
-    "order": 16,
+    "order": 17,
     "id": "HP:0002664",
     "active": 0,
     "children": []
 }, {
     "name": "Abnormality of the Nervous System",
-    "order": 17,
+    "order": 18,
     "id": "HP:0000707",
     "active": 0,
     "children": []
 }, {
     "name": "Abnormality of Prenatal Development or Birth",
-    "order": 18,
+    "order": 19,
     "id": "HP:0001197",
     "active": 0,
     "children": []
 },  {
     "name": "Abnormality of the Respiratory System",
-    "order": 19,
+    "order": 20,
     "id": "HP:0002086",
     "active": 0,
     "children": []
 }, {
     "name": "Abnormality of the Skeletal System",
-    "order": 20,
+    "order": 21,
     "id": "HP:0000924",
     "active": 0,
     "children": []
 }, {
+    "name": "Abnormality of the Thoracic Cavity",
+    "order": 22,
+    "id": "HP:0045027",
+    "active": 0,
+    "children": []
+}, {
     "name": "Abnormality of the Voice",
-    "order": 21,
+    "order": 23,
     "id": "HP:0001608",
     "active": 0,
     "children": []

@@ -1,6 +1,6 @@
 var margin = {top: 0, right: 0, bottom: 0, left: 0},
-    width = 2960 - margin.left - margin.right,
-    height = 2500 - margin.top - margin.bottom;
+    width = 1000 - margin.left - margin.right,
+    height = 1000 - margin.top - margin.bottom;
 
 var color = d3.scale.category20c();
 
