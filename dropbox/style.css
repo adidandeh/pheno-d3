@@ -1,3 +1,15 @@
+div#representations {
+    width: 100%;
+    margin: auto;
+}
+
+div#phenobar {
+  float: left;
+}
+
+div#chart {
+}
+
 div.tooltip {   
   position: absolute;           
   text-align: left;           
