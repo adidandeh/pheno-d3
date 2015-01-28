@@ -4,11 +4,11 @@ var mapMargin = {top: 20, right: 0, bottom: 0, left: 0},
     formatNumber = d3.format(",d"),
     transitioning;
 
-var x = d3.scale.linear()
+var mapX = d3.scale.linear()
     .domain([0, mapWidth])
     .range([0, mapWidth]);
 
-var y = d3.scale.linear()
+var mapY = d3.scale.linear()
     .domain([0, mapHeight])
     .range([0, mapHeight]);
 
@@ -129,8 +129,8 @@ d3.json("flare.json", function(root) {
           t2 = g2.transition().duration(750);
 
       // Update the domain only after entering new elements.
-      x.domain([d.x, d.x + d.dx]);
-      y.domain([d.y, d.y + d.dy]);
+      mapX.domain([d.x, d.x + d.dx]);
+      mapY.domain([d.y, d.y + d.dy]);
 
       // Enable anti-aliasing during the transition.
       svg.style("shape-rendering", null);
@@ -157,15 +157,15 @@ d3.json("flare.json", function(root) {
   }
 
   function text(text) {
-    text.attr("x", function(d) { return x(d.x) + 6; })
-        .attr("y", function(d) { return y(d.y) + 6; });
+    text.attr("x", function(d) { return mapX(d.x) + 6; })
+        .attr("y", function(d) { return mapY(d.y) + 6; });
   }
 
   function rect(rect) {
-    rect.attr("x", function(d) { return x(d.x); })
-        .attr("y", function(d) { return y(d.y); })
-        .attr("mapWidth", function(d) { return x(d.x + d.dx) - x(d.x); })
-        .attr("mapHeight", function(d) { return y(d.y + d.dy) - y(d.y); });
+    rect.attr("x", function(d) { return mapX(d.x); })
+        .attr("y", function(d) { return mapY(d.y); })
+        .attr("mapWidth", function(d) { return mapX(d.x + d.dx) - mapX(d.x); })
+        .attr("mapHeight", function(d) { return mapY(d.y + d.dy) - mapY(d.y); });
   }
 
   function name(d) {

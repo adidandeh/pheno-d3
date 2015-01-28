@@ -32,48 +32,48 @@ cleanName = function(name) {
     return name;
 }
 
-var margin = {top: 20, right: 0, bottom: 0, left: 0},
-    width = 300,
-    height = 300 - margin.top - margin.bottom,
+var mapMargin = {top: 20, right: 0, bottom: 0, left: 0},
+    mapWidth = 300,
+    mapHeight = 300 - mapMargin.top - mapMargin.bottom,
     formatNumber = d3.format(",d"),
     transitioning;
 
-var x = d3.scale.linear()
-    .domain([0, width])
-    .range([0, width]);
+var mapX = d3.scale.linear()
+    .domain([0, mapWidth])
+    .range([0, mapWidth]);
 
-var y = d3.scale.linear()
-    .domain([0, height])
-    .range([0, height]);
+var mapY = d3.scale.linear()
+    .domain([0, mapHeight])
+    .range([0, mapHeight]);
 
 var treemap = d3.layout.treemap()
     .children(function(d, depth) { 
       return depth ? null : d._children; })
     // .sort(function(a, b) { 
     //   return a.value - b.value; })
-    .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
+    .ratio(mapHeight / mapWidth * 0.5 * (1 + Math.sqrt(5)))
     .round(false);
 
 var svg = d3.select("#chart").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.bottom + margin.top)
-    .style("margin-left", -margin.left + "px")
-    .style("margin.right", -margin.right + "px")
+    .attr("width", mapWidth + mapMargin.left + mapMargin.right)
+    .attr("height", mapHeight + mapMargin.bottom + mapMargin.top)
+    .style("margin-left", -mapMargin.left + "px")
+    .style("margin.right", -mapMargin.right + "px")
   .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .attr("transform", "translate(" + mapMargin.left + "," + mapMargin.top + ")")
     .style("shape-rendering", "crispEdges");
 
 var grandparent = svg.append("g")
     .attr("class", "grandparent");
 
 grandparent.append("rect")
-    .attr("y", -margin.top)
-    .attr("width", width)
-    .attr("height", margin.top);
+    .attr("y", -mapMargin.top)
+    .attr("width", mapWidth)
+    .attr("height", mapMargin.top);
 
 grandparent.append("text")
     .attr("x", 6)
-    .attr("y", 6 - margin.top)
+    .attr("y", 6 - mapMargin.top)
     .attr("dy", ".75em");
 
 d3.json("data.json", function(root) {
@@ -84,8 +84,8 @@ d3.json("data.json", function(root) {
 
   function initialize(root) {
     root.x = root.y = 0;
-    root.dx = width;
-    root.dy = height;
+    root.dx = mapWidth;
+    root.dy = mapHeight;
     root.depth = 0;
   }
 
@@ -171,8 +171,8 @@ d3.json("data.json", function(root) {
           t2 = g2.transition().duration(750);
 
       // Update the domain only after entering new elements.
-      x.domain([d.x, d.x + d.dx]);
-      y.domain([d.y, d.y + d.dy]);
+      mapX.domain([d.x, d.x + d.dx]);
+      mapY.domain([d.y, d.y + d.dy]);
 
       // Enable anti-aliasing during the transition.
       svg.style("shape-rendering", null);
@@ -200,15 +200,15 @@ d3.json("data.json", function(root) {
   }
 
   function text(text) {
-    text.attr("x", function(d) { return x(d.x) + 6; })
-        .attr("y", function(d) { return y(d.y) + 6; });
+    text.attr("x", function(d) { return mapX(d.x) + 6; })
+        .attr("y", function(d) { return mapY(d.y) + 6; });
   }
 
   function rect(rect) {
-    rect.attr("x", function(d) { return x(d.x); })
-        .attr("y", function(d) { return y(d.y); })
-        .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
-        .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
+    rect.attr("x", function(d) { return mapX(d.x); })
+        .attr("y", function(d) { return mapY(d.y); })
+        .attr("width", function(d) { return mapX(d.x + d.dx) - mapX(d.x); })
+        .attr("height", function(d) { return mapY(d.y + d.dy) - mapY(d.y); });
   }
 
   function name(d) {
