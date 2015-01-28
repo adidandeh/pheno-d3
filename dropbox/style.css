@@ -8,6 +8,7 @@ div#phenobar {
 }
 
 div#chart {
+  float: right;
 }
 
 div.tooltip {   
@@ -16,52 +17,22 @@ div.tooltip {
   width: 1000px;                  
   height:10px;                 
   padding: 10px;             
-  font: 8px sans-serif;        
-/*  background: white;   
-  border: 1px;      
-  border-radius: 8px;
-  border-style: solid;   */        
+  font: 8px sans-serif;                
   pointer-events: none;
   opacity: 0;         
 }
 
-*::selection {
-    background:transparent;
-}
-
-*::-moz-selection {
-    background:transparent;
-}
-
-*::-webkit-selection {
-    background:transparent;
-}
-
-.node {
+.node, .rootPheno {
   cursor: pointer;
-}
-
-.node circle { /* the circle around the node, but not the inside */
-  fill: #fff;
-  stroke: green;
-  stroke-width: 1.5px;
 }
 
 .node text { 
   font: 10px sans-serif;
 }
 
-.link { /* line connecting the tree nodes */
-  fill: none;
-  stroke: #ccc;
-  stroke-width: 1.5px;
-}
-
 /* treeMap*/
 
-/*
 @import url(http://fonts.googleapis.com/css?family=PT+Serif|PT+Serif:b|PT+Serif:i|PT+Sans|PT+Sans:b);
-
 
 .ocks-org body {
   background: #fcfcfa;
@@ -187,7 +158,7 @@ blockquote q:after {
 
 #chart {
   width: 300;
-  height: 320;
+  height: 300;
   background: #ddd;
 }
 
@@ -199,13 +170,13 @@ text {
   font-weight: bold;
 }
 
-rect:not(.rootPheno, .node) {
+rect:not(.rootPheno):not(.childPheno) {
   fill: none;
   stroke: #fff;
 }
 
 rect.parent,
-.grandparent{
+.grandparent rect {
   stroke-width: 2px;
 }
 
@@ -229,5 +200,5 @@ rect.parent,
 
 .children:hover rect.child {
   fill: #bbb;
-}*/
+}
 
