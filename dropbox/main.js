@@ -409,148 +409,148 @@ cursor = function(d) {
 // major functions
 update = function(source, row, startOffset) {
     // treeMap
-    svgMap.selectAll(".depth").remove();
+    // svgMap.selectAll(".depth").remove();
 
-    initialize(source);
-    accumulate(source);
-    layout(source);
-    display(source);
+    // initialize(fullTree);
+    // accumulate(fullTree);
+    // layout(fullTree);
+    // display(fullTree);
 
-    function initialize(root) {
-        root.x = root.y = 0;
-        root.dx = mapWidth;
-        root.dy = mapHeight;
-        root.depth = 0;
-    }
+    // function initialize(root) {
+    //     root.x = root.y = 0;
+    //     root.dx = mapWidth;
+    //     root.dy = mapHeight;
+    //     root.depth = 0;
+    // }
 
-    // Aggregate the values for internal nodes. This is normally done by the
-    // treemap layout, but not here because of our custom implementation.
-    // We also take a snapshot of the original children (_children) to avoid
-    // the children being overwritten when when layout is computed.
-    function accumulate(d) {
-        //d.value = Math.floor((Math.random() * 2) + 1);
-        d.value = 1;
-        //console.log("tes");
-        return (d._children = d.children)
-            ? d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0)
-            : d.value;
-    }
+    // // Aggregate the values for internal nodes. This is normally done by the
+    // // treemap layout, but not here because of our custom implementation.
+    // // We also take a snapshot of the original children (_children) to avoid
+    // // the children being overwritten when when layout is computed.
+    // function accumulate(d) {
+    //     //d.value = Math.floor((Math.random() * 2) + 1);
+    //     d.value = 1;
+    //     //console.log("tes");
+    //     return (d._children = d.children)
+    //         ? d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0)
+    //         : d.value;
+    // }
 
-    // Compute the treemap layout recursively such that each group of siblings
-    // uses the same size (1×1) rather than the dimensions of the parent cell.
-    // This optimizes the layout for the current zoom state. Note that a wrapper
-    // object is created for the parent node for each group of siblings so that
-    // the parent’s dimensions are not discarded as we recurse. Since each group
-    // of sibling was laid out in 1×1, we must rescale to fit using absolute
-    // coordinates. This lets us use a viewport to zoom.
-    function layout(d) {
-        if (d._children) {
-          treemap.nodes({_children: d._children});
-          d._children.forEach(function(c) {
-            c.x = d.x + c.x * d.dx;
-            c.y = d.y + c.y * d.dy;
-            c.dx *= d.dx;
-            c.dy *= d.dy;
-            c.parent = d;
-            layout(c);
-          });
-        }
-    }
+    // // Compute the treemap layout recursively such that each group of siblings
+    // // uses the same size (1×1) rather than the dimensions of the parent cell.
+    // // This optimizes the layout for the current zoom state. Note that a wrapper
+    // // object is created for the parent node for each group of siblings so that
+    // // the parent’s dimensions are not discarded as we recurse. Since each group
+    // // of sibling was laid out in 1×1, we must rescale to fit using absolute
+    // // coordinates. This lets us use a viewport to zoom.
+    // function layout(d) {
+    //     if (d._children) {
+    //       treemap.nodes({_children: d._children});
+    //       d._children.forEach(function(c) {
+    //         c.x = d.x + c.x * d.dx;
+    //         c.y = d.y + c.y * d.dy;
+    //         c.dx *= d.dx;
+    //         c.dy *= d.dy;
+    //         c.parent = d;
+    //         layout(c);
+    //       });
+    //     }
+    // }
 
-    function display(d) {
-        grandparent
-            .datum(d.parent)
-            .on("click", transition)
-          .select("text")
-            .text(name(d));
+    // function display(d) {
+    //     grandparent
+    //         .datum(d.parent)
+    //         .on("click", transition)
+    //       .select("text")
+    //         .text(name(d));
 
-        var g1 = svgMap.insert("g", ".grandparent")
-            .datum(d)
-            .attr("class", "depth");
+    //     var g1 = svgMap.insert("g", ".grandparent")
+    //         .datum(d)
+    //         .attr("class", "depth");
 
-        var g = g1.selectAll("g")
-            .data(d._children)
-          .enter().append("g");
+    //     var g = g1.selectAll("g")
+    //         .data(d._children)
+    //       .enter().append("g");
 
-        g.filter(function(d) { return d._children; })
-            .classed("children", true)
-            .on("click", transition);
+    //     g.filter(function(d) { return d._children; })
+    //         .classed("children", true)
+    //         .on("click", transition);
 
-        g.selectAll(".child")
-            .data(function(d) { return d._children || [d]; })
-          .enter().append("rect")
-            .attr("class", "child")
-            .call(rect);
+    //     g.selectAll(".child")
+    //         .data(function(d) { return d._children || [d]; })
+    //       .enter().append("rect")
+    //         .attr("class", "child")
+    //         .call(rect);
 
-        g.append("rect")
-            .attr("class", "parent")
-            .call(rect)
-          .append("title")
-            .text(function(d) { 
-              //return formatNumber(d.value); 
-              return cleanName(d.name);
-            });
+    //     g.append("rect")
+    //         .attr("class", "parent")
+    //         .call(rect)
+    //       .append("title")
+    //         .text(function(d) { 
+    //           //return formatNumber(d.value); 
+    //           return cleanName(d.name);
+    //         });
 
-        g.append("text")
-            .attr("dy", ".75em")
-            .text(function(d) {  return cleanName(d.name).substring(0, 10); })
-            .call(text);
+    //     g.append("text")
+    //         .attr("dy", ".75em")
+    //         .text(function(d) {  return cleanName(d.name).substring(0, 10); })
+    //         .call(text);
 
-        function transition(d) {
-            console.log("test");
-          if (transitioning || !d) return;
-          transitioning = true;
+    //     function transition(d) {
+    //         console.log("test");
+    //       if (transitioning || !d) return;
+    //       transitioning = true;
 
-          var g2 = display(d),
-              t1 = g1.transition().duration(750),
-              t2 = g2.transition().duration(750);
+    //       var g2 = display(d),
+    //           t1 = g1.transition().duration(750),
+    //           t2 = g2.transition().duration(750);
 
-          // Update the domain only after entering new elements.
-          mapX.domain([d.x, d.x + d.dx]);
-          mapY.domain([d.y, d.y + d.dy]);
+    //       // Update the domain only after entering new elements.
+    //       mapX.domain([d.x, d.x + d.dx]);
+    //       mapY.domain([d.y, d.y + d.dy]);
 
-          // Enable anti-aliasing during the transition.
-          svgMap.style("shape-rendering", null);
+    //       // Enable anti-aliasing during the transition.
+    //       svgMap.style("shape-rendering", null);
 
-          // Draw child nodes on top of parent nodes.
-          svgMap.selectAll(".depth").sort(function(a, b) { return a.depth - b.depth; });
+    //       // Draw child nodes on top of parent nodes.
+    //       svgMap.selectAll(".depth").sort(function(a, b) { return a.depth - b.depth; });
 
-          // Fade-in entering text.
-          g2.selectAll("text").style("fill-opacity", 0);
+    //       // Fade-in entering text.
+    //       g2.selectAll("text").style("fill-opacity", 0);
 
-          // Transition to the new view.
-          t1.selectAll("text").call(text).style("fill-opacity", 0);
-          t2.selectAll("text").call(text).style("fill-opacity", 1);
-          t1.selectAll("rect").call(rect);
-          t2.selectAll("rect").call(rect);
+    //       // Transition to the new view.
+    //       t1.selectAll("text").call(text).style("fill-opacity", 0);
+    //       t2.selectAll("text").call(text).style("fill-opacity", 1);
+    //       t1.selectAll("rect").call(rect);
+    //       t2.selectAll("rect").call(rect);
 
-          // Remove the old node when the transition is finished.
-          t1.remove().each("end", function() {
-            svgMap.style("shape-rendering", "crispEdges");
-            transitioning = false;
-          });
-        }
+    //       // Remove the old node when the transition is finished.
+    //       t1.remove().each("end", function() {
+    //         svgMap.style("shape-rendering", "crispEdges");
+    //         transitioning = false;
+    //       });
+    //     }
 
-        return g;
-    }
+    //     return g;
+    // }
 
-    function text(text) {
-        text.attr("x", function(d) { return mapX(d.x) + 6; })
-            .attr("y", function(d) { return mapY(d.y) + 6; });
-    }
+    // function text(text) {
+    //     text.attr("x", function(d) { return mapX(d.x) + 6; })
+    //         .attr("y", function(d) { return mapY(d.y) + 6; });
+    // }
 
-    function rect(rect) {
-        rect.attr("x", function(d) { return mapX(d.x); })
-            .attr("y", function(d) { return mapY(d.y); })
-            .attr("width", function(d) { return mapX(d.x + d.dx) - mapX(d.x); })
-            .attr("height", function(d) { return mapY(d.y + d.dy) - mapY(d.y); });
-    }
+    // function rect(rect) {
+    //     rect.attr("x", function(d) { return mapX(d.x); })
+    //         .attr("y", function(d) { return mapY(d.y); })
+    //         .attr("width", function(d) { return mapX(d.x + d.dx) - mapX(d.x); })
+    //         .attr("height", function(d) { return mapY(d.y + d.dy) - mapY(d.y); });
+    // }
 
-    function name(d) {
-        return d.parent
-            ? name(d.parent) + "." + cleanName(d.name)
-            : cleanName(d.name);
-    }
+    // function name(d) {
+    //     return d.parent
+    //         ? name(d.parent) + "." + cleanName(d.name)
+    //         : cleanName(d.name);
+    // }
 
     // phenoTree
     if(typeof startOffset == "undefined") {
