@@ -57,7 +57,7 @@ var treemap = d3.layout.treemap()
         try {
             return (d._children.length > 0) ? d._children.length : 1;
         } catch (e) {
-            return 1;
+            return 0;
         }
     });
 
