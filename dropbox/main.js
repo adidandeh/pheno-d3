@@ -31,11 +31,9 @@ var activerow = -1,
     maxBoxHeight = 120;
 
 // treeMap
-// var mapMargin = {top: 20, right: 0, bottom: 0, left: 0},
-//     mapWidth = 300,
-//     mapHeight = 300 - mapMargin.top - mapMargin.bottom,
-//     formatNumber = d3.format(",d"),
-//     transitioning;
+var mapMargin = {top: 20, right: 0, bottom: 0, left: 0},
+    mapWidth = 300,
+    mapHeight = 300;
 
 // var mapX = d3.scale.linear()
 //     .domain([0, mapWidth])
@@ -53,6 +51,16 @@ var activerow = -1,
 //     .ratio(mapHeight / mapWidth * 0.5 * (1 + Math.sqrt(5)))
 //     .round(false);
 
+var treemap = d3.layout.treemap()
+    .size([mapWidth, mapHeight])
+    .value(function(d) { 
+        try {
+            return (d._children.length > 0) ? d._children.length : 1;
+        } catch (e) {
+            return 1;
+        }
+    });
+
 // phenoTree
 var tree = d3.layout.tree()
     .size([treeHeight, treeWidth]);
@@ -68,6 +76,8 @@ var svg = d3.select("#phenobar").append("svg")
 
 var div = d3.select("body").append("div")
     .attr("class", "tooltip");
+
+var treecolor = d3.scale.category20c();
 
 // treeMap
 // var svgMap = d3.select("#chart").append("svg")
@@ -408,9 +418,32 @@ cursor = function(d) {
 // major functions
 update = function(source, row, startOffset) {
     // treeMap
+
+    d3.select("#chart").selectAll("div").remove();
+
+    var treediv = d3.select("#chart").append("div")
+        .style("position", "relative")
+        .style("width", (mapWidth + mapMargin.left + mapMargin.right) + "px")
+        .style("height", (mapHeight + mapMargin.top + mapMargin.bottom) + "px")
+        .style("left", mapMargin.left + "px")
+        .style("top", mapMargin.top + "px");
+
+    var treenode = treediv.datum(source).selectAll(".treenode")
+        .data(treemap.nodes)
+        .enter().append("div")
+          .attr("class", "treenode")
+          .call(position)
+          .style("background", function(d) { return d.children ? treecolor(d.name) : null; })
+          .text(function(d) { return d.children ? null : d.name; });
+
+    function position() {
+      this.style("left", function(d) { return d.x + "px"; })
+          .style("top", function(d) { return d.y + "px"; })
+          .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+          .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+    }
     // svgMap.selectAll(".depth").remove();
-// console.log("Updating");
-// console.log(source);
+
 // console.log("^^^^");
 //    initialize(source);
   // accumulate(source);
