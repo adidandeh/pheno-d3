@@ -53,7 +53,7 @@ var mapMargin = {top: 20, right: 0, bottom: 0, left: 0},
 
 var treemap = d3.layout.treemap()
     .size([mapWidth, mapHeight])
-    .value(function(d) { 
+    .value(function(d) {
         try {
             return (d._children.length > 0) ? d._children.length : 1;
         } catch (e) {
@@ -433,8 +433,9 @@ update = function(source, row, startOffset) {
         .enter().append("div")
           .attr("class", "treenode")
           .call(position)
-          .style("background", function(d) { return d.children ? treecolor(d.name) : null; })
-          .text(function(d) { return d.children ? null : d.name; });
+          .style("background", function(d) { return d.children ? color(d.name) : null; })
+          .text(function(d) { 
+            return d._children ? d.name : null; });
 
     function position() {
       this.style("left", function(d) { return d.x + "px"; })
