@@ -58,9 +58,10 @@ d3.json("flare.json", function(root) {
   // We also take a snapshot of the original children (_children) to avoid
   // the children being overwritten when when layout is computed.
   function accumulate(d) {
-    return (d._children = d.children)
-        ? d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0)
-        : d.value;
+    d.value = 1;
+    // return (d._children = d.children)
+    //     ? d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0)
+    //     : d.value;
   }
 
   // Compute the treemap layout recursively such that each group of siblings

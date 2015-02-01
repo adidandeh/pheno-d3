@@ -12,7 +12,6 @@ var activerow = -1,
     duration = 200,
     depth = 0;
     drill = undefined,
-    fullTree = null,
     i = 0,
     margin = {
         top: 20,
@@ -32,27 +31,27 @@ var activerow = -1,
     maxBoxHeight = 120;
 
 // treeMap
-var mapMargin = {top: 20, right: 0, bottom: 0, left: 0},
-    mapWidth = 300,
-    mapHeight = 300 - mapMargin.top - mapMargin.bottom,
-    formatNumber = d3.format(",d"),
-    transitioning;
+// var mapMargin = {top: 20, right: 0, bottom: 0, left: 0},
+//     mapWidth = 300,
+//     mapHeight = 300 - mapMargin.top - mapMargin.bottom,
+//     formatNumber = d3.format(",d"),
+//     transitioning;
 
-var mapX = d3.scale.linear()
-    .domain([0, mapWidth])
-    .range([0, mapWidth]);
+// var mapX = d3.scale.linear()
+//     .domain([0, mapWidth])
+//     .range([0, mapWidth]);
 
-var mapY = d3.scale.linear()
-    .domain([0, mapHeight])
-    .range([0, mapHeight]);
+// var mapY = d3.scale.linear()
+//     .domain([0, mapHeight])
+//     .range([0, mapHeight]);
 
-var treemap = d3.layout.treemap()
-    .children(function(d, depth) { 
-      return depth ? null : d._children; })
-    // .sort(function(a, b) { 
-    //   return a.value - b.value; })
-    .ratio(mapHeight / mapWidth * 0.5 * (1 + Math.sqrt(5)))
-    .round(false);
+// var treemap = d3.layout.treemap()
+//     .children(function(d, depth) { 
+//       return depth ? null : d._children; })
+//     // .sort(function(a, b) { 
+//     //   return a.value - b.value; })
+//     .ratio(mapHeight / mapWidth * 0.5 * (1 + Math.sqrt(5)))
+//     .round(false);
 
 // phenoTree
 var tree = d3.layout.tree()
@@ -71,27 +70,27 @@ var div = d3.select("body").append("div")
     .attr("class", "tooltip");
 
 // treeMap
-var svgMap = d3.select("#chart").append("svg")
-    .attr("width", mapWidth + mapMargin.left + mapMargin.right)
-    .attr("height", mapHeight + mapMargin.bottom + mapMargin.top)
-    .style("margin-left", -mapMargin.left + "px")
-    .style("margin.right", -mapMargin.right + "px")
-  .append("g")
-    .attr("transform", "translate(" + mapMargin.left + "," + mapMargin.top + ")")
-    .style("shape-rendering", "crispEdges");
+// var svgMap = d3.select("#chart").append("svg")
+//     .attr("width", mapWidth + mapMargin.left + mapMargin.right)
+//     .attr("height", mapHeight + mapMargin.bottom + mapMargin.top)
+//     .style("margin-left", -mapMargin.left + "px")
+//     .style("margin.right", -mapMargin.right + "px")
+//   .append("g")
+//     .attr("transform", "translate(" + mapMargin.left + "," + mapMargin.top + ")")
+//     .style("shape-rendering", "crispEdges");
 
-var grandparent = svgMap.append("g")
-    .attr("class", "grandparent");
+// var grandparent = svgMap.append("g")
+//     .attr("class", "grandparent");
 
-grandparent.append("rect")
-    .attr("y", -mapMargin.top)
-    .attr("width", mapWidth)
-    .attr("height", mapMargin.top);
+// grandparent.append("rect")
+//     .attr("y", -mapMargin.top)
+//     .attr("width", mapWidth)
+//     .attr("height", mapMargin.top);
 
-grandparent.append("text")
-    .attr("x", 6)
-    .attr("y", 6 - mapMargin.top)
-    .attr("dy", ".75em");
+// grandparent.append("text")
+//     .attr("x", 6)
+//     .attr("y", 6 - mapMargin.top)
+//     .attr("dy", ".75em");
 // /
 
 d3.select("body").on("keydown", function (d) {
@@ -410,11 +409,13 @@ cursor = function(d) {
 update = function(source, row, startOffset) {
     // treeMap
     // svgMap.selectAll(".depth").remove();
-
-    // initialize(fullTree);
-    // accumulate(fullTree);
-    // layout(fullTree);
-    // display(fullTree);
+// console.log("Updating");
+// console.log(source);
+// console.log("^^^^");
+//    initialize(source);
+  // accumulate(source);
+  // layout(source);
+    // display(source);
 
     // function initialize(root) {
     //     root.x = root.y = 0;
@@ -429,10 +430,11 @@ update = function(source, row, startOffset) {
     // // the children being overwritten when when layout is computed.
     // function accumulate(d) {
     //     //d.value = Math.floor((Math.random() * 2) + 1);
-    //     d.value = 1;
-    //     //console.log("tes");
+    //  //  d.value = 1;
+    //     console.log(d);
     //     return (d._children = d.children)
-    //         ? d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0)
+    //         ? d.value = d.children.reduce(function(p, v) { 
+    //             return p + accumulate(v); }, 0)
     //         : d.value;
     // }
 
@@ -444,9 +446,9 @@ update = function(source, row, startOffset) {
     // // of sibling was laid out in 1×1, we must rescale to fit using absolute
     // // coordinates. This lets us use a viewport to zoom.
     // function layout(d) {
-    //     if (d._children) {
-    //       treemap.nodes({_children: d._children});
-    //       d._children.forEach(function(c) {
+    //     if (d.children) {
+    //       treemap.nodes({_children: d.children});
+    //       d.children.forEach(function(c) {
     //         c.x = d.x + c.x * d.dx;
     //         c.y = d.y + c.y * d.dy;
     //         c.dx *= d.dx;
@@ -798,10 +800,8 @@ prepData = function(d, data, row) {
         }
 
         root.children.forEach(collapse);
-
-       if (fullTree == null) {
-            fullTree = root;
-       }
+        console.log(root);
+        console.log("****");
         currentTreeData = root;
         update(currentTreeData, row, sqwidth*(tempPheno.length-1));
     });  
