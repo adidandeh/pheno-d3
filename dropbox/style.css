@@ -39,3 +39,8 @@ div.tooltip {
   text-indent: 2px;
 }
 
+#treeMapHeader {
+  padding-top: 0px;
+  font-weight: bold;
+  font-size: 8pt;
+}

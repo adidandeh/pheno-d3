@@ -219,6 +219,15 @@ clearPhenotypes = function() {
     data.forEach(function(d) {
         d.children = [];
     });
+    d3.select("#chart").selectAll("div").remove();
+    activerow = -1;
+    childrenNumStack = [1];
+    currentTreeData = {};
+    cursorElement = null;
+    cursorData = null;
+    depth = 0;
+    drill = undefined;
+    
     draw(svg, data);
 }
 
@@ -399,7 +408,11 @@ update = function(source, row, startOffset) {
         .style("width", (mapWidth + mapMargin.left + mapMargin.right) + "px")
         .style("height", (mapHeight + mapMargin.top + mapMargin.bottom) + "px")
         .style("left", mapMargin.left + "px")
-        .style("top", mapMargin.top + verticalPadding + "px");
+        .style("top", mapMargin.top + verticalPadding + "px")
+        .attr("id", "treeMapHeader")
+        .text(function(d) {
+            return cursorData.name.toUpperCase();
+        });
 
     var treenode = treediv.datum(source).selectAll(".treenode")
         .data(treemap.nodes)
@@ -418,7 +431,7 @@ update = function(source, row, startOffset) {
             return d.x + "px";
         })
             .style("top", function(d) {
-                return d.y + "px";
+                return d.y + 20 + "px";
             })
             .style("width", function(d) {
                 return Math.max(0, d.dx - 1) + "px";
