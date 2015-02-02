@@ -217,14 +217,13 @@ cleanName = function(name) {
 
 clearPhenotypes = function() {
     data.forEach(function(d) {
-        console.log(d);
         d.children = [];
     });
     draw(svg, data);
 }
 
 searchPhenotypes = function() {
-    console.log("test");
+    console.log("searching");
 }
 
 color = function(d) {
