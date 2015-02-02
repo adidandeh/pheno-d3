@@ -1,16 +1,17 @@
 var activerow = -1,
-    childrenNumStack = [1];
+    childrenNumStack = [1],
     currentTreeData = {},
     cursorElement = null,
     cursorData = null,
     colorArr = ["#98DDD3",
-                "#E2B8CC",
-                "#A3E0A4",
-                "#D5D481",
-                "#C6D2D7",
-                "#EDAA84"],
+        "#E2B8CC",
+        "#A3E0A4",
+        "#D5D481",
+        "#C6D2D7",
+        "#EDAA84"
+    ],
     duration = 200,
-    depth = 0;
+    depth = 0,
     drill = undefined,
     i = 0,
     margin = {
@@ -23,17 +24,22 @@ var activerow = -1,
     sqwidth = 70,
     sqheight = 25,
     sqspacing = 1,
-    treeActive = false;
+    treeActive = false,
     treeWidth = 200,
     treeHeight = 500,
     height = 2000 - margin.top - margin.bottom,
     width = 900 - margin.right - margin.left,
     maxBoxHeight = 120,
-    verticalPadding = 10
+    verticalPadding = 10,
     horizontalPadding = 0;
 
 // treeMap
-var mapMargin = {top: 20, right: 0, bottom: 0, left: 0},
+var mapMargin = {
+        top: 20,
+        right: 0,
+        bottom: 0,
+        left: 0
+    },
     mapWidth = 300,
     mapHeight = 300;
 
@@ -65,18 +71,18 @@ var div = d3.select("body").append("div")
 
 var treecolor = d3.scale.category20c();
 
-d3.select("body").on("keydown", function (d) {
-    if(treeActive) {
+d3.select("body").on("keydown", function(d) {
+    if (treeActive) {
         var keyCode = d3.event.keyCode;
-        d3.event.preventDefault(); 
-    
-        switch(keyCode) {
+        d3.event.preventDefault();
+
+        switch (keyCode) {
             case 13: // enter
                 createPhenoBox();
                 break;
             case 37: // left
                 try {
-                    var next = document.querySelector('[hpid="'+cursorData.parent["id"]+'"]');
+                    var next = document.querySelector('[hpid="' + cursorData.parent["id"] + '"]');
                     cursorElement["element"].style["stroke"] = "";
                     cursorElement["element"].style["opacity"] = 0.6;
                     cursorElement["element"].id = "";
@@ -86,12 +92,12 @@ d3.select("body").on("keydown", function (d) {
                     cursorElement["element"].id = "cursor";
                     if (typeof cursorData.parent.parent == "undefined") { // going back into root phenos
                         cursorElement["location"] = "list";
-                    } 
+                    }
 
                     var l = document.getElementById('cursor');
-                    if(cursorElement["location"] == "list") {
+                    if (cursorElement["location"] == "list") {
                         moveSignal(l);
-                    } else if(cursorElement["location"] == "tree"){
+                    } else if (cursorElement["location"] == "tree") {
                         moveSignal(l.parentNode);
                     }
                 } catch (e) {}
@@ -99,12 +105,11 @@ d3.select("body").on("keydown", function (d) {
             case 38: // up
                 try {
                     var next;
-                    if(cursorElement["location"] == "list") { // list and tree are inverted.
+                    if (cursorElement["location"] == "list") { // list and tree are inverted.
                         next = cursorElement["element"].parentNode.previousSibling.childNodes[0];
                     } else if (cursorElement["location"] == "tree") {
                         next = cursorElement["element"].parentNode.nextSibling.childNodes[0];
-                        if (cursorElement["element"].parentNode.transform.animVal[0].matrix.e 
-                            != next.parentNode.transform.animVal[0].matrix.e) {
+                        if (cursorElement["element"].parentNode.transform.animVal[0].matrix.e != next.parentNode.transform.animVal[0].matrix.e) {
                             break; // stop from scroll off the bottom of the tree list
                         }
                     }
@@ -118,21 +123,21 @@ d3.select("body").on("keydown", function (d) {
                     cursorElement["element"].id = "cursor";
 
                     var l = document.getElementById('cursor');
-                    if(cursorElement["location"] == "list") {
+                    if (cursorElement["location"] == "list") {
                         moveSignal(l);
-                    } else if(cursorElement["location"] == "tree"){
+                    } else if (cursorElement["location"] == "tree") {
                         moveSignal(l.parentNode);
                     }
 
-                } catch(e){}
-                break; 
+                } catch (e) {}
+                break;
             case 39: // right
                 try {
                     var next;
-                    if(cursorElement["location"] == "list") {
+                    if (cursorElement["location"] == "list") {
                         next = cursorElement["element"].parentNode.parentNode.lastChild.previousSibling.childNodes[0];
                     } else if (cursorElement["location"] == "tree") {
-                        if(cursorData.children.length <= 0) break;
+                        if (cursorData.children.length <= 0) break;
                         next = cursorElement["element"].parentNode.parentNode.lastChild.childNodes[0];
                     }
 
@@ -147,19 +152,18 @@ d3.select("body").on("keydown", function (d) {
 
                     var l = document.getElementById('cursor');
                     moveSignal(l.parentNode);
-                } catch(e){}
-                break; 
+                } catch (e) {}
+                break;
             case 40: // down
                 try {
                     var next;
-                    if(cursorElement["location"] == "list") { // list and tree are inverted.
+                    if (cursorElement["location"] == "list") { // list and tree are inverted.
                         next = cursorElement["element"].parentNode.nextSibling.childNodes[0];
                         if (next.className.animVal != "rootPheno") break; // stop from scroll off the bottom of the list
                     } else if (cursorElement["location"] == "tree") {
                         next = cursorElement["element"].parentNode.previousSibling.childNodes[0];
-                        if (cursorElement["element"].parentNode.transform.animVal[0].matrix.e 
-                            != next.parentNode.transform.animVal[0].matrix.e) {
-                             break; // stop from scroll off the bottom of the tree list
+                        if (cursorElement["element"].parentNode.transform.animVal[0].matrix.e != next.parentNode.transform.animVal[0].matrix.e) {
+                            break; // stop from scroll off the bottom of the tree list
                         }
                     }
 
@@ -172,20 +176,20 @@ d3.select("body").on("keydown", function (d) {
                     cursorElement["element"].style["opacity"] = 1.0;
 
                     var l = document.getElementById('cursor');
-                    if(cursorElement["location"] == "list") {
+                    if (cursorElement["location"] == "list") {
                         moveSignal(l);
-                    } else if(cursorElement["location"] == "tree"){
+                    } else if (cursorElement["location"] == "tree") {
                         moveSignal(l.parentNode);
                     }
-                } catch(e){}
-                break; 
+                } catch (e) {}
+                break;
         }
-    }  
+    }
 });
 
-d3.select("body").on("keypress", function () { 
-    if(treeActive) {
-        d3.event.preventDefault();  
+d3.select("body").on("keypress", function() {
+    if (treeActive) {
+        d3.event.preventDefault();
     }
 });
 
@@ -223,7 +227,7 @@ searchPhenotypes = function() {
     console.log("test");
 }
 
-color = function(d){
+color = function(d) {
     var random = Math.floor(Math.random() * colorArr.length) + 0;
     //return colorArr[random];
     // insert generation function.
@@ -232,17 +236,17 @@ color = function(d){
 }
 
 createPhenoBox = function() { // use cursorData parent chain-up
-    if(typeof cursorData.name != "undefined"){
+    if (typeof cursorData.name != "undefined") {
         var tempPheno = [cursorData];
-        while(typeof tempPheno[tempPheno.length-1].parent != "undefined") {
-            tempPheno.push(tempPheno[tempPheno.length-1].parent);
+        while (typeof tempPheno[tempPheno.length - 1].parent != "undefined") {
+            tempPheno.push(tempPheno[tempPheno.length - 1].parent);
         }
         tempPheno.pop();
         tempPheno.reverse();
         var inArray;
-        for(var i = 0; i < tempPheno.length; i++) {
+        for (var i = 0; i < tempPheno.length; i++) {
             inArray = findWithAttr(data[activerow].children, "id", tempPheno[i].id);
-            if(inArray == -1) {
+            if (inArray == -1) {
                 data[activerow].children.push(tempPheno[i]);
             }
         }
@@ -260,8 +264,8 @@ findWithAttr = function(array, attr, value) {
                 return i;
             }
         }
-    } 
-    return -1;      
+    }
+    return -1;
 }
 
 moveSignal = function(target) {
@@ -274,20 +278,20 @@ getMaxChildren = function() {
     var children = 0;
 
     data.forEach(function(rootPheno) {
-        if(rootPheno.children.length > children) {
+        if (rootPheno.children.length > children) {
             children = rootPheno.children.length;
         }
     });
     return children;
-} 
+}
 
 getLineage = function(d) {
     var lineage = [];
-        var temp = d;
-        while (temp.hasOwnProperty("parent")) {
-            lineage.push(temp.parent);
-            temp = temp.parent;
-        }
+    var temp = d;
+    while (temp.hasOwnProperty("parent")) {
+        lineage.push(temp.parent);
+        temp = temp.parent;
+    }
     return lineage;
 }
 
@@ -311,31 +315,31 @@ generateBreadCrumb = function(d) {
 }
 
 collapse = function(d) {
-  if (d.children) {
-    d._children = d.children;
-    d._children.forEach(collapse);
-    d.children = null;
-  }
+    if (d.children) {
+        d._children = d.children;
+        d._children.forEach(collapse);
+        d.children = null;
+    }
 }
 
 move = function(d) {
-  cursorData = d;
-  if (d.children) {
-    drill = false; // up to the parent
-    d._children = d.children;
-    d.children = null;
-  } else {
-      drill = true; // down to the children
-      d.children = d._children;
-      d._children = null;
-  }
+    cursorData = d;
+    if (d.children) {
+        drill = false; // up to the parent
+        d._children = d.children;
+        d.children = null;
+    } else {
+        drill = true; // down to the children
+        d.children = d._children;
+        d._children = null;
+    }
 
     // http://stackoverflow.com/questions/19167890/d3-js-tree-layout-collapsing-other-nodes-when-expanding-one/19168311#19168311
     if (d.parent) {
         d.parent.children.forEach(function(element) {
-          if (d !== element) {
-            collapse(element);
-          }
+            if (d !== element) {
+                collapse(element);
+            }
         });
     }
     tooltipMouseOver(d);
@@ -353,7 +357,7 @@ tooltipMouseOut = function(d) {
         .style("opacity", 0);
 }
 
-tooltipMouseOver = function(d) { 
+tooltipMouseOver = function(d) {
     var defn = " : " + d.defn;
     if (typeof d.defn == "undefined" || d.defn == null) {
         defn = "";
@@ -369,17 +373,17 @@ tooltipMouseOver = function(d) {
         .style("opacity", 10);
     div.html("<h3>" + bread + defn /*d.name*/ + "</h3><br/>")
         .style("left", /*(d3.event.pageX + 10)*/ 0 + "px") // horizontal
-        .style("top", /*(d3.event.pageY - 20)*/ 5 + verticalPadding + "px"); // vertical
+    .style("top", /*(d3.event.pageY - 20)*/ 5 + verticalPadding + "px"); // vertical
 }
 
 cursor = function(d) {
-    if(cursorData) {
+    if (cursorData) {
         if (cursorData.id == d.id) {
             return "black";
         }
         var lineage = getLineage(cursorData);
-        for(var i = 0; i < lineage.length; i++){
-            if(lineage[i].id == d.id) {
+        for (var i = 0; i < lineage.length; i++) {
+            if (lineage[i].id == d.id) {
                 return "grey";
             }
         }
@@ -401,46 +405,57 @@ update = function(source, row, startOffset) {
     var treenode = treediv.datum(source).selectAll(".treenode")
         .data(treemap.nodes)
         .enter().append("div")
-          .attr("class", "treenode")
-          .call(position)
-          .style("background", function(d) { return d.children ? color(d.name) : null; })
-          .text(function(d) { 
-            return d._children ? d.name : null; });
+        .attr("class", "treenode")
+        .call(position)
+        .style("background", function(d) {
+            return d.children ? color(d.name) : null;
+        })
+        .text(function(d) {
+            return d._children ? d.name : null;
+        });
 
     function position() {
-      this.style("left", function(d) { return d.x + "px"; })
-          .style("top", function(d) { return d.y + "px"; })
-          .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
-          .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+        this.style("left", function(d) {
+            return d.x + "px";
+        })
+            .style("top", function(d) {
+                return d.y + "px";
+            })
+            .style("width", function(d) {
+                return Math.max(0, d.dx - 1) + "px";
+            })
+            .style("height", function(d) {
+                return Math.max(0, d.dy - 1) + "px";
+            });
     }
 
     // phenoTree
-    if(typeof startOffset == "undefined") {
+    if (typeof startOffset == "undefined") {
         startOffset = 0;
     }
-    if(typeof source != "undefined") {
-        if(typeof drill !== "undefined") {
-          if (!drill) {
-            childrenNumStack.pop();
-          }
+    if (typeof source != "undefined") {
+        if (typeof drill !== "undefined") {
+            if (!drill) {
+                childrenNumStack.pop();
+            }
         }
         var levelWidth = [1];
         var childCount = function(level, n) {
-            if(n.children && n.children.length > 0) {
-                if(levelWidth.length <= level + 1) levelWidth.push(0);
-              
-                levelWidth[level+1] += n.children.length;
+            if (n.children && n.children.length > 0) {
+                if (levelWidth.length <= level + 1) levelWidth.push(0);
+
+                levelWidth[level + 1] += n.children.length;
                 n.children.forEach(function(d) {
-                   childCount(level + 1, d);
+                    childCount(level + 1, d);
                 });
             }
         };
-        
+
         if (typeof source.children !== "undefined") {
-         childCount(0, source);
-         if (typeof levelWidth[1] !== "undefined") {  
-            childrenNumStack.push(levelWidth[1]);
-          }
+            childCount(0, source);
+            if (typeof levelWidth[1] !== "undefined") {
+                childrenNumStack.push(levelWidth[1]);
+            }
         }
 
 
@@ -453,10 +468,10 @@ update = function(source, row, startOffset) {
 
         nodes.forEach(function(d) {
 
-            d.y = d.depth * (sqwidth+1) + startOffset + horizontalPadding - 20; // final positioning
-           if (d.children != null) {
-                d.children.forEach(function (d, i) {
-                   d.x = sqheight + i*(sqheight+sqspacing) + verticalPadding;
+            d.y = d.depth * (sqwidth + 1) + startOffset + horizontalPadding - 20; // final positioning
+            if (d.children != null) {
+                d.children.forEach(function(d, i) {
+                    d.x = sqheight + i * (sqheight + sqspacing) + verticalPadding;
                 });
             }
         });
@@ -475,29 +490,32 @@ update = function(source, row, startOffset) {
             })
             .on("mouseover", tooltipMouseOver)
             .on("mouseout", tooltipMouseOut)
-            .on("click", function(d){
+            .on("click", function(d) {
                 cursorData = d;
                 cursorElement["element"].id = "";
                 cursorElement["element"].style["stroke"] = "grey";
                 this.children[0].id = "cursor";
-                cursorElement = {"element":this.children[0], "location":"tree"};
+                cursorElement = {
+                    "element": this.children[0],
+                    "location": "tree"
+                };
                 if (typeof d != "undefined") {
                     move(d);
-                } 
+                }
             })
             .on("dblclick", function() {
                 createPhenoBox();
             });
 
         nodeEnter.append("rect") // top majority of phenotype box
-            .attr("y", function(d) {
-                return sqspacing;
-            })
+        .attr("y", function(d) {
+            return sqspacing;
+        })
             .attr("x", phenobarheight)
             .attr("width", sqwidth)
             .attr("height", sqheight)
             .attr("class", "childPheno")
-            .attr("hpid", function(d){
+            .attr("hpid", function(d) {
                 return d.id;
             })
             .style("fill", function(d) {
@@ -510,16 +528,18 @@ update = function(source, row, startOffset) {
             .style("stroke", cursor);
 
         nodeEnter.append("text")
-            .attr("y", sqheight/2)
-            .attr("x", function(d) { return d.children || d._children ? 55 : 55; })
+            .attr("y", sqheight / 2)
+            .attr("x", function(d) {
+                return d.children || d._children ? 55 : 55;
+            })
             .attr("dy", ".35em")
             .style("text-anchor", "middle")
             .text(function(d) {
-              try {
-               return cleanName(d.name).substring(0, 10);
-              } catch (e) {
-                return "Empty Pheno!";
-              }
+                try {
+                    return cleanName(d.name).substring(0, 10);
+                } catch (e) {
+                    return "Empty Pheno!";
+                }
             })
             .style("fill-opacity", 1e-6)
             .style("visibility", function(d) {
@@ -546,12 +566,12 @@ update = function(source, row, startOffset) {
                 return d.parent == null ? "hidden" : "visible";
             })
             .style("opacity", function(d) {
-                if(cursorData.id == d.id) {
+                if (cursorData.id == d.id) {
                     return 1.0;
                 }
 
                 var lineage = getLineage(cursorData);
-                for(var i = 0; i < lineage.length; i++) {
+                for (var i = 0; i < lineage.length; i++) {
                     if (d.id == lineage[i].id) {
                         return 1.0;
                     }
@@ -559,18 +579,18 @@ update = function(source, row, startOffset) {
 
                 var children = cursorData["children"];
 
-                if(children) {
+                if (children) {
                     for (var i = 0; i < children.length; i++) {
-                        if(d.id == children[i].id) {
+                        if (d.id == children[i].id) {
                             return 1.0;
                         }
                     }
                 }
 
-                if(typeof cursorData.parent == "undefined") {
+                if (typeof cursorData.parent == "undefined") {
                     return 1.0;
                 }
-                
+
                 return 0.6;
             });
 
@@ -583,7 +603,7 @@ update = function(source, row, startOffset) {
             .remove();
 
         nodeExit.select("text")
-            .style("fill-opacity", 1e-6)            
+            .style("fill-opacity", 1e-6)
             .style("visibility", function(d) {
                 return d.parent == null ? "hidden" : "visible";
             });
@@ -626,33 +646,33 @@ update = function(source, row, startOffset) {
     }
 }
 
-prepData = function(d, data, row) {    
+prepData = function(d, data, row) {
     d3.json("data.json", function(error, flare) {
         root = flare;
 
         var tempPheno = [cursorData];
-        while(typeof tempPheno[tempPheno.length-1].parent != "undefined") {
-            tempPheno.push(tempPheno[tempPheno.length-1].parent);
+        while (typeof tempPheno[tempPheno.length - 1].parent != "undefined") {
+            tempPheno.push(tempPheno[tempPheno.length - 1].parent);
         }
         tempPheno.reverse();
-        for(var x = 0; x < tempPheno.length; x++) {
-            if(typeof root == "undefined") break // leaf node
-            if(typeof root.children !== "undefined") { // stops if at leaf
+        for (var x = 0; x < tempPheno.length; x++) {
+            if (typeof root == "undefined") break // leaf node
+            if (typeof root.children !== "undefined") { // stops if at leaf
                 root = root.children[findWithAttr(root.children, 'id', tempPheno[x].id)];
             }
         }
 
-        root.x0 = (row+1) * sqheight;
-        root.y0 = phenobarheight + (sqwidth*(tempPheno.length-1)) + 50; 
+        root.x0 = (row + 1) * sqheight;
+        root.y0 = phenobarheight + (sqwidth * (tempPheno.length - 1)) + 50;
 
         function collapse(d) {
             if (d.children) {
                 //for(var i=0; i < d.children.length; i++) { // trying to cut out the junk ones.
-                    //console.log(d.children);
-                    // if (typeof d.children[i].name == "undefined") {
-                    //     d.children.splice(i,1);
-                    // }
-               // }
+                //console.log(d.children);
+                // if (typeof d.children[i].name == "undefined") {
+                //     d.children.splice(i,1);
+                // }
+                // }
 
                 d._children = d.children;
                 d._children.forEach(collapse);
@@ -662,8 +682,8 @@ prepData = function(d, data, row) {
 
         root.children.forEach(collapse);
         currentTreeData = root;
-        update(currentTreeData, row, sqwidth*(tempPheno.length-1));
-    });  
+        update(currentTreeData, row, sqwidth * (tempPheno.length - 1));
+    });
 }
 
 draw = function(svg, data) {
@@ -679,9 +699,9 @@ draw = function(svg, data) {
         });
 
     bar.append("rect") // top majority of phenotype box
-        .attr("y", function(d) {
-            return (d.order * sqheight) + sqspacing + verticalPadding;
-        })
+    .attr("y", function(d) {
+        return (d.order * sqheight) + sqspacing + verticalPadding;
+    })
         .attr("x", horizontalPadding)
         .attr("class", "rootPheno")
         .attr("width", sqwidth)
@@ -692,32 +712,35 @@ draw = function(svg, data) {
         .style("fill", color)
         .on("click", function(d) {
             treeActive = true;
-            activerow = d.order-1;
+            activerow = d.order - 1;
             cursorData = d;
             if (cursorElement != null) {
                 cursorElement["element"].id = "";
             }
 
             this.id = "cursor";
-            cursorElement = {"element":this, "location":"list"};
+            cursorElement = {
+                "element": this,
+                "location": "list"
+            };
 
             var rootPhenos = d3.selectAll(".rootPheno"); // CSS adjustments
-            for(var i = 0; i < rootPhenos[0].length; i++) {
-               rootPhenos[0][i].style["stroke"] = "";
-               rootPhenos[0][i].style["opacity"] = 0.6;
+            for (var i = 0; i < rootPhenos[0].length; i++) {
+                rootPhenos[0][i].style["stroke"] = "";
+                rootPhenos[0][i].style["opacity"] = 0.6;
             }
             this.style["stroke"] = "black";
             this.style["opacity"] = 1.0;
 
             var childPhenos = d3.selectAll(".childPheno"); // CSS adjustments
-            for(var i = 0; i < childPhenos[0].length; i++) {
+            for (var i = 0; i < childPhenos[0].length; i++) {
                 childPhenos[0][i].style["opacity"] = 0;
                 childPhenos[0][i].nextSibling.style["opacity"] = 0;
             }
             prepData(d, data, activerow);
         })
-        .on("contextmenu", function(d){
-            d3.event.preventDefault();   
+        .on("contextmenu", function(d) {
+            d3.event.preventDefault();
         })
         .on("mouseover", function(d) { // tool tip  
             tooltipMouseOver(d);
@@ -727,11 +750,11 @@ draw = function(svg, data) {
         });
 
     bar.append("text") // phenotype name
-        .attr("y", function(d) {
-            return ((d.order * sqheight) + sqheight / 2) + sqspacing + verticalPadding;
-        })
+    .attr("y", function(d) {
+        return ((d.order * sqheight) + sqheight / 2) + sqspacing + verticalPadding;
+    })
         .attr("x", horizontalPadding + 35) // hardcoded until better option is found
-        .attr("dy", ".35em")
+    .attr("dy", ".35em")
         .style("font-size", function(d) {
             return 0.15 * sqwidth + "px";
         })
@@ -743,7 +766,7 @@ draw = function(svg, data) {
 
     // attempt to create children boxes.
     var locData = data;
-    for(var row = 0; row < locData.length; row++) {
+    for (var row = 0; row < locData.length; row++) {
         if (locData[row].children.length > 0) {
             var barChildren = svg.selectAll(locData[row].name) // the bar which will hold the phenotype boxes.
                 .data(locData[row].children)
@@ -752,15 +775,15 @@ draw = function(svg, data) {
                     return "translate(" + 0 + ", " + 0 + ")";
                 });
 
-            for(var count = 0; count < locData[row].children.length; count++) {
+            for (var count = 0; count < locData[row].children.length; count++) {
                 var tempName = locData[row].children[count].name;
 
                 barChildren.append("rect") // top majority of phenotype box
-                    .attr("y", function(d) {
-                        return (locData[row].order * (sqheight+sqspacing)) + verticalPadding;
-                    })
+                .attr("y", function(d) {
+                    return (locData[row].order * (sqheight + sqspacing)) + verticalPadding;
+                })
                     .attr("x", function(d) {
-                        return ((1+sqwidth)*(count+sqspacing) + horizontalPadding);
+                        return ((1 + sqwidth) * (count + sqspacing) + horizontalPadding);
                     })
                     .attr("width", sqwidth)
                     .attr("height", sqheight)
@@ -804,8 +827,8 @@ draw = function(svg, data) {
                         // pheno = data[tempRow].children[tempColumn];
                         // prepData(pheno, data, tempRow);
                     })
-                    .on("contextmenu", function(d){
-                        d3.event.preventDefault();  
+                    .on("contextmenu", function(d) {
+                        d3.event.preventDefault();
                         var tempColumn = d3.select(this).attr("id");
                         var tempRow = d3.select(this).attr("row");
                         removeChild(tempRow, tempColumn);
@@ -814,17 +837,17 @@ draw = function(svg, data) {
                         var tempColumn = d3.select(this).attr("id");
                         var tempName = "";
                         var tempRow = d3.select(this).attr("row");
-                        if(typeof data[tempRow] !== "undefined" &&
-                           typeof data[tempRow].children[tempColumn] !== "undefined") {
-                            tempName = data[tempRow].children[tempColumn]/*.name*/;
+                        if (typeof data[tempRow] !== "undefined" &&
+                            typeof data[tempRow].children[tempColumn] !== "undefined") {
+                            tempName = data[tempRow].children[tempColumn] /*.name*/ ;
                         }
 
                         div.transition()
                             .duration(200)
                             .style("opacity", 10);
                         div.html("<h3>" + generateBreadCrumb(tempName) + "</h3><br/>") // issue only remembers last name
-                            .style("left", 100 + "px") // horizontal
-                            .style("top", 50 + "px"); // vertical
+                        .style("left", 100 + "px") // horizontal
+                        .style("top", 50 + "px"); // vertical
                     })
                     .on("mouseout", function(d) {
                         div.transition()
@@ -833,11 +856,11 @@ draw = function(svg, data) {
                     });
 
                 barChildren.append("text") // phenotype name
-                    .attr("y", function(d) {
-                        return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2) + sqspacing + verticalPadding;
-                    })
-                    .attr("x", 51*(count+1) + horizontalPadding + 55 + (count*20)) // hardcoded until better option is found
-                    .attr("dy", ".35em")
+                .attr("y", function(d) {
+                    return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2) + sqspacing + verticalPadding;
+                })
+                    .attr("x", 51 * (count + 1) + horizontalPadding + 55 + (count * 20)) // hardcoded until better option is found
+                .attr("dy", ".35em")
                     .style("font-size", function(d) {
                         return 0.15 * sqwidth + "px";
                     })
