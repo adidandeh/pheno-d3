@@ -28,28 +28,14 @@ var activerow = -1,
     treeHeight = 500,
     height = 2000 - margin.top - margin.bottom,
     width = 1000 - margin.right - margin.left,
-    maxBoxHeight = 120;
+    maxBoxHeight = 120,
+    verticalPadding = 10
+    horizontalPadding = 0;
 
 // treeMap
 var mapMargin = {top: 20, right: 0, bottom: 0, left: 0},
     mapWidth = 300,
     mapHeight = 300;
-
-// var mapX = d3.scale.linear()
-//     .domain([0, mapWidth])
-//     .range([0, mapWidth]);
-
-// var mapY = d3.scale.linear()
-//     .domain([0, mapHeight])
-//     .range([0, mapHeight]);
-
-// var treemap = d3.layout.treemap()
-//     .children(function(d, depth) { 
-//       return depth ? null : d._children; })
-//     // .sort(function(a, b) { 
-//     //   return a.value - b.value; })
-//     .ratio(mapHeight / mapWidth * 0.5 * (1 + Math.sqrt(5)))
-//     .round(false);
 
 var treemap = d3.layout.treemap()
     .size([mapWidth, mapHeight])
@@ -78,30 +64,6 @@ var div = d3.select("body").append("div")
     .attr("class", "tooltip");
 
 var treecolor = d3.scale.category20c();
-
-// treeMap
-// var svgMap = d3.select("#chart").append("svg")
-//     .attr("width", mapWidth + mapMargin.left + mapMargin.right)
-//     .attr("height", mapHeight + mapMargin.bottom + mapMargin.top)
-//     .style("margin-left", -mapMargin.left + "px")
-//     .style("margin.right", -mapMargin.right + "px")
-//   .append("g")
-//     .attr("transform", "translate(" + mapMargin.left + "," + mapMargin.top + ")")
-//     .style("shape-rendering", "crispEdges");
-
-// var grandparent = svgMap.append("g")
-//     .attr("class", "grandparent");
-
-// grandparent.append("rect")
-//     .attr("y", -mapMargin.top)
-//     .attr("width", mapWidth)
-//     .attr("height", mapMargin.top);
-
-// grandparent.append("text")
-//     .attr("x", 6)
-//     .attr("y", 6 - mapMargin.top)
-//     .attr("dy", ".75em");
-// /
 
 d3.select("body").on("keydown", function (d) {
     if(treeActive) {
@@ -250,6 +212,18 @@ cleanName = function(name) {
     return name;
 }
 
+clearPhenotypes = function() {
+    data.forEach(function(d) {
+        console.log(d);
+        d.children = [];
+    });
+    draw(svg, data);
+}
+
+searchPhenotypes = function() {
+    console.log("test");
+}
+
 color = function(d){
     var random = Math.floor(Math.random() * colorArr.length) + 0;
     //return colorArr[random];
@@ -396,8 +370,8 @@ tooltipMouseOver = function(d) {
         .duration(200)
         .style("opacity", 10);
     div.html("<h3>" + bread + defn /*d.name*/ + "</h3><br/>")
-        .style("left", /*(d3.event.pageX + 10)*/ 100 + "px") // horizontal
-        .style("top", /*(d3.event.pageY - 20)*/ 40 + "px"); // vertical
+        .style("left", /*(d3.event.pageX + 10)*/ 0 + "px") // horizontal
+        .style("top", /*(d3.event.pageY - 20)*/ 5 + verticalPadding + "px"); // vertical
 }
 
 cursor = function(d) {
@@ -418,7 +392,6 @@ cursor = function(d) {
 // major functions
 update = function(source, row, startOffset) {
     // treeMap
-
     d3.select("#chart").selectAll("div").remove();
 
     var treediv = d3.select("#chart").append("div")
@@ -426,7 +399,7 @@ update = function(source, row, startOffset) {
         .style("width", (mapWidth + mapMargin.left + mapMargin.right) + "px")
         .style("height", (mapHeight + mapMargin.top + mapMargin.bottom) + "px")
         .style("left", mapMargin.left + "px")
-        .style("top", mapMargin.top + "px");
+        .style("top", mapMargin.top + verticalPadding + "px");
 
     var treenode = treediv.datum(source).selectAll(".treenode")
         .data(treemap.nodes)
@@ -443,150 +416,6 @@ update = function(source, row, startOffset) {
           .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
           .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
     }
-    // svgMap.selectAll(".depth").remove();
-
-// console.log("^^^^");
-//    initialize(source);
-  // accumulate(source);
-  // layout(source);
-    // display(source);
-
-    // function initialize(root) {
-    //     root.x = root.y = 0;
-    //     root.dx = mapWidth;
-    //     root.dy = mapHeight;
-    //     root.depth = 0;
-    // }
-
-    // // Aggregate the values for internal nodes. This is normally done by the
-    // // treemap layout, but not here because of our custom implementation.
-    // // We also take a snapshot of the original children (_children) to avoid
-    // // the children being overwritten when when layout is computed.
-    // function accumulate(d) {
-    //     //d.value = Math.floor((Math.random() * 2) + 1);
-    //  //  d.value = 1;
-    //     console.log(d);
-    //     return (d._children = d.children)
-    //         ? d.value = d.children.reduce(function(p, v) { 
-    //             return p + accumulate(v); }, 0)
-    //         : d.value;
-    // }
-
-    // // Compute the treemap layout recursively such that each group of siblings
-    // // uses the same size (1×1) rather than the dimensions of the parent cell.
-    // // This optimizes the layout for the current zoom state. Note that a wrapper
-    // // object is created for the parent node for each group of siblings so that
-    // // the parent’s dimensions are not discarded as we recurse. Since each group
-    // // of sibling was laid out in 1×1, we must rescale to fit using absolute
-    // // coordinates. This lets us use a viewport to zoom.
-    // function layout(d) {
-    //     if (d.children) {
-    //       treemap.nodes({_children: d.children});
-    //       d.children.forEach(function(c) {
-    //         c.x = d.x + c.x * d.dx;
-    //         c.y = d.y + c.y * d.dy;
-    //         c.dx *= d.dx;
-    //         c.dy *= d.dy;
-    //         c.parent = d;
-    //         layout(c);
-    //       });
-    //     }
-    // }
-
-    // function display(d) {
-    //     grandparent
-    //         .datum(d.parent)
-    //         .on("click", transition)
-    //       .select("text")
-    //         .text(name(d));
-
-    //     var g1 = svgMap.insert("g", ".grandparent")
-    //         .datum(d)
-    //         .attr("class", "depth");
-
-    //     var g = g1.selectAll("g")
-    //         .data(d._children)
-    //       .enter().append("g");
-
-    //     g.filter(function(d) { return d._children; })
-    //         .classed("children", true)
-    //         .on("click", transition);
-
-    //     g.selectAll(".child")
-    //         .data(function(d) { return d._children || [d]; })
-    //       .enter().append("rect")
-    //         .attr("class", "child")
-    //         .call(rect);
-
-    //     g.append("rect")
-    //         .attr("class", "parent")
-    //         .call(rect)
-    //       .append("title")
-    //         .text(function(d) { 
-    //           //return formatNumber(d.value); 
-    //           return cleanName(d.name);
-    //         });
-
-    //     g.append("text")
-    //         .attr("dy", ".75em")
-    //         .text(function(d) {  return cleanName(d.name).substring(0, 10); })
-    //         .call(text);
-
-    //     function transition(d) {
-    //         console.log("test");
-    //       if (transitioning || !d) return;
-    //       transitioning = true;
-
-    //       var g2 = display(d),
-    //           t1 = g1.transition().duration(750),
-    //           t2 = g2.transition().duration(750);
-
-    //       // Update the domain only after entering new elements.
-    //       mapX.domain([d.x, d.x + d.dx]);
-    //       mapY.domain([d.y, d.y + d.dy]);
-
-    //       // Enable anti-aliasing during the transition.
-    //       svgMap.style("shape-rendering", null);
-
-    //       // Draw child nodes on top of parent nodes.
-    //       svgMap.selectAll(".depth").sort(function(a, b) { return a.depth - b.depth; });
-
-    //       // Fade-in entering text.
-    //       g2.selectAll("text").style("fill-opacity", 0);
-
-    //       // Transition to the new view.
-    //       t1.selectAll("text").call(text).style("fill-opacity", 0);
-    //       t2.selectAll("text").call(text).style("fill-opacity", 1);
-    //       t1.selectAll("rect").call(rect);
-    //       t2.selectAll("rect").call(rect);
-
-    //       // Remove the old node when the transition is finished.
-    //       t1.remove().each("end", function() {
-    //         svgMap.style("shape-rendering", "crispEdges");
-    //         transitioning = false;
-    //       });
-    //     }
-
-    //     return g;
-    // }
-
-    // function text(text) {
-    //     text.attr("x", function(d) { return mapX(d.x) + 6; })
-    //         .attr("y", function(d) { return mapY(d.y) + 6; });
-    // }
-
-    // function rect(rect) {
-    //     rect.attr("x", function(d) { return mapX(d.x); })
-    //         .attr("y", function(d) { return mapY(d.y); })
-    //         .attr("width", function(d) { return mapX(d.x + d.dx) - mapX(d.x); })
-    //         .attr("height", function(d) { return mapY(d.y + d.dy) - mapY(d.y); });
-    // }
-
-    // function name(d) {
-    //     return d.parent
-    //         ? name(d.parent) + "." + cleanName(d.name)
-    //         : cleanName(d.name);
-    // }
 
     // phenoTree
     if(typeof startOffset == "undefined") {
@@ -626,10 +455,11 @@ update = function(source, row, startOffset) {
             links = tree.links(nodes);
 
         nodes.forEach(function(d) {
-            d.y = d.depth * (sqwidth+1) + startOffset; // final positioning
+
+            d.y = d.depth * (sqwidth+1) + startOffset + horizontalPadding - 20; // final positioning
            if (d.children != null) {
                 d.children.forEach(function (d, i) {
-                   d.x = sqheight + i*(sqheight+1);
+                   d.x = sqheight + i*(sqheight+sqspacing) + verticalPadding;
                 });
             }
         });
@@ -841,7 +671,6 @@ prepData = function(d, data, row) {
     });  
 }
 
-
 draw = function(svg, data) {
     svg.selectAll("*").remove();
 
@@ -856,9 +685,9 @@ draw = function(svg, data) {
 
     bar.append("rect") // top majority of phenotype box
         .attr("y", function(d) {
-            return (d.order * sqheight) + sqspacing;
+            return (d.order * sqheight) + sqspacing + verticalPadding;
         })
-        .attr("x", phenobarheight)
+        .attr("x", horizontalPadding)
         .attr("class", "rootPheno")
         .attr("width", sqwidth)
         .attr("height", sqheight)
@@ -904,9 +733,9 @@ draw = function(svg, data) {
 
     bar.append("text") // phenotype name
         .attr("y", function(d) {
-            return ((d.order * sqheight) + sqheight / 2) + 1;
+            return ((d.order * sqheight) + sqheight / 2) + sqspacing + verticalPadding;
         })
-        .attr("x", sqwidth - 15) // hardcoded until better option is found
+        .attr("x", horizontalPadding + 35) // hardcoded until better option is found
         .attr("dy", ".35em")
         .style("font-size", function(d) {
             return 0.15 * sqwidth + "px";
@@ -933,10 +762,10 @@ draw = function(svg, data) {
 
                 barChildren.append("rect") // top majority of phenotype box
                     .attr("y", function(d) {
-                        return ((locData[row].order) * (sqheight+sqspacing));
+                        return (locData[row].order * (sqheight+sqspacing)) + verticalPadding;
                     })
                     .attr("x", function(d) {
-                        return (sqwidth*(count+1) + 21 + (count));
+                        return ((1+sqwidth)*(count+sqspacing) + horizontalPadding);
                     })
                     .attr("width", sqwidth)
                     .attr("height", sqheight)
@@ -1010,9 +839,9 @@ draw = function(svg, data) {
 
                 barChildren.append("text") // phenotype name
                     .attr("y", function(d) {
-                        return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2) + 1;
+                        return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2) + sqspacing + verticalPadding;
                     })
-                    .attr("x", 51*(count+1) + 75 + (count*20)) // hardcoded until better option is found
+                    .attr("x", 51*(count+1) + horizontalPadding + 55 + (count*20)) // hardcoded until better option is found
                     .attr("dy", ".35em")
                     .style("font-size", function(d) {
                         return 0.15 * sqwidth + "px";
@@ -1026,6 +855,5 @@ draw = function(svg, data) {
         }
     }
 }
-
 
 draw(svg, data);
