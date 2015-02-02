@@ -8,7 +8,7 @@ div#phenobar {
 }
 
 div#chart {
-  float: right;
+  float: left;
 }
 
 div.tooltip {   
