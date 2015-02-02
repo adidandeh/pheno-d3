@@ -189,7 +189,6 @@ d3.select("body").on("keypress", function () {
     }
 });
 
-//helper functions 
 cleanName = function(name) {
     try {
         name = name.replace("Abnormality of the ", "");
@@ -311,7 +310,6 @@ generateBreadCrumb = function(d) {
     return temptext;
 }
 
-// http://stackoverflow.com/questions/19167890/d3-js-tree-layout-collapsing-other-nodes-when-expanding-one/19168311#19168311
 collapse = function(d) {
   if (d.children) {
     d._children = d.children;
@@ -389,7 +387,6 @@ cursor = function(d) {
     return "";
 }
 
-// major functions
 update = function(source, row, startOffset) {
     // treeMap
     d3.select("#chart").selectAll("div").remove();
@@ -664,8 +661,6 @@ prepData = function(d, data, row) {
         }
 
         root.children.forEach(collapse);
-        console.log(root);
-        console.log("****");
         currentTreeData = root;
         update(currentTreeData, row, sqwidth*(tempPheno.length-1));
     });  
