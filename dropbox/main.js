@@ -10,7 +10,7 @@ var activerow = -1,
         "#C6D2D7",
         "#EDAA84"
     ],
-    duration = 200,
+    duration = 100,
     depth = 0,
     drill = undefined,
     i = 0,
@@ -227,7 +227,7 @@ clearPhenotypes = function() {
     cursorData = null;
     depth = 0;
     drill = undefined;
-    
+
     draw(svg, data);
 }
 
