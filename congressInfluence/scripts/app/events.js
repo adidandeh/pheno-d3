@@ -8,15 +8,23 @@ function node_onMouseOver(d,type) {
         // header1.text("Congress");
         // header.text(d.CAND_NAME);
         // header2.text("Total Recieved: " + formatCurrency(Number(d.Amount)));
+
+        tempHeight = 100;
+
         header1.text(d.medline_journal_title);
         header.text(d.medline_article_title);
+        header2.text("Publish Year: " + d.medline_pub_year);
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
             .style("height", function() {
                 if (d.medline_article_title.length > 31*2) {
-                    return (d.medline_article_title.length/31*15) +100+"px";
+                    tempHeight += (d.medline_article_title.length/31*25);
                 } 
-                return 100 + "px";
+
+                if (d.medline_journal_title.length > 30) {
+                    tempHeight += (d.medline_journal_title.length/30*10)
+                }
+                return tempHeight + "px";
             });
 
         highlightLinks(d,true);
