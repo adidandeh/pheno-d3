@@ -118,9 +118,12 @@ function updateLinks(links) {
 function updateNodes() {
 
     var node = nodesSvg.selectAll("g.node")
-        .data(cands, function (d,i) {
-            return d.CAND_ID;
+        .data(docs, function (d,i) {
+            return d.id;
         });
+        // .data(cands, function (d,i) {
+        //     return d.CAND_ID;
+        // });
 
 
     var enter=node.enter().append("g")
@@ -133,17 +136,22 @@ function updateNodes() {
         .attr("r", function(d) { return d.r; })
         .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.05})
         .style("stroke",function(d) {
-            return ((d.PTY=='DEM') ? demColor : (d.PTY=="REP") ? repColor : otherColor);
+            return demColor;
+            // return ((d.PTY=='DEM') ? demColor : (d.PTY=="REP") ? repColor : otherColor);
         })
         .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.2})
         .style("fill", function(d) {
-            return ((d.PTY=='DEM') ? demColor : (d.PTY=="REP") ? repColor : otherColor);
+            return demColor;
+            // return ((d.PTY=='DEM') ? demColor : (d.PTY=="REP") ? repColor : otherColor);
         });
 
 
 
     var g=enter.append("g")
-        .attr("id", function(d) { return "c_" + d.CAND_ID; })
+        .attr("id", function(d) { 
+            return "d_" + d.id; 
+            // return "c_" + d.CAND_ID; 
+        })
         .style("opacity",0);
 
         g.append("circle")

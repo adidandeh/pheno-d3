@@ -52,7 +52,10 @@ function onFetchPhenotypes(error, data) {
 function onFetchDocuments(error, data) {
     documents = data.response.docs;
     for (var i=0; i < documents.length; i++) {
+        var d = documents[i];
+        d.value = d.phenotypes.length;
         documentsById["documents_" + documents[i].id]=documents[i];
+        total_docs+=1; 
     }
     endFetch();
 }

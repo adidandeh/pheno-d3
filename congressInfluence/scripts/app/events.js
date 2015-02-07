@@ -5,13 +5,19 @@ function node_onMouseOver(d,type) {
         toolTip.transition()
             .duration(200)
             .style("opacity", ".9");
-
-        header1.text("Congress");
-        header.text(d.CAND_NAME);
-        header2.text("Total Recieved: " + formatCurrency(Number(d.Amount)));
+        // header1.text("Congress");
+        // header.text(d.CAND_NAME);
+        // header2.text("Total Recieved: " + formatCurrency(Number(d.Amount)));
+        header1.text(d.medline_journal_title);
+        header.text(d.medline_article_title);
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
-            .style("height","100px");
+            .style("height", function() {
+                if (d.medline_article_title.length > 31*2) {
+                    return (d.medline_article_title.length/31*15) +100+"px";
+                } 
+                return 100 + "px";
+            });
 
         highlightLinks(d,true);
     }

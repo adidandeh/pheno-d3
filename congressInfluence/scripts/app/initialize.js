@@ -7,21 +7,26 @@ function initialize() {
     contr=[];
     phenoRoots=[];
     phenoRoots=phenotypeRoots;
+    docs=[];
+
     if (office=="house") {
         var root={};
         var d={};
-        d.value=total_hDems;
-        d.children=h_dems;
+        // d.value=total_hDems;
+        // d.children=h_dems;
+        d.value=total_docs;
+        d.children=documents;
 
-        var r={};
-        r.value=total_hReps;
-        r.children=h_reps;
+        // var r={};
+        // r.value=total_hReps;
+        // r.children=h_reps;
 
-        var o={};
-        o.value=total_hOthers;
-        o.children=h_others;
+        // var o={};
+        // o.value=total_hOthers;
+        // o.children=h_others;
 
-        root.children=[r,d,o];
+        // root.children=[r,d,o];
+        root.children=[d];
         root.PTY="root";
 
         nodes=bubble.nodes(root);
@@ -29,17 +34,19 @@ function initialize() {
         var totalCandAmount=0;
         nodes.forEach (function (d) {
             if (d.depth==2) {
-                nodesById[d.CAND_ID]=d;
+                nodesById[d.id]=d;
                 d.relatedLinks=[];
-                d.Amount=Number(d.Amount);
-                d.currentAmount= d.Amount;
-                cands.push(d);
+                d.Amount=Number(d.phenotypes.length);
+                // d.Amount=Number(d.Amount);
+                d.currentAmount =d.phenotypes.length;
+                // d.currentAmount =d.Amount;
+                // cands.push(d);
+                docs.push(d);
                 totalCandAmount+= d.Amount;
+
             }
         })
-
         log("totalCandAmount=" + totalCandAmount);
-        
         pacs=pacsHouse;
         // c_house.forEach(function (d) {
         //     contr.push(d);
