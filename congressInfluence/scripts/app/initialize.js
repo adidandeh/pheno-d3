@@ -7,7 +7,6 @@ function initialize() {
     contr=[];
     phenoRoots=[];
     phenoRoots=phenotypeRoots;
-    console.log(phenotypeRoots);
     if (office=="house") {
         var root={};
         var d={};
@@ -42,9 +41,9 @@ function initialize() {
         log("totalCandAmount=" + totalCandAmount);
         
         pacs=pacsHouse;
-        c_house.forEach(function (d) {
-            contr.push(d);
-        });
+        // c_house.forEach(function (d) {
+        //     contr.push(d);
+        // });
     }
     else if (office=="senate") {
         var root={};
@@ -86,15 +85,15 @@ function initialize() {
 
     buildChords();
     var totalContr=0;
-    contr.forEach(function (d) {
-        nodesById[d.CAND_ID].relatedLinks.push(d);
-        chordsById[d.CMTE_ID].relatedLinks.push(d);
-        totalContr+= Number(d.TRANSACTION_AMT);
-    })
+    // contr.forEach(function (d) {
+    //     console.log(d);
+    //     nodesById[d.CAND_ID].relatedLinks.push(d);
+    //     //chordsById[d.CMTE_ID].relatedLinks.push(d);
+    //     chordsById[d.CMTE_ID].relatedLinks.push(d); //temp
+    //     totalContr+= Number(d.TRANSACTION_AMT);
+    // })
 
     log("totalContributions=" + totalContr);
-
-
     log("initialize()");
 
 }

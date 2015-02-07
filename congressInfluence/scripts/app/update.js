@@ -170,11 +170,8 @@ function updateNodes() {
 }
 
 function updateChords() {
-
-
     var arcGroup = chordsSvg.selectAll("g.arc")
         .data(chords, function (d) {
-       //     console.log(d);
             return d.label;
         });
 
@@ -190,8 +187,8 @@ function updateChords() {
                 + (d.angle > Math.PI ? "rotate(180)" : "");
         })
         .text(function(d) { 
-            // return trimLabel(phenotypeRootsById["phenotypeRoot_" + d.id].name);
-            return trimLabel(pacsById[office + "_" + d.label].CMTE_NM); 
+            return trimLabel(phenotypeRootsById["phenotypeRoot_" + d.label].name);
+            // return trimLabel(psacsById[office + "_" + d.label].CMTE_NM); 
         })
         .on("mouseover", function (d) { node_onMouseOver(d,"PAC");})
         .on("mouseout", function (d) {node_onMouseOut(d,"PAC"); });
@@ -207,7 +204,10 @@ function updateChords() {
                 + (d.angle > Math.PI ? "rotate(180)" : "");
         })
         .style("fill", "#777")
-        .text(function(d) { return trimLabel(pacsById[office + "_" + d.label].CMTE_NM); });
+        .text(function(d) { 
+             return trimLabel(phenotypeRootsById["phenotypeRoot_" + d.label].name);
+            // return trimLabel(psacsById[office + "_" + d.label].CMTE_NM); 
+        });
 
 
 

@@ -4,24 +4,8 @@ function buildChords() {
 
     labels=[];
     chords=[];
-    // console.log(phenoRoots);
-    // for (var i=0; i < phenoRoots.length; i++) {
-    //     console.log(i);
-    //     var l={};
-    //     l.index=i;
-    //     l.label="null";
-    //     l.angle=0;
-    //     labels.push(l);
 
-    //     var c={}
-    //     c.label="null";
-    //     c.source={};
-    //     c.target={};
-    //     chords.push(c);
-
-    // }
-
-    for (var i=0; i < pacs.length; i++) {
+    for (var i=0; i < phenotypeRoots.length; i++) {
         var l={};
         l.index=i;
         l.label="null";
@@ -36,6 +20,21 @@ function buildChords() {
 
     }
 
+    // for (var i=0; i < pacs.length; i++) {
+    //     var l={};
+    //     l.index=i;
+    //     l.label="null";
+    //     l.angle=0;
+    //     labels.push(l);
+
+    //     var c={}
+    //     c.label="null";
+    //     c.source={};
+    //     c.target={};
+    //     chords.push(c);
+
+    // }
+
 
     buf_indexByName=indexByName;
 
@@ -46,48 +45,52 @@ function buildChords() {
     var totalPacAmount=0;
 
     // Compute a unique index for each package name
-    // phenoRoots.forEach(function(d) {
-    //     d = d.id;
-    //     if (!(d in indexByName)) {
-    //           nameByIndex[n] = d;
-    //           indexByName[d] = n++;
-    //     }
-    // });
-
-    //  phenoRoots.forEach(function(d) {
-    //     var source = indexByName[d.id],
-    //         row = matrix[source];
-    //     if (!row) {
-    //         row = matrix[source] = [];
-    //         for (var i = -1; ++i < n;) row[i] = 0;
-    //     }
-    //     row[indexByName[d.id]]= Number(d.id);
-    // //    totalPacAmount+=Number(d.Amount);
-    // });
-
-    pacs.forEach(function(d) {
-        d = d.CMTE_ID;
+    phenotypeRoots.forEach(function(d) {
+        d = d.id;
         if (!(d in indexByName)) {
               nameByIndex[n] = d;
               indexByName[d] = n++;
         }
     });
 
-     pacs.forEach(function(d) {
-        var source = indexByName[d.CMTE_ID],
+     phenotypeRoots.forEach(function(d) {
+        var source = indexByName[d.id],
             row = matrix[source];
         if (!row) {
             row = matrix[source] = [];
             for (var i = -1; ++i < n;) row[i] = 0;
         }
-        row[indexByName[d.CMTE_ID]]= Number(d.Amount);
-        totalPacAmount+=Number(d.Amount);
+
+        // console.log(d.name);
+        // console.log(d.children.length);
+        // console.log("-----");
+        row[indexByName[d.id]]= d.children.length;
+                // console.log(row);
+        totalPacAmount+= d.children.length;
     });
+
+    // pacs.forEach(function(d) {
+    //     d = d.CMTE_ID;
+    //     if (!(d in indexByName)) {
+    //           nameByIndex[n] = d;
+    //           indexByName[d] = n++;
+    //     }
+    // });
+
+    //  pacs.forEach(function(d) {
+    //     var source = indexByName[d.CMTE_ID],
+    //         row = matrix[source];
+    //     if (!row) {
+    //         row = matrix[source] = [];
+    //         for (var i = -1; ++i < n;) row[i] = 0;
+    //     }
+    //     row[indexByName[d.CMTE_ID]]= Number(d.Amount);
+    //     totalPacAmount+=Number(d.Amount);
+    // });
 
   //  console.log("totalPacAmount=" + totalPacAmount)
 
     chord.matrix(matrix);
-
     var tempLabels=[];
     var tempChords=[];
 
@@ -147,7 +150,6 @@ function buildChords() {
     */
 
     chords=chord.chords();
-
     var i=0;
     chords.forEach(function (d) {
         d.label=nameByIndex[i];
@@ -162,7 +164,6 @@ function buildChords() {
         o.Amount= d.source.value;
         o.source= d.source;
         o.relatedLinks=[];
-        // console.log(d.label);
         chordsById[d.label]= o;
         i++;
     });

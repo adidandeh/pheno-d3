@@ -46,8 +46,7 @@ function onFetchPhenotypes(error, data) {
     for (var i=0; i < phenotypeRoots.length; i++) {
         phenotypeRootsById["phenotypeRoot_" + phenotypeRoots[i].id]=phenotypeRoots[i];
     }
-
-        endFetch();
+    endFetch();
 }
 
 function onFetchDocuments(error, data) {
@@ -55,7 +54,7 @@ function onFetchDocuments(error, data) {
     for (var i=0; i < documents.length; i++) {
         documentsById["documents_" + documents[i].id]=documents[i];
     }
-        endFetch();
+    endFetch();
 }
 
 function onFetchCandidatesSenate(csv) {

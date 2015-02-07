@@ -40,9 +40,12 @@ function node_onMouseOver(d,type) {
             .duration(200)
             .style("opacity", ".9");
 
-        header1.text("Political Action Committee");
-        header.text(pacsById[office + "_" + d.label].CMTE_NM);
-        header2.text("Total Contributions: " + formatCurrency(pacsById[office + "_" + d.label].Amount));
+        // header1.text("Political Action Committee");
+        // header.text(pacsById[office + "_" + d.label].CMTE_NM);
+        // header2.text("Total Contributions: " + formatCurrency(pacsById[office + "_" + d.label].Amount));
+        header1.text("Phenotype Root");
+        header.text(phenotypeRootsById["phenotypeRoot_" + d.label].name);
+        header2.text("Number of Children: " + phenotypeRootsById["phenotypeRoot_" + d.label].children.length);
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
             .style("height","110px");
