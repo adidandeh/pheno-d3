@@ -16,15 +16,47 @@ var numCalls=0;
 function fetchData() {
     dataCalls=[];
 //    dataDispatch.on("end",onDataFetched)
-    addStream("data/Candidates_House.csv", onFetchCandidatesHouse);
-    addStream("data/Candidates_Senate.csv", onFetchCandidatesSenate);
-    addStream("data/Contributions_House.csv", onFetchContributionsHouse);
-    addStream("data/Contributions_Senate.csv", onFetchContributionsSenate);
-    addStream("data/Pacs_House.csv", onFetchPacsHouse);
-    addStream("data/Pacs_Senate.csv", onFetchPacsSenate);
+
+
+/* Need to generate: 
+    - Full phenotype listing, seperated by major subtree. 
+        - data.children is the arc main segments
+        - the individual divisions are the children phenotypes
+        - Used for arc divisions around the visual space.
+    - Full article sets.
+        - Used as the clusters within the visual space.
+    - Search input.
+        - Used to generate the links between the arc and the clusters.
+*/
+
+    addStream("data/data.json", onFetchPhenotypes, "json");
+    addStream("data/docs.json", onFetchDocuments, "json");
+    addStream("data/Candidates_House.csv", onFetchCandidatesHouse, "csv");
+    addStream("data/Candidates_Senate.csv", onFetchCandidatesSenate, "csv");
+    addStream("data/Contributions_House.csv", onFetchContributionsHouse, "csv");
+    addStream("data/Contributions_Senate.csv", onFetchContributionsSenate, "csv");
+    addStream("data/Pacs_House.csv", onFetchPacsHouse, "csv");
+    addStream("data/Pacs_Senate.csv", onFetchPacsSenate, "csv");
     startFetch();
 }
 
+
+function onFetchPhenotypes(error, data) {
+    phenotypeRoots = data.children;
+    for (var i=0; i < phenotypeRoots.length; i++) {
+        phenotypeRootsById["phenotypeRoot_" + phenotypeRoots[i].id]=phenotypeRoots[i];
+    }
+
+        endFetch();
+}
+
+function onFetchDocuments(error, data) {
+    documents = data.response.docs;
+    for (var i=0; i < documents.length; i++) {
+        documentsById["documents_" + documents[i].id]=documents[i];
+    }
+        endFetch();
+}
 
 function onFetchCandidatesSenate(csv) {
 
@@ -104,12 +136,12 @@ function onFetchContributionsHouse(csv) {
 }
 
 function onFetchPacsHouse(csv) {
-
+    // console.log(csv);
     pacsHouse=csv;
     for (var i=0; i < pacsHouse.length; i++) {
         pacsById["house_" + pacsHouse[i].CMTE_ID]=pacsHouse[i];
     }
-
+    // console.log(pacsById);
     log("onFetchPacsHouse()");
     endFetch();
 
@@ -129,17 +161,18 @@ function onFetchPacsSenate(csv) {
 }
 
 
-function addStream(file,func) {
+function addStream(file,func,type) {
     var o={};
     o.file=file;
     o.function=func;
+    o.type=type;
     dataCalls.push(o);
 }
 
 function startFetch() {
     numCalls=dataCalls.length;
     dataCalls.forEach(function (d) {
-        d3.csv(d.file, d.function);
+        d3[d.type](d.file, d.function);
     })
 }
 

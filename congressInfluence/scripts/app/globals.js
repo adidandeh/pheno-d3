@@ -90,6 +90,12 @@ var linkGroup;
 var cns=[],
     cands=[],
     pacs=[],
+
+    phenoRoots=[], // init
+
+    documents=[], // data
+    phenotypeRoots=[], // data
+
     pacsHouse=[],
     pacsSentate=[],
     contr=[],
@@ -110,8 +116,11 @@ var cns=[],
     contributions=[],
     c_senate=[];
     c_house=[];
-    pacs=[],
     pacsById={},
+
+    documentsById={},
+    phenotypeRootsById={},
+
     chordsById={},
     nodesById={},
     chordCount=20,

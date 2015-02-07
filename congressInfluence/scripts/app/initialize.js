@@ -5,7 +5,9 @@ function initialize() {
     cands=[];
     pacs=[];
     contr=[];
-
+    phenoRoots=[];
+    phenoRoots=phenotypeRoots;
+    console.log(phenotypeRoots);
     if (office=="house") {
         var root={};
         var d={};
@@ -38,6 +40,7 @@ function initialize() {
         })
 
         log("totalCandAmount=" + totalCandAmount);
+        
         pacs=pacsHouse;
         c_house.forEach(function (d) {
             contr.push(d);
@@ -82,7 +85,6 @@ function initialize() {
     }
 
     buildChords();
-
     var totalContr=0;
     contr.forEach(function (d) {
         nodesById[d.CAND_ID].relatedLinks.push(d);
