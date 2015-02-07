@@ -205,7 +205,7 @@ function updateChords() {
         })
         .style("fill", "#777")
         .text(function(d) { 
-             return trimLabel(phenotypeRootsById["phenotypeRoot_" + d.label].name);
+             return trimLabel(cleanName(phenotypeRootsById["phenotypeRoot_" + d.label].name));
             // return trimLabel(psacsById[office + "_" + d.label].CMTE_NM); 
         });
 

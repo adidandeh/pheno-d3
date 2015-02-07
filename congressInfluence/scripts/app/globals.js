@@ -91,8 +91,6 @@ var cns=[],
     cands=[],
     pacs=[],
 
-    phenoRoots=[], // init
-
     documents=[], // data
     phenotypeRoots=[], // data
 
@@ -143,6 +141,28 @@ var formatNumber = d3.format(",.0f"),
     labels = [],
     chords = [];
 
+
+cleanName = function(name) {
+    try {
+        name = name.replace("Abnormality of the ", "");
+        name = name.replace("Abnormality of ", "");
+        name = name.replace(" Abnormality", "");
+        name = name.replace(" abnormality", "");
+        name = name.replace("Abnormal ", "");
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+
+        var tempEnd = "";
+        var tempTextLength = 26;
+        if (name.length > tempTextLength) {
+            tempEnd = "...";
+        }
+        name = name.substring(0, tempTextLength) + tempEnd;
+    } catch (e) {
+        name = "Error."
+    }
+
+    return name;
+}
 
 function log(message) {
    // console.log(message);
