@@ -7,11 +7,11 @@ div#phenobar {
   float: left;
 }
 
-div#chart {
+/*div#chart {
   float: left;
-}
+}*/
 
-div.tooltip {   
+div.tooltipPhenoBox {   
   position: absolute;           
   text-align: left;           
   width: 1000px;                  
@@ -30,7 +30,7 @@ div.tooltip {
   font: 10px sans-serif;
 }
 
-.treenode {
+/*.treenode {
   border: solid 1px white;
   font: 10px sans-serif;
   line-height: 12px;
@@ -43,4 +43,169 @@ div.tooltip {
   padding-top: 0px;
   font-weight: bold;
   font-size: 8pt;
+}*/
+
+/* new stuff */
+
+headerRight {
+    text-align: right;
+    position:absolute;
+    top:10px;
+    right:10px;
+    margin-right:0px;
+}
+
+.hint {
+    right: 0;
+    width: 300px;
+    font-size: 12px;
+    color: #999;
+}
+
+
+div.tooltip {
+    position: absolute;     /* reference for measurement */
+    text-align: left;
+    pointer-events: none;     /* 'none' tells the mouse to ignore the rectangle */
+    background: #FFFFEF;
+    width: 400px;
+    height: 165px;
+    padding: 10px;
+    border: 1px solid #D5D5D5;
+    font-family: arial,helvetica,sans-serif;
+    position: absolute;
+    font-size: 1.1em;
+    color: #333;
+    padding: 10px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.9);
+    color: #000;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    -moz-box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    border:1px solid rgba(200,200,200,0.85);
+    opacity:0;
+}
+
+div.tooltipTail {
+    position: absolute;
+    left:-7px;
+    top: 72px;
+    width: 7px;
+    height: 13px;
+    background: url("images/tail_white.png") 50% 0%;
+}
+
+div.toolTipBody {
+    position:absolute;
+    height:100px;
+    width:230px;
+}
+
+div.header {
+    text-transform: uppercase;
+    text-align: left;
+    font-size: 14px;
+    margin-bottom: 2px;
+    color:#666;
+    text-align:center;
+
+}
+
+div.header-rule{
+    height:1px;
+    margin:1px auto 3px;
+    margin-top:7px;
+    margin-bottom:7px;
+    background:#ddd;
+    width:125px;
+}
+
+div.header1{
+   /* text-transform: uppercase; */
+    text-align: left;
+    font-size: 13px;
+    margin-bottom: 2px;
+    color:#000;
+    text-align:center;
+}
+
+div.header2{
+    color:#000;
+    text-transform:uppercase;
+    font-size: 12px;
+    margin-bottom: 2px;
+    text-align:center;
+}
+
+div.header3 {
+    color:#333;
+    text-align: left;
+    font-size: 15px;
+    font-style: italic;
+    font-family: Georgia;
+    /*  width:170px;*/
+    text-align:center;
+}
+
+div.header4 {
+    /*  position:absolute;*/
+    text-align:center;
+    right:10px;
+    top:28px;
+    font-size: 16px;
+    /*  width:100px;*/
+    text-align:center;
+    overflow:hidden;
+    font-weight:bold;
+}
+
+/* Structure */
+.g {
+    font-family:  Helvetica, Arial;
+}
+
+div.selected {
+    color: #000;
+    background: #e9e9e9;
+    border-color: #AAA;
+    box-shadow: inset 0px 0px 4px rgba(0,0,0,0.2);
+    padding-bottom:10px;
+}
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+    stroke-linecap: round;
+}
+
+text.chord {
+    font-size:8px;
+}
+
+
+text.mainLabel {
+    font-size:12px;
+    font-family: Georgia;
+    font-style: italic;
+    text-align:center;
+    fill: #9B001C;
+}
+
+
+text.export {
+    font-family: "Myriad", Arial;
+    fill: #00AC6B;
+}
+
+text.import {
+    font-family: "Myriad", Arial;
+    fill: #9B001C;
+}
+
+text.secondLabel {
+    font-family: Myriad, Arial;
+    font-style: italic;
+    fill: #888888;
+    font-size: 10px;
 }
