@@ -12,7 +12,7 @@ function main() {
   //  updateLinks(contr);
     intervalId=setInterval(onInterval,1);
 
-    draw(svg, data);
+    draw(svgBoxes, data);
 }
 
 /*

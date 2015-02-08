@@ -348,7 +348,7 @@ update = function(source, row, startOffset) {
         });
 
         // Update the nodes…
-        var node = svg.selectAll("g.node")
+        var node = svgBoxes.selectAll("g.node")
             .data(nodes, function(d) {
                 return d.id || (d.id = ++i);
             });

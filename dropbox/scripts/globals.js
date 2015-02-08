@@ -27,8 +27,8 @@ var activerow = -1,
     treeActive = false,
     treeWidth = 200,
     treeHeight = 500,
-    height = 2000 - margin.top - margin.bottom,
-    width = 900 - margin.right - margin.left,
+    height = 1000 - margin.top - margin.bottom,
+    width = 1200 - margin.right - margin.left,
     maxBoxHeight = 120,
     verticalPadding = 10,
     horizontalPadding = 0;
@@ -88,12 +88,16 @@ var outerRadius = maxWidth / 2,
     nodesTranslate=(outerRadius-innerRadius) + (innerRadius-bubbleRadius) + 100,
     chordsTranslate=(outerRadius + 100);
 
-d3.select(document.getElementById("mainDiv"))
-    .style("width",(outerRadius*2 + 400) + "px")
-    .style("height",(outerRadius*2 + 400) + "px");
+// d3.select(document.getElementById("mainDiv"))
+//     .style("width",(outerRadius*2 + 400) + "px")
+//     .style("height",(outerRadius*2 + 400) + "px");
 
-d3.select(document.getElementById("bpg"))
-    .style("width",(outerRadius*2 + 400) + "px");
+// d3.select(document.getElementById("bpg"))
+//     .style("width",(outerRadius*2 + 400) + "px");
+
+var svgBoxes = d3.select("#phenobar").append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
 var svg = d3.select("#phenobar").append("svg")
     .attr("width", width)
@@ -200,10 +204,6 @@ var tree = d3.layout.tree()
 //     .projection(function(d) {
 //         return [d.y, d.x];
 //     });
-
-var svg = d3.select("#phenobar").append("svg")
-    .attr("width", width)
-    .attr("height", height);
 
 var div = d3.select("body").append("div")
     .attr("class", "tooltipPhenoBox");

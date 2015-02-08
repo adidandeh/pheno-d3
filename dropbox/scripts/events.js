@@ -257,7 +257,7 @@ clearPhenotypes = function() {
     depth = 0;
     drill = undefined;
 
-    draw(svg, data);
+    draw(svgBoxes, data);
 }
 
 searchPhenotypes = function() {
@@ -282,13 +282,13 @@ createPhenoBox = function() { // use cursorData parent chain-up
 
         cursorData = null;
         treeActive = false;
-        draw(svg, data);
+        draw(svgBoxes, data);
     }
 }
 
 removeChild = function(row, column) {
     data[row].children.splice(column, 1);
-    draw(svg, data);
+    draw(svgBoxes, data);
 }
 
 moveSignal = function(target) {
