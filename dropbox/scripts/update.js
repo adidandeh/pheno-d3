@@ -259,47 +259,6 @@ function getChordColor(i) {
 }
 
 update = function(source, row, startOffset) {
-    // treeMap
-    // d3.select("#chart").selectAll("div").remove();
-
-    // var treediv = d3.select("#chart").append("div")
-    //     .style("position", "relative")
-    //     .style("width", (mapWidth + mapMargin.left + mapMargin.right) + "px")
-    //     .style("height", (mapHeight + mapMargin.top + mapMargin.bottom) + "px")
-    //     .style("left", mapMargin.left + "px")
-    //     .style("top", mapMargin.top + verticalPadding + "px")
-    //     .attr("id", "treeMapHeader")
-    //     .text(function(d) {
-    //         return cursorData.name.toUpperCase();
-    //     });
-
-    // var treenode = treediv.datum(source).selectAll(".treenode")
-    //     .data(treemap.nodes)
-    //     .enter().append("div")
-    //     .attr("class", "treenode")
-    //     .call(position)
-    //     .style("background", function(d) {
-    //         return d.children ? color(d.name) : null;
-    //     })
-    //     .text(function(d) {
-    //         return d._children ? d.name : null;
-    //     });
-
-    // function position() {
-    //     this.style("left", function(d) {
-    //         return d.x + "px";
-    //     })
-    //         .style("top", function(d) {
-    //             return d.y + 20 + "px";
-    //         })
-    //         .style("width", function(d) {
-    //             return Math.max(0, d.dx - 1) + "px";
-    //         })
-    //         .style("height", function(d) {
-    //             return Math.max(0, d.dy - 1) + "px";
-    //         });
-    // }
-
     // phenoTree
     if (typeof startOffset == "undefined") {
         startOffset = 0;

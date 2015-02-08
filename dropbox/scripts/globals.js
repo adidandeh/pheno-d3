@@ -16,9 +16,9 @@ var activerow = -1,
     i = 0,
     margin = {
         top: 20,
-        right: 120,
+        right: 0,
         bottom: 20,
-        left: 120
+        left: 0
     },
     phenobarheight = 20,
     sqwidth = 70,
@@ -28,7 +28,7 @@ var activerow = -1,
     treeWidth = 200,
     treeHeight = 500,
     height = 1000 - margin.top - margin.bottom,
-    width = 1200 - margin.right - margin.left,
+    width = 900 - margin.right - margin.left,
     maxBoxHeight = 120,
     verticalPadding = 10,
     horizontalPadding = 0;
@@ -85,31 +85,17 @@ var outerRadius = maxWidth / 2,
     innerRadius = outerRadius - 120,
     bubbleRadius=innerRadius-50,
     linkRadius=innerRadius-20,
-    nodesTranslate=(outerRadius-innerRadius) + (innerRadius-bubbleRadius) + 100,
-    chordsTranslate=(outerRadius + 100);
-
-// d3.select(document.getElementById("mainDiv"))
-//     .style("width",(outerRadius*2 + 400) + "px")
-//     .style("height",(outerRadius*2 + 400) + "px");
-
-// d3.select(document.getElementById("bpg"))
-//     .style("width",(outerRadius*2 + 400) + "px");
+    chartTranslateX = 0,
+    nodesTranslate=(outerRadius-innerRadius) + (innerRadius-bubbleRadius) + chartTranslateX,
+    chordsTranslate=(outerRadius + chartTranslateX);
 
 var svgBoxes = d3.select("#phenobar").append("svg")
-    .attr("width", width)
+    .attr("width", 800)
     .attr("height", height);
 
 var svg = d3.select("#phenobar").append("svg")
     .attr("width", width)
     .attr("height", height);
-
-// var svg = d3.select(document.getElementById("svgDiv"))
-//     .style("width", (outerRadius*2 + 200) + "px")
-//     .style("height", (outerRadius*2 + 200) + "px")
-//     .append("svg")
-//     .attr("id","svg")
-//     .style("width", (outerRadius*2 + 200) + "px")
-//     .style("height", (outerRadius*2 + 200) + "px");
 
 var chordsSvg=svg.append("g")
     .attr("class","chords")
@@ -154,7 +140,6 @@ var toolTip = d3.select(document.getElementById("toolTip"));
 var header = d3.select(document.getElementById("head"));
 var header1 = d3.select(document.getElementById("header1"));
 var header2 = d3.select(document.getElementById("header2"));
-var total = d3.select(document.getElementById("totalDiv"));
 var repColor="#F80018";
 var demColor="#0543bc";
 var otherColor="#FFa400";
@@ -173,28 +158,6 @@ var buf_indexByName={},
     nameByIndex = {},
     labels = [],
     chords = [];
-
-
-
-// treeMap
-var mapMargin = {
-        top: 20,
-        right: 0,
-        bottom: 0,
-        left: 0
-    },
-    mapWidth = 300,
-    mapHeight = 300;
-
-var treemap = d3.layout.treemap()
-    .size([mapWidth, mapHeight])
-    .value(function(d) {
-        try {
-            return (d._children.length > 0) ? d._children.length : 1;
-        } catch (e) {
-            return 0;
-        }
-    });
 
 // phenoTree
 var tree = d3.layout.tree()
