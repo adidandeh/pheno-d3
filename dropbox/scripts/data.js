@@ -140,7 +140,7 @@ var data = [{
 }]
 
 prepData = function(d, data, row) {
-    d3.json("data.json", function(error, flare) {
+    d3.json("data/data.json", function(error, flare) {
         root = flare;
 
         var tempPheno = [cursorData];
