@@ -1,5 +1,14 @@
-function updateLinks(links) {
+updateChart = function() {
+    log("updateChart");
+    initialize();
+    updateNodes();
+    updateChords();
+ //   console.log("contr.length=" + contr.length)
+   // updateLinks(contr);
+    intervalId=setInterval(onInterval,1);
+}
 
+function updateLinks(links) {
     linkGroup=linksSvg.selectAll("g.links")
         .data(links, function (d,i) {
             return d.Key;

@@ -256,12 +256,15 @@ clearPhenotypes = function() {
     cursorData = null;
     depth = 0;
     drill = undefined;
-
-    draw(svgBoxes, data);
+    
+    fetchData();
+    // updateChart();
+    // draw(svgBoxes, data);
 }
 
 searchPhenotypes = function() {
-    console.log("searching");
+        fetchData();
+    // updateChart();
 }
 
 createPhenoBox = function() { // use cursorData parent chain-up
@@ -282,13 +285,17 @@ createPhenoBox = function() { // use cursorData parent chain-up
 
         cursorData = null;
         treeActive = false;
-        draw(svgBoxes, data);
+            fetchData();
+        // updateChart();
+        // draw(svgBoxes, data);
     }
 }
 
 removeChild = function(row, column) {
     data[row].children.splice(column, 1);
-    draw(svgBoxes, data);
+    fetchData();
+    // updateChart();
+    // draw(svgBoxes, data);
 }
 
 moveSignal = function(target) {

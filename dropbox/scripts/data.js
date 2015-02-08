@@ -29,7 +29,7 @@ var data = [{
     "id": "HP:0003549",
     "active": 0,
     "children": []
-},{
+}, {
     "name": "Abnormality of the Ear",
     "order": 6,
     "id": "HP:0000598",
@@ -171,11 +171,21 @@ function fetchData() {
 }
 
 
-function onFetchPhenotypes(error, data) {
-    phenotypeRoots = data.children;
+function onFetchPhenotypes(error, pheno) {
+    phenotypeRoots = pheno.children;
+    // build arc setup
     for (var i=0; i < phenotypeRoots.length; i++) {
         phenotypeRootsById["phenotypeRoot_" + phenotypeRoots[i].id]=phenotypeRoots[i];
     }
+
+    // build search links
+    for(var i=0; i<data.length; i++) {
+        // console.log(data[i].children);
+        for(var j=0; j<data[i].children.length; j++) {
+            // log(data[i].children);
+        }
+    }
+
     endFetch();
 }
 
@@ -191,28 +201,24 @@ function onFetchDocuments(error, data) {
 }
 
 function onFetchCandidatesSenate(csv) {
-
-     for (var i=0; i < csv.length; i++) {
+    for (var i=0; i < csv.length; i++) {
         var r=csv[i];
-         r.value=Number(r.Amount);
+        r.value=Number(r.Amount);
         cns[r.CAND_ID]=r;
-
-            senate.push(r);
-            if (r.PTY=="REP") {
-                s_reps.push(r);
-                total_sReps+= r.value;
-            }
-            else if (r.PTY=="DEM") {
-                s_dems.push(r)
-                total_sDems+= r.value;
-            }
-            else {
-                s_others.push(r);
-                total_sOthers+= r.value;
-            }
-
-     }
-
+        senate.push(r);
+        if (r.PTY=="REP") {
+            s_reps.push(r);
+            total_sReps+= r.value;
+        }
+        else if (r.PTY=="DEM") {
+            s_dems.push(r)
+            total_sDems+= r.value;
+        }
+        else {
+            s_others.push(r);
+            total_sOthers+= r.value;
+        }
+    }
     log("onFetchCandidatesSenate()");
     endFetch();
 }
@@ -241,7 +247,6 @@ function onFetchCandidatesHouse(csv) {
 }
 
 function onFetchContributionsSenate(csv) {
-
     var i=0;
     csv.forEach(function (d) {
         d.Key="S"+(i++);

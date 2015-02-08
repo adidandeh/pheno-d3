@@ -60,6 +60,8 @@ var cns=[],
 
     total_docs=0,
 
+    searchedPhenotypes =[],
+
     contributions=[],
     c_senate=[];
     c_house=[];
@@ -174,7 +176,7 @@ var div = d3.select("body").append("div")
 var treecolor = d3.scale.category20c();
 
 log = function(message) {
-    // console.log(message);
+    console.log(message);
 }
 
 cleanName = function(name) {

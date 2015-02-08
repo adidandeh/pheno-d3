@@ -5,13 +5,7 @@ var counter=2;
 var renderLinks=[];
 
 function main() {
-    initialize();
-    updateNodes();
-    updateChords();
- //   console.log("contr.length=" + contr.length)
-  //  updateLinks(contr);
-    intervalId=setInterval(onInterval,1);
-
+    updateChart();
     draw(svgBoxes, data);
 }
 
