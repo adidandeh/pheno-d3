@@ -30,7 +30,8 @@ function updateLinks(links) {
         .style("fill-opacity",.2)
         .attr("d", function (d,i) {
             var newArc={};
-            var relatedChord=chordsById[d.CMTE_ID];
+            console.log(d);
+            var relatedChord=chordsById[d.parentId];
            // console.log("CMTE_ID=" + d.CMTE_ID);
             newArc.startAngle=relatedChord.currentAngle;
             relatedChord.currentAngle=relatedChord.currentAngle+(Number(d.TRANSACTION_AMT)/relatedChord.value)*(relatedChord.endAngle-relatedChord.startAngle);
