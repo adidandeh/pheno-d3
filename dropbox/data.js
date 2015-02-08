@@ -138,3 +138,43 @@ var data = [{
     "active": 0,
     "children": []
 }]
+
+prepData = function(d, data, row) {
+    d3.json("data.json", function(error, flare) {
+        root = flare;
+
+        var tempPheno = [cursorData];
+        while (typeof tempPheno[tempPheno.length - 1].parent != "undefined") {
+            tempPheno.push(tempPheno[tempPheno.length - 1].parent);
+        }
+        tempPheno.reverse();
+        for (var x = 0; x < tempPheno.length; x++) {
+            if (typeof root == "undefined") break // leaf node
+            if (typeof root.children !== "undefined") { // stops if at leaf
+                root = root.children[findWithAttr(root.children, 'id', tempPheno[x].id)];
+            }
+        }
+
+        root.x0 = (row + 1) * sqheight;
+        root.y0 = phenobarheight + (sqwidth * (tempPheno.length - 1)) + 50;
+
+        function collapse(d) {
+            if (d.children) {
+                //for(var i=0; i < d.children.length; i++) { // trying to cut out the junk ones.
+                //console.log(d.children);
+                // if (typeof d.children[i].name == "undefined") {
+                //     d.children.splice(i,1);
+                // }
+                // }
+
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+            }
+        }
+
+        root.children.forEach(collapse);
+        currentTreeData = root;
+        update(currentTreeData, row, sqwidth * (tempPheno.length - 1));
+    });
+}
