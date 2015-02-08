@@ -183,9 +183,12 @@ function onFetchPhenotypes(error, pheno) {
         // console.log(data[i].children);
         for(var j=0; j<data[i].children.length; j++) {
             // log(data[i].children);
+            data[i].children[j].key = data[i].order + "_" + j;
+            data[i].children[j].parentId = data[i].id;
+            searchedPhenotypes.push(data[i].children[j]);
         }
     }
-
+    log(searchedPhenotypes);
     endFetch();
 }
 

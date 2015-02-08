@@ -9,6 +9,7 @@ updateChart = function() {
 }
 
 function updateLinks(links) {
+    log("updateLinks");
     linkGroup=linksSvg.selectAll("g.links")
         .data(links, function (d,i) {
             return d.Key;
