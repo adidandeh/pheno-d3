@@ -49,15 +49,21 @@ function buildChords() {
             if(searchedPhenotypes[j].parentId === d.id) {
                 for(var i = 0; i < docs.length; i++) { // each document
                     tempPhenotypes = docs[i].phenotypes;
-                    for (var k = 0; k < tempPhenotypes.length; k++) { // each document's phenotypes tags
-                        if(searchedPhenotypes[j].name.toUpperCase() === tempPhenotypes[k].toUpperCase()) {
-                            linkCount++; // TODO: current does not account for same phenotype tag
+
+                    var uniquePhenos = tempPhenotypes.reduce(function(a,b){ // remove duplicate phenos
+                        if (a.indexOf(b) < 0 ) a.push(b);
+                        return a;
+                    },[]);
+
+                    for (var k = 0; k < uniquePhenos.length; k++) { // each document's phenotypes tags
+                        if(searchedPhenotypes[j].name.toUpperCase() === uniquePhenos[k].toUpperCase()) {
+                            linkCount++;
                         }
                     }   
                 }
             }
         }
-
+        log(linkCount);
         if(linkCount<1) linkCount++; // To show at least the tag
 
         row[indexByName[d.id]] = linkCount;
