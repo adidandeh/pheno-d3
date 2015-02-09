@@ -1,14 +1,10 @@
 
 function node_onMouseOver(d,type) {
-    if (type=="CAND") {
+    if (type=="DOC") {
         if(d.depth < 2) return;
         toolTip.transition()
             .duration(200)
             .style("opacity", ".9");
-        // header1.text("Congress");
-        // header.text(d.CAND_NAME);
-        // header2.text("Total Recieved: " + formatCurrency(Number(d.Amount)));
-
         tempHeight = 100;
 
         header1.text(d.medline_journal_title);
@@ -29,7 +25,7 @@ function node_onMouseOver(d,type) {
 
         highlightLinks(d,true);
     }
-    else if (type=="CONTRIBUTION") {
+    else if (type=="LINK") {
 
         /*
         Highlight chord stroke
@@ -38,31 +34,22 @@ function node_onMouseOver(d,type) {
             .duration(200)
             .style("opacity", ".9");
 
-        // console.log(phenotypeRootsById);
-        // console.log(d);
         header1.text(phenotypeRootsById["phenotypeRoot_" + d.parentId].name);
         header.text(d.name);
         header2.text(d.defn);
 
-        // header1.text(pacsById[office + "_" + d.CMTE_ID].CMTE_NM);
-        // header.text(d.CAND_NAME);
-        // header2.text(formatCurrency(Number(d.TRANSACTION_AMT)) + " on " + d.Month + "/" + d.Day + "/" + d.Year);
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
             .style("height","100px");
         highlightLink(d,true);
     }
-    else if (type=="PAC") {
+    else if (type=="ROOT") {
         /*
         highlight all contributions and all candidates
          */
         toolTip.transition()
             .duration(200)
             .style("opacity", ".9");
-
-        // header1.text("Political Action Committee");
-        // header.text(pacsById[office + "_" + d.label].CMTE_NM);
-        // header2.text("Total Contributions: " + formatCurrency(pacsById[office + "_" + d.label].Amount));
         header1.text("Phenotype Root");
         header.text(phenotypeRootsById["phenotypeRoot_" + d.label].name);
         header2.text("Number of Children: " + phenotypeRootsById["phenotypeRoot_" + d.label].children.length);
@@ -74,13 +61,13 @@ function node_onMouseOver(d,type) {
 }
 
 function node_onMouseOut(d,type) {
-    if (type=="CAND") {
+    if (type=="DOC") {
         highlightLinks(d,false);
     }
-    else if (type=="CONTRIBUTION") {
+    else if (type=="LINK") {
         highlightLink(d,false);
     }
-    else if (type=="PAC") {
+    else if (type=="ROOT") {
         highlightLinks(chordsById[d.label],false);
     }
 
@@ -120,11 +107,9 @@ function highlightLink(g,on) {
 }
 
 function highlightLinks(d,on) {
-
     d.relatedLinks.forEach(function (d) {
         highlightLink(d,on);
     })
-
 }
 
 

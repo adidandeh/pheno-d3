@@ -43,8 +43,8 @@ function updateLinks(links) {
             // log("test");
             return arc(newArc,i);
         })
-        .on("mouseover", function (d) { node_onMouseOver(d,"CONTRIBUTION");})
-        .on("mouseout", function (d) {node_onMouseOut(d,"CONTRIBUTION"); });
+        .on("mouseover", function (d) { node_onMouseOver(d,"LINK");})
+        .on("mouseout", function (d) {node_onMouseOut(d,"LINK"); });
 
     /* LINKS */
      enter.append("path")
@@ -69,8 +69,8 @@ function updateLinks(links) {
             return demColor;
             // return (d.PTY=="DEM") ? demColor : (d.PTY=="REP") ? repColor : otherColor; 
         })
-        .on("mouseover", function (d) { node_onMouseOver(d,"CONTRIBUTION");})
-        .on("mouseout", function (d) {node_onMouseOut(d,"CONTRIBUTION"); });
+        .on("mouseover", function (d) { node_onMouseOver(d,"LINK");})
+        .on("mouseout", function (d) {node_onMouseOut(d,"LINK"); });
 
 
         /* NODES */
@@ -84,7 +84,7 @@ function updateLinks(links) {
         .style("fill-opacity",0.2)
         .style("stroke-opacity",1)
         .attr("r", function (d) {
-            var relatedNode=nodesById["450820"];
+            var relatedNode=nodesById["450820"]; // TODO: Hardcode
             // var relatedNode=nodesById[d.CAND_ID];
             //Decrement Related Node
             relatedNode.currentAmount=relatedNode.currentAmount/*-Number(d.TRANSACTION_AMT)*/;
@@ -108,7 +108,7 @@ function updateLinks(links) {
 
         var relatedChord=chordsById[d.parentId];
         // 450820
-        var relatedNode=nodesById["450820"];
+        var relatedNode=nodesById["450820"]; // TODO: Hardcode
         // var relatedNode=nodesById[d.id];
         var r=linkRadius;
         var currX=(r * Math.cos(relatedChord.currentLinkAngle-1.57079633));
@@ -138,15 +138,10 @@ function updateLinks(links) {
 }
 
 function updateNodes() {
-
     var node = nodesSvg.selectAll("g.node")
         .data(docs, function (d,i) {
             return d.id;
         });
-        // .data(cands, function (d,i) {
-        //     return d.CAND_ID;
-        // });
-
 
     var enter=node.enter().append("g")
         .attr("class", "node")
@@ -172,7 +167,6 @@ function updateNodes() {
     var g=enter.append("g")
         .attr("id", function(d) { 
             return "d_" + d.id; 
-            // return "c_" + d.CAND_ID; 
         })
         .style("opacity",0);
 
@@ -189,8 +183,8 @@ function updateNodes() {
         .style("stroke", "#000")
         .style("stroke-width",1.5)
         .style("stroke-opacity",1)
-        .on("mouseover", function (d) { node_onMouseOver(d,"CAND"); })
-        .on("mouseout", function (d) {node_onMouseOut(d,"CAND"); });
+        .on("mouseover", function (d) { node_onMouseOver(d,"DOC"); })
+        .on("mouseout", function (d) {node_onMouseOut(d,"DOC"); });
 
 
     node.exit().remove().transition(500).style("opacity",0);
@@ -219,8 +213,8 @@ function updateChords() {
         .text(function(d) { 
             return trimLabel(phenotypeRootsById["phenotypeRoot_" + d.label].name);
         })
-        .on("mouseover", function (d) { node_onMouseOver(d,"PAC");})
-        .on("mouseout", function (d) {node_onMouseOut(d,"PAC"); });
+        .on("mouseover", function (d) { node_onMouseOver(d,"ROOT");})
+        .on("mouseout", function (d) {node_onMouseOut(d,"ROOT"); });
 
     arcGroup.transition()
         .select("text")
