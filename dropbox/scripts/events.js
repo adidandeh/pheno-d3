@@ -85,12 +85,12 @@ function highlightLink(g,on) {
       // console.log("fadeHandler(" + opacity + ")");
       // highlightSvg.style("opacity",opacity);
 
-       var link=d3.select(document.getElementById("l_" + g.Key));
+       var link=d3.select(document.getElementById("l_" + g.key));
         link.transition((on==true) ? 150:550)
             .style("fill-opacity",opacity)
             .style("stroke-opacity",opacity);
 
-        var arc=d3.select(document.getElementById("a_" + g.Key));
+        var arc=d3.select(document.getElementById("a_" + g.key));
         arc.transition().style("fill-opacity",(on==true) ? opacity :.2);
 
         var circ=d3.select(document.getElementById("c_" + g.id));

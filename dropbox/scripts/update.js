@@ -11,7 +11,7 @@ function updateLinks(links) {
     linkGroup=linksSvg.selectAll("g.links")
         .data(links, function (d,i) {
             log(d);
-            return d.Key; // i.e. 1_0
+            return d.key; // i.e. 1_0
         });
 
  //   linkGroup.selectAll("g.links").transition(500).style("opacity",1);
@@ -24,7 +24,7 @@ function updateLinks(links) {
     enter.append("g")
         .attr("class", "arc")
         .append("path")
-        .attr("id",function (d) { return "a_" + d.Key;})
+        .attr("id",function (d) { return "a_" + d.key;})
         .style("fill", function(d) { 
             return demColor;
             // return (d.PTY=="DEM") ? demColor : (d.PTY=="REP") ? repColor : otherColor; 
@@ -49,7 +49,7 @@ function updateLinks(links) {
     /* LINKS */
      enter.append("path")
         .attr("class","link")
-        .attr("id",function (d) { return "l_" + d.Key;})
+        .attr("id",function (d) { return "l_" + d.key;})
         .attr("d", function (d,i) {
               d.links=createLinks(d);
               var diag = diagonal(d.links[0],i);

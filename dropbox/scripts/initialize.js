@@ -29,7 +29,6 @@ function initialize() {
             }
         })
         log("totalDocAmount=" + totalDocAmount);
-        // pacs=pacsHouse;
         searchedPhenotypes.forEach(function (d) {
             searches.push(d);
         });
