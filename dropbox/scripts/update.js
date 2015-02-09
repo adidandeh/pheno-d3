@@ -40,7 +40,7 @@ function updateLinks(links) {
             var arc=d3.svg.arc(d,i).innerRadius(linkRadius).outerRadius(innerRadius);
             // totalContributions+=newArc.value;
             // total.text(formatCurrency(totalContributions));
-            log("test");
+            // log("test");
             return arc(newArc,i);
         })
         .on("mouseover", function (d) { node_onMouseOver(d,"CONTRIBUTION");})
@@ -218,7 +218,6 @@ function updateChords() {
         })
         .text(function(d) { 
             return trimLabel(phenotypeRootsById["phenotypeRoot_" + d.label].name);
-            // return trimLabel(psacsById[office + "_" + d.label].CMTE_NM); 
         })
         .on("mouseover", function (d) { node_onMouseOver(d,"PAC");})
         .on("mouseout", function (d) {node_onMouseOut(d,"PAC"); });
@@ -236,7 +235,6 @@ function updateChords() {
         .style("fill", "#777")
         .text(function(d) { 
              return trimLabel(cleanName(phenotypeRootsById["phenotypeRoot_" + d.label].name));
-            // return trimLabel(psacsById[office + "_" + d.label].CMTE_NM); 
         });
 
 

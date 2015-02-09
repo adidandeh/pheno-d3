@@ -172,12 +172,14 @@ function fetchData() {
 
 
 function onFetchPhenotypes(error, pheno) {
+    phenotypeRootsById = [];
     phenotypeRoots = pheno.children;
     // build arc setup
     for (var i=0; i < phenotypeRoots.length; i++) {
         phenotypeRootsById["phenotypeRoot_" + phenotypeRoots[i].id]=phenotypeRoots[i];
     }
 
+    searchedPhenotypes = [];
     // build search links
     for(var i=0; i<data.length; i++) {
         for(var j=0; j<data[i].children.length; j++) {

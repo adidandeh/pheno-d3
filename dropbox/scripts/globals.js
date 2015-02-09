@@ -124,8 +124,8 @@ var nodesSvg=svg.append("g")
 
 var chord = d3.layout.chord()
     .padding(.05)
-    .sortSubgroups(d3.descending)
-    .sortChords(d3.descending);
+    .sortSubgroups(d3.descending);
+    // .sortChords(d3.descending);
 
 var diagonal = d3.svg.diagonal.radial();
     //.projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });

@@ -1,7 +1,5 @@
-
 function buildChords() {
     var  matrix = [];
-
     labels=[];
     chords=[];
 
@@ -20,28 +18,13 @@ function buildChords() {
 
     }
 
-    // for (var i=0; i < pacs.length; i++) {
-    //     var l={};
-    //     l.index=i;
-    //     l.label="null";
-    //     l.angle=0;
-    //     labels.push(l);
-
-    //     var c={}
-    //     c.label="null";
-    //     c.source={};
-    //     c.target={};
-    //     chords.push(c);
-
-    // }
-
     buf_indexByName=indexByName;
 
     indexByName=[];
     nameByIndex=[];
     n = 0;
 
-    var totalPacAmount=0;
+    var totalLinkAmount=0;
 
     // Compute a unique index for each package name
     phenotypeRoots.forEach(function(d) {
@@ -52,119 +35,40 @@ function buildChords() {
         }
     });
 
+    var counter = 1;
      phenotypeRoots.forEach(function(d) {
-        var source = indexByName[d.id],
+        var source = indexByName[d.id], // get HP id
             row = matrix[source];
         if (!row) {
             row = matrix[source] = [];
             for (var i = -1; ++i < n;) row[i] = 0;
         }
 
-        // linkCount = 0;
-        // for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
-        //     if(searchedPhenotypes[j].parentId == d.id) {
-        //         for(var i = 0; i < docs.length; i++) { // each document
-        //             tempPhenotypes = docs[i].phenotypes;
-        //             for (var k = 0; k < tempPhenotypes.length; k++) { // each document's phenotypes tags
-        //                 if(searchedPhenotypes[j].name.toUpperCase() === tempPhenotypes[k].toUpperCase()) {
-        //                     linkCount++;
-        //                 }
-        //             }   
-        //         }
-        //     }
-        // }
+        linkCount = 0;
+        for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
+            if(searchedPhenotypes[j].parentId === d.id) {
+                for(var i = 0; i < docs.length; i++) { // each document
+                    tempPhenotypes = docs[i].phenotypes;
+                    for (var k = 0; k < tempPhenotypes.length; k++) { // each document's phenotypes tags
+                        if(searchedPhenotypes[j].name.toUpperCase() === tempPhenotypes[k].toUpperCase()) {
+                            linkCount++; // TODO: current does not account for same phenotype tag
+                        }
+                    }   
+                }
+            }
+        }
 
+        if(linkCount<1) linkCount++; // To show at least the tag
 
-        // log(linkCount);
-
-        // row[indexByName[d.id]]= linkCount;
-        // totalPacAmount+= linkCount;
-        
-        row[indexByName[d.id]]= d.children.length;
-        totalPacAmount+= d.children.length;
+        row[indexByName[d.id]] = linkCount;
+        totalLinkAmount+= linkCount;
     });
 
-    // pacs.forEach(function(d) {
-    //     d = d.CMTE_ID;
-    //     if (!(d in indexByName)) {
-    //           nameByIndex[n] = d;
-    //           indexByName[d] = n++;
-    //     }
-    // });
-
-    //  pacs.forEach(function(d) {
-    //     var source = indexByName[d.CMTE_ID],
-    //         row = matrix[source];
-    //     if (!row) {
-    //         row = matrix[source] = [];
-    //         for (var i = -1; ++i < n;) row[i] = 0;
-    //     }
-    //     row[indexByName[d.CMTE_ID]]= Number(d.Amount);
-    //     totalPacAmount+=Number(d.Amount);
-    // });
-
-  //  console.log("totalPacAmount=" + totalPacAmount)
-
-    chord.matrix(matrix);
     var tempLabels=[];
     var tempChords=[];
-
-    /*
-    for (var i=0; i < labels.length; i++) {
-        labels[i].label='null';
-        chords[i].label='null';
-    }
-
-    for (var i=0; i < chord.groups().length; i++) {
-        var d={}
-        var g=chord.groups()[i];
-        var c=chord.chords()[i];
-        d.index=i;
-        d.angle= (g.startAngle + g.endAngle) / 2;
-        d.label = nameByIndex[g.index];
-        d.amount= c.source.value;
-        d.value= c.source.value;
-        var bIndex=buf_indexByName[d.label];
-        if (typeof bIndex != 'undefined') {  //Country already exists so re-purpose node.
-            labels[bIndex].angle= d.angle;
-            labels[bIndex].label= d.label;
-            labels[bIndex].index= i;
-            labels[bIndex].Amount= Number(d.Amount);
-
-            chords[bIndex].index= i;
-            chords[bIndex].label= d.label;
-            chords[bIndex].source= c.source;
-            chords[bIndex].target= c.target;
-            chords[bIndex].Amount = Number(d.Amount);
-
-        }
-        else { //Country doesnt currently exist so save for later
-            tempLabels.push(d);
-            tempChords.push(c);
-        }
-    }
-
-    //Now use up unused indexes
-    for (var i=0; i < labels.length; i++) {
-        if (labels[i].label=="null") {
-            var o=tempLabels.pop();
-            labels[i].index=indexByName[o.label];
-            labels[i].label= o.label;
-            labels[i].angle= o.angle;
-            labels[i].Amount= Number(o.Amount);
-
-            var c=tempChords.pop();
-            chords[i].label= o.label;
-            chords[i].index= i;
-            chords[i].source= c.source;
-            chords[i].target= c.target;
-            chords[i].Amount= Number(c.Amount);
-
-        }
-    }
-    */
-
+    chord.matrix(matrix);
     chords=chord.chords();
+
     var i=0;
     chords.forEach(function (d) {
         d.label=nameByIndex[i];
@@ -182,7 +86,6 @@ function buildChords() {
         chordsById[d.label]= o;
         i++;
     });
-
 
     function getFirstIndex(index,indexes) {
         for (var i=0; i < chordCount; i++) {
