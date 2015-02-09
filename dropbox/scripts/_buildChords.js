@@ -31,7 +31,7 @@ function buildChords() {
 
     var tempLabels=[];
     var tempChords=[];
-    chord.matrix(matrix);
+    chord.matrix(matrix); // TODO: change matrix to allow for all the searchLinks
     chords=chord.chords();
 
     var i=0;

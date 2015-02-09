@@ -30,6 +30,7 @@ function updateLinks(links) {
         })
         .style("fill-opacity",.2)
         .attr("d", function (d,i) {
+            log(chordsById);
             var newArc={};
             var relatedChord=chordsById[d.pheno.parentId];
             newArc.startAngle=relatedChord.currentAngle;
@@ -37,9 +38,6 @@ function updateLinks(links) {
             newArc.endAngle=relatedChord.currentAngle;
             newArc.value=1 /*Number(d.TRANSACTION_AMT)*/;
             var arc=d3.svg.arc(d,i).innerRadius(linkRadius).outerRadius(innerRadius);
-            // totalContributions+=newArc.value;
-            // total.text(formatCurrency(totalContributions));
-            // log("test");
             return arc(newArc,i);
         })
         .on("mouseover", function (d) { node_onMouseOver(d.pheno,"LINKHEAD");})
@@ -83,9 +81,7 @@ function updateLinks(links) {
         .style("fill-opacity",0.2)
         .style("stroke-opacity",1)
         .attr("r", function (d) {
-            // log(d);
-            var relatedNode=nodesById[d.doc.id]; // TODO: Hardcode issue is that d is a search but needs to be a doc
-            // var relatedNode=nodesById[d.CAND_ID];
+            var relatedNode=nodesById[d.doc.id];
             //Decrement Related Node
             relatedNode.currentAmount=relatedNode.currentAmount/*-Number(d.TRANSACTION_AMT)*/;
             var ratio=((relatedNode.Amount-relatedNode.currentAmount)/relatedNode.Amount);
@@ -107,9 +103,7 @@ function updateLinks(links) {
         var source2={};
 
         var relatedChord=chordsById[d.pheno.parentId];
-        // 450820
-        var relatedNode=nodesById[d.doc.id]; // TODO: Hardcode
-        // var relatedNode=nodesById[d.id];
+        var relatedNode=nodesById[d.doc.id];
         var r=linkRadius;
         var currX=(r * Math.cos(relatedChord.currentLinkAngle-1.57079633));
         var currY=(r * Math.sin(relatedChord.currentLinkAngle-1.57079633));
@@ -132,9 +126,7 @@ function updateLinks(links) {
         return [link,link2];
 
     }
-
-
- //   console.log("updateLinks()");
+    log("updateLinks");
 }
 
 function updateNodes() {

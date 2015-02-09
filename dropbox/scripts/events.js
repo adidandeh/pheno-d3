@@ -87,7 +87,6 @@ function node_onMouseOut(d,type) {
         highlightLinks(chordsById[d.label],false,type);
     }
 
-
     toolTip.transition()                                    // declare the transition properties to fade-out the div
         .duration(500)                                  // it shall take 500ms
         .style("opacity", "0");                         // and go all the way to an opacity of nil
