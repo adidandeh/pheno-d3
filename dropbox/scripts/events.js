@@ -38,9 +38,15 @@ function node_onMouseOver(d,type) {
             .duration(200)
             .style("opacity", ".9");
 
-        header1.text(pacsById[office + "_" + d.CMTE_ID].CMTE_NM);
-        header.text(d.CAND_NAME);
-        header2.text(formatCurrency(Number(d.TRANSACTION_AMT)) + " on " + d.Month + "/" + d.Day + "/" + d.Year);
+        // console.log(phenotypeRootsById);
+        // console.log(d);
+        header1.text(phenotypeRootsById["phenotypeRoot_" + d.parentId].name);
+        header.text(d.name);
+        header2.text(d.defn);
+
+        // header1.text(pacsById[office + "_" + d.CMTE_ID].CMTE_NM);
+        // header.text(d.CAND_NAME);
+        // header2.text(formatCurrency(Number(d.TRANSACTION_AMT)) + " on " + d.Month + "/" + d.Day + "/" + d.Year);
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
             .style("height","100px");
@@ -100,11 +106,11 @@ function highlightLink(g,on) {
         var arc=d3.select(document.getElementById("a_" + g.Key));
         arc.transition().style("fill-opacity",(on==true) ? opacity :.2);
 
-        var circ=d3.select(document.getElementById("c_" + g.CAND_ID));
+        var circ=d3.select(document.getElementById("c_" + g.id));
         circ.transition((on==true) ? 150:550)
         .style("opacity",((on==true) ?1 :0));
 
-        var text=d3.select(document.getElementById("t_" + g.CMTE_ID));
+        var text=d3.select(document.getElementById("t_" + g.id));
          text.transition((on==true) ? 0:550)
              .style("fill",(on==true) ? "#000" : "#777")
              .style("font-size",(on==true) ? "10px" : "8px")

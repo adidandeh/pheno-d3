@@ -54,17 +54,15 @@ function initialize() {
     }
 
     buildChords();
-    // var totalContr=0;
+    var totalContr=0;
 
     // connect phenotypes to documents and phenotypes to its root tree
     searches.forEach(function (d) {
-        // log(documentsById);
-        // log(chordsById);
-        // log(d);
         documentsById["documents_450820"].relatedLinks.push(d); // temp target until search
         //chordsById[d.CMTE_ID].relatedLinks.push(d);
         chordsById[d.parentId].relatedLinks.push(d);
         // totalContr+= Number(d.TRANSACTION_AMT);
+        totalContr+=1
     })
 
     // log("totalContributions=" + totalContr);

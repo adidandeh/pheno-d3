@@ -111,7 +111,7 @@ var cns=[],
     total_sReps=0,
     total_hOthers=0,
     total_sOthers=0,
-
+    
     total_docs=0,
 
     contributions=[],
