@@ -10,7 +10,8 @@ function updateLinks(links) {
     log("updateLinks");
     linkGroup=linksSvg.selectAll("g.links")
         .data(links, function (d,i) {
-            return d.Key;
+            log(d);
+            return d.Key; // i.e. 1_0
         });
 
  //   linkGroup.selectAll("g.links").transition(500).style("opacity",1);
@@ -37,9 +38,9 @@ function updateLinks(links) {
             newArc.endAngle=relatedChord.currentAngle;
             newArc.value=1 /*Number(d.TRANSACTION_AMT)*/;
             var arc=d3.svg.arc(d,i).innerRadius(linkRadius).outerRadius(innerRadius);
-            totalContributions+=newArc.value;
+            // totalContributions+=newArc.value;
             // total.text(formatCurrency(totalContributions));
-
+            log("test");
             return arc(newArc,i);
         })
         .on("mouseover", function (d) { node_onMouseOver(d,"CONTRIBUTION");})
