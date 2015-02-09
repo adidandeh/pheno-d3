@@ -27,9 +27,8 @@ function buildChords() {
             for (var i = -1; ++i < n;) row[i] = 0;
         }
         row[indexByName[d.id]] = chordLinkCount[indexByName[d.id]];
-        totalLinkAmount+= linkCount;
     });
-    log(chordLinkCount);
+
     var tempLabels=[];
     var tempChords=[];
     chord.matrix(matrix);

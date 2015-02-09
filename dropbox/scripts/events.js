@@ -23,17 +23,12 @@ function node_onMouseOver(d,type) {
                 return tempHeight + "px";
             });
 
-        highlightLinks(d,true);
-    }
-    else if (type=="LINK") {
-
-        /*
-        Highlight chord stroke
-         */
+        highlightLinks(d,true,type);
+    } 
+    else if (type=="LINKHEAD") {
         toolTip.transition()
             .duration(200)
             .style("opacity", ".9");
-
         header1.text(phenotypeRootsById["phenotypeRoot_" + d.parentId].name);
         header.text(d.name);
         header2.text(d.defn);
@@ -41,7 +36,25 @@ function node_onMouseOver(d,type) {
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
             .style("height","100px");
+        // log(d);
         highlightLink(d,true);
+    }
+    else if (type=="LINK") {
+        /*
+        Highlight chord stroke
+         */
+        toolTip.transition()
+            .duration(200)
+            .style("opacity", ".9");
+        header1.text(phenotypeRootsById["phenotypeRoot_" + d.pheno.parentId].name);
+        header.text(d.pheno.name);
+        header2.text(d.pheno.defn);
+
+        toolTip.style("left", (d3.event.pageX+15) + "px")
+            .style("top", (d3.event.pageY-75) + "px")
+            .style("height","100px");
+        // log(d);
+        highlightLink(d.pheno,true);
     }
     else if (type=="ROOT") {
         /*
@@ -56,19 +69,22 @@ function node_onMouseOver(d,type) {
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
             .style("height","110px");
-        highlightLinks(chordsById[d.label],true);
+        highlightLinks(chordsById[d.label],true,type);
     }
 }
 
 function node_onMouseOut(d,type) {
     if (type=="DOC") {
-        highlightLinks(d,false);
+        highlightLinks(d,false,type);
     }
-    else if (type=="LINK") {
+    else if (type=="LINKHEAD") {
         highlightLink(d,false);
     }
+    else if (type=="LINK") {
+        highlightLink(d.pheno,false);
+    }
     else if (type=="ROOT") {
-        highlightLinks(chordsById[d.label],false);
+        highlightLinks(chordsById[d.label],false,type);
     }
 
 
@@ -78,8 +94,7 @@ function node_onMouseOut(d,type) {
 
 }
 
-function highlightLink(g,on) {
-
+function highlightLink(g,on,type) {
     var opacity=((on==true) ? .6 : .1);
 
       // console.log("fadeHandler(" + opacity + ")");
@@ -106,10 +121,16 @@ function highlightLink(g,on) {
 
 }
 
-function highlightLinks(d,on) {
-    d.relatedLinks.forEach(function (d) {
-        highlightLink(d,on);
-    })
+function highlightLinks(d,on,type) {
+    if(type=="ROOT") {
+        d.relatedLinks.forEach(function (d) {
+            highlightLink(d.pheno,on);
+        })
+    } else {
+        d.relatedLinks.forEach(function (d) {
+            highlightLink(d,on);
+        })
+    }
 }
 
 

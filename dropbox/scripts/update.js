@@ -10,8 +10,7 @@ function updateLinks(links) {
     log("updateLinks");
     linkGroup=linksSvg.selectAll("g.links")
         .data(links, function (d,i) {
-            log(d);
-            return d.key; // i.e. 1_0
+            return d.pheno.key; // i.e. 1_0
         });
 
  //   linkGroup.selectAll("g.links").transition(500).style("opacity",1);
@@ -24,7 +23,7 @@ function updateLinks(links) {
     enter.append("g")
         .attr("class", "arc")
         .append("path")
-        .attr("id",function (d) { return "a_" + d.key;})
+        .attr("id",function (d) { return "a_" + d.pheno.key;})
         .style("fill", function(d) { 
             return demColor;
             // return (d.PTY=="DEM") ? demColor : (d.PTY=="REP") ? repColor : otherColor; 
@@ -32,7 +31,7 @@ function updateLinks(links) {
         .style("fill-opacity",.2)
         .attr("d", function (d,i) {
             var newArc={};
-            var relatedChord=chordsById[d.parentId];
+            var relatedChord=chordsById[d.pheno.parentId];
             newArc.startAngle=relatedChord.currentAngle;
             relatedChord.currentAngle=relatedChord.currentAngle+(1/*Number(d.TRANSACTION_AMT)*//relatedChord.value)*(relatedChord.endAngle-relatedChord.startAngle);
             newArc.endAngle=relatedChord.currentAngle;
@@ -43,18 +42,18 @@ function updateLinks(links) {
             // log("test");
             return arc(newArc,i);
         })
-        .on("mouseover", function (d) { node_onMouseOver(d,"LINK");})
-        .on("mouseout", function (d) {node_onMouseOut(d,"LINK"); });
+        .on("mouseover", function (d) { node_onMouseOver(d.pheno,"LINKHEAD");})
+        .on("mouseout", function (d) {node_onMouseOut(d.pheno,"LINKHEAD"); });
 
     /* LINKS */
      enter.append("path")
         .attr("class","link")
-        .attr("id",function (d) { return "l_" + d.key;})
+        .attr("id",function (d) { return "l_" + d.pheno.key;})
         .attr("d", function (d,i) {
-              d.links=createLinks(d);
-              var diag = diagonal(d.links[0],i);
-              diag += "L" + String(diagonal(d.links[1],i)).substr(1);
-              diag += "A" + (linkRadius) + "," + (linkRadius) + " 0 0,0 " +  d.links[0].source.x + "," + d.links[0].source.y;
+              d.pheno.links=createLinks(d);
+              var diag = diagonal(d.pheno.links[0],i);
+              diag += "L" + String(diagonal(d.pheno.links[1],i)).substr(1);
+              diag += "A" + (linkRadius) + "," + (linkRadius) + " 0 0,0 " +  d.pheno.links[0].source.x + "," + d.pheno.links[0].source.y;
 
               return diag;
         })
@@ -84,7 +83,8 @@ function updateLinks(links) {
         .style("fill-opacity",0.2)
         .style("stroke-opacity",1)
         .attr("r", function (d) {
-            var relatedNode=nodesById["450820"]; // TODO: Hardcode
+            // log(d);
+            var relatedNode=nodesById[d.doc.id]; // TODO: Hardcode issue is that d is a search but needs to be a doc
             // var relatedNode=nodesById[d.CAND_ID];
             //Decrement Related Node
             relatedNode.currentAmount=relatedNode.currentAmount/*-Number(d.TRANSACTION_AMT)*/;
@@ -92,7 +92,7 @@ function updateLinks(links) {
             return relatedNode.r*ratio;
         })
         .attr("transform", function (d,i) {
-            return "translate(" + (d.links[0].target.x) + "," + (d.links[0].target.y) + ")";
+            return "translate(" + (d.pheno.links[0].target.x) + "," + (d.pheno.links[0].target.y) + ")";
         })
 
 
@@ -106,9 +106,9 @@ function updateLinks(links) {
         var link2={};
         var source2={};
 
-        var relatedChord=chordsById[d.parentId];
+        var relatedChord=chordsById[d.pheno.parentId];
         // 450820
-        var relatedNode=nodesById["450820"]; // TODO: Hardcode
+        var relatedNode=nodesById[d.doc.id]; // TODO: Hardcode
         // var relatedNode=nodesById[d.id];
         var r=linkRadius;
         var currX=(r * Math.cos(relatedChord.currentLinkAngle-1.57079633));

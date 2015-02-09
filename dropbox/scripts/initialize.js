@@ -28,7 +28,7 @@ function initialize() {
         }
     })
     log("totalDocAmount=" + totalDocAmount);
-    searchedPhenotypes.forEach(function (d) {
+    searchLinks.forEach(function (d) {
         searches.push(d);
     });
 
@@ -37,8 +37,8 @@ function initialize() {
 
     // connect phenotypes to documents and phenotypes to its root tree
     searches.forEach(function (d) {
-        documentsById["documents_450820"].relatedLinks.push(d); // temp target until search
-        chordsById[d.parentId].relatedLinks.push(d);
+        documentsById["documents_"+d.doc.id].relatedLinks.push(d);
+        chordsById[d.pheno.parentId].relatedLinks.push(d);
         totalSearchPhenotypes+=1;
     })
 

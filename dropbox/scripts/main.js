@@ -17,15 +17,15 @@ function onDataFetched() {
 
 function onInterval() {
     log("onInterval");
-    if(searchedPhenotypes.length==0) {
+    if(searchLinks.length==0) {
         clearInterval(intervalId);
     }
     else {
        // renderLinks=[];
        log("Rendering links");
         for (var i=0; i < counter; i++) {
-            if (searchedPhenotypes.length > 0) {
-                renderLinks.push(searchedPhenotypes.pop());
+            if (searchLinks.length > 0) {
+                renderLinks.push(searchLinks.pop());
             }
         }
         counter=30;

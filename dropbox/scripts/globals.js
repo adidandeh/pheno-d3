@@ -37,6 +37,8 @@ var documents=[], // data
     phenotypeRoots=[], // data
     total_docs=0,
     searchedPhenotypes =[],
+    searchLinks = [],
+    
     documentsById={},
     phenotypeRootsById={},
     chordsById={},

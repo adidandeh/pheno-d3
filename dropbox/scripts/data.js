@@ -202,6 +202,8 @@ dataInit = function() {
     indexByName=[];
     nameByIndex=[];
     n = 0;
+    searchLinks = [];
+
     var totalLinkAmount=0;
 
     phenotypeRoots.forEach(function(d) {
@@ -226,18 +228,24 @@ dataInit = function() {
 
                     for (var k = 0; k < uniquePhenos.length; k++) { // each document's phenotypes tags
                         if(searchedPhenotypes[j].name.toUpperCase() === uniquePhenos[k].toUpperCase()) {
+
+                            s = {};
+                            s.doc = documents[i];
+                            s.pheno = searchedPhenotypes[j];
+
+                            searchLinks.push(s);
                             linkCount++;
                         }
                     }   
                 }
             }
         }
-
         totalLinkAmount+=linkCount;
         if(linkCount<1) linkCount++; // To show at least the chord tag TODO, artificially pumping by one
         chordLinkCount[indexByName[d.id]] = linkCount;
 
     });
+
 }
 
 function addStream(file,func,type) {
