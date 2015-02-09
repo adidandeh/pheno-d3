@@ -161,12 +161,12 @@ function fetchData() {
 
     addStream("data/data.json", onFetchPhenotypes, "json");
     addStream("data/docs.json", onFetchDocuments, "json");
-    addStream("data/Candidates_House.csv", onFetchCandidatesHouse, "csv");
-    addStream("data/Candidates_Senate.csv", onFetchCandidatesSenate, "csv");
-    addStream("data/Contributions_House.csv", onFetchContributionsHouse, "csv");
-    addStream("data/Contributions_Senate.csv", onFetchContributionsSenate, "csv");
-    addStream("data/Pacs_House.csv", onFetchPacsHouse, "csv");
-    addStream("data/Pacs_Senate.csv", onFetchPacsSenate, "csv");
+    // addStream("data/Candidates_House.csv", onFetchCandidatesHouse, "csv");
+    // addStream("data/Candidates_Senate.csv", onFetchCandidatesSenate, "csv");
+    // addStream("data/Contributions_House.csv", onFetchContributionsHouse, "csv");
+    // addStream("data/Contributions_Senate.csv", onFetchContributionsSenate, "csv");
+    // addStream("data/Pacs_House.csv", onFetchPacsHouse, "csv");
+    // addStream("data/Pacs_Senate.csv", onFetchPacsSenate, "csv");
     startFetch();
 }
 
@@ -180,15 +180,13 @@ function onFetchPhenotypes(error, pheno) {
 
     // build search links
     for(var i=0; i<data.length; i++) {
-        // console.log(data[i].children);
         for(var j=0; j<data[i].children.length; j++) {
-            // log(data[i].children);
             data[i].children[j].key = data[i].order + "_" + j;
             data[i].children[j].parentId = data[i].id;
+            data[i].children[j].parentOrder = data[i].order;
             searchedPhenotypes.push(data[i].children[j]);
         }
     }
-    log(searchedPhenotypes);
     endFetch();
 }
 

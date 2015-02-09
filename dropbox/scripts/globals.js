@@ -34,44 +34,44 @@ var activerow = -1,
     horizontalPadding = 0;
 
 var cns=[],
-    cands=[],
-    pacs=[],
+//     cands=[],
+//     pacs=[],
     
     documents=[], // data
     phenotypeRoots=[], // data
 
-    pacsHouse=[],
-    pacsSentate=[],
-    contr=[],
-    h_dems=[],
-    h_reps=[],
-    h_others=[],
-    house=[];
-    s_dems=[],
-    s_reps=[],
-    s_others=[],
-    senate=[],
-    total_hDems=0,
-    total_sDems=0,
-    total_hReps=0,
-    total_sReps=0,
-    total_hOthers=0,
-    total_sOthers=0,
+    // pacsHouse=[],
+    // pacsSentate=[],
+    // contr=[],
+    // h_dems=[],
+    // h_reps=[],
+    // h_others=[],
+    // house=[];
+    // s_dems=[],
+    // s_reps=[],
+    // s_others=[],
+    // senate=[],
+    // total_hDems=0,
+    // total_sDems=0,
+    // total_hReps=0,
+    // total_sReps=0,
+    // total_hOthers=0,
+    // total_sOthers=0,
 
     total_docs=0,
-
     searchedPhenotypes =[],
 
-    contributions=[],
-    c_senate=[];
-    c_house=[];
-    pacsById={},
+    // contributions=[],
+    // c_senate=[];
+    // c_house=[];
+    // pacsById={},
 
     documentsById={},
     phenotypeRootsById={},
 
     chordsById={},
     nodesById={},
+
     chordCount=20,
     pText=null,
     pChords=null,

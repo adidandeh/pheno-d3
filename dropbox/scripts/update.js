@@ -3,8 +3,6 @@ updateChart = function() {
     initialize();
     updateNodes();
     updateChords();
- //   console.log("contr.length=" + contr.length)
-   // updateLinks(contr);
     intervalId=setInterval(onInterval,1);
 }
 
@@ -86,7 +84,6 @@ function updateLinks(links) {
         .style("stroke-opacity",1)
         .attr("r", function (d) {
             var relatedNode=nodesById["450820"];
-            console.log(relatedNode);
             // var relatedNode=nodesById[d.CAND_ID];
             //Decrement Related Node
             relatedNode.currentAmount=relatedNode.currentAmount/*-Number(d.TRANSACTION_AMT)*/;

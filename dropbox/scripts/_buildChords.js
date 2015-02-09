@@ -35,7 +35,6 @@ function buildChords() {
 
     // }
 
-
     buf_indexByName=indexByName;
 
     indexByName=[];
@@ -61,11 +60,27 @@ function buildChords() {
             for (var i = -1; ++i < n;) row[i] = 0;
         }
 
-        // console.log(d.name);
-        // console.log(d.children.length);
-        // console.log("-----");
+        // linkCount = 0;
+        // for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
+        //     if(searchedPhenotypes[j].parentId == d.id) {
+        //         for(var i = 0; i < docs.length; i++) { // each document
+        //             tempPhenotypes = docs[i].phenotypes;
+        //             for (var k = 0; k < tempPhenotypes.length; k++) { // each document's phenotypes tags
+        //                 if(searchedPhenotypes[j].name.toUpperCase() === tempPhenotypes[k].toUpperCase()) {
+        //                     linkCount++;
+        //                 }
+        //             }   
+        //         }
+        //     }
+        // }
+
+
+        // log(linkCount);
+
+        // row[indexByName[d.id]]= linkCount;
+        // totalPacAmount+= linkCount;
+        
         row[indexByName[d.id]]= d.children.length;
-                // console.log(row);
         totalPacAmount+= d.children.length;
     });
 

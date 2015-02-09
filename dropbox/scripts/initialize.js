@@ -5,7 +5,6 @@ function initialize() {
     pacs=[];
     contr=[];
     searches=[],
-    phenoRoots=[];
     phenoRoots=phenotypeRoots;
     docs=[];
 
@@ -31,41 +30,36 @@ function initialize() {
 
         nodes=bubble.nodes(root);
 
-        var totalCandAmount=0;
+        var totalDocAmount=0;
         nodes.forEach (function (d) {
             if (d.depth==2) {
                 nodesById[d.id]=d;
                 d.relatedLinks=[];
-                d.Amount=Number(d.phenotypes.length);
-                // d.Amount=Number(d.Amount);
-                d.currentAmount =d.phenotypes.length;
-                // d.currentAmount =d.Amount;
-                // cands.push(d);
+                d.Amount=1;
+                d.currentAmount = 1;
                 docs.push(d);
-                totalCandAmount+= d.Amount;
+                totalDocAmount+= d.Amount;
 
             }
         })
-        log("totalCandAmount=" + totalCandAmount);
-        pacs=pacsHouse;
+        log("totalDocAmount=" + totalDocAmount);
+        // pacs=pacsHouse;
         searchedPhenotypes.forEach(function (d) {
             searches.push(d);
         });
     }
 
     buildChords();
-    var totalContr=0;
+    var totalSearchPhenotypes=0;
 
     // connect phenotypes to documents and phenotypes to its root tree
     searches.forEach(function (d) {
         documentsById["documents_450820"].relatedLinks.push(d); // temp target until search
-        //chordsById[d.CMTE_ID].relatedLinks.push(d);
         chordsById[d.parentId].relatedLinks.push(d);
-        // totalContr+= Number(d.TRANSACTION_AMT);
-        totalContr+=1
+        totalSearchPhenotypes+=1;
     })
 
-    // log("totalContributions=" + totalContr);
+    log("totalSearchPhenotypes=" + totalSearchPhenotypes);
     log("initialize()");
 
 }
