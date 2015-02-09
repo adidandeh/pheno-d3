@@ -33,42 +33,12 @@ var activerow = -1,
     verticalPadding = 10,
     horizontalPadding = 0;
 
-var cns=[],
-//     cands=[],
-//     pacs=[],
-    
-    documents=[], // data
+var documents=[], // data
     phenotypeRoots=[], // data
-
-    // pacsHouse=[],
-    // pacsSentate=[],
-    // contr=[],
-    // h_dems=[],
-    // h_reps=[],
-    // h_others=[],
-    // house=[];
-    // s_dems=[],
-    // s_reps=[],
-    // s_others=[],
-    // senate=[],
-    // total_hDems=0,
-    // total_sDems=0,
-    // total_hReps=0,
-    // total_sReps=0,
-    // total_hOthers=0,
-    // total_sOthers=0,
-
     total_docs=0,
     searchedPhenotypes =[],
-
-    // contributions=[],
-    // c_senate=[];
-    // c_house=[];
-    // pacsById={},
-
     documentsById={},
     phenotypeRootsById={},
-
     chordsById={},
     nodesById={},
 
@@ -78,7 +48,6 @@ var cns=[],
     nodes=[],
     renderLinks=[],
     colorByName={},
-    totalContributions=0,
     delay=2;
 
 var maxWidth=Math.max(600,Math.min(screen.height,screen.width)-250);

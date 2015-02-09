@@ -1,9 +1,5 @@
 function initialize() {
-    totalContributions=0;
     renderLinks=[];
-    cands=[];
-    pacs=[];
-    contr=[];
     searches=[],
     phenoRoots=phenotypeRoots;
     docs=[];
@@ -11,20 +7,10 @@ function initialize() {
     if (office=="house") {
         var root={};
         var d={};
-        // d.value=total_hDems;
-        // d.children=h_dems;
+
         d.value=total_docs;
         d.children=documents;
 
-        // var r={};
-        // r.value=total_hReps;
-        // r.children=h_reps;
-
-        // var o={};
-        // o.value=total_hOthers;
-        // o.children=h_others;
-
-        // root.children=[r,d,o];
         root.children=[d];
         root.PTY="root";
 
