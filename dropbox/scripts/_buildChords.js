@@ -18,23 +18,6 @@ function buildChords() {
 
     }
 
-    buf_indexByName=indexByName;
-
-    indexByName=[];
-    nameByIndex=[];
-    n = 0;
-
-    var totalLinkAmount=0;
-
-    // Compute a unique index for each package name
-    phenotypeRoots.forEach(function(d) {
-        d = d.id;
-        if (!(d in indexByName)) {
-              nameByIndex[n] = d;
-              indexByName[d] = n++;
-        }
-    });
-
     var counter = 1;
      phenotypeRoots.forEach(function(d) {
         var source = indexByName[d.id], // get HP id
@@ -43,33 +26,10 @@ function buildChords() {
             row = matrix[source] = [];
             for (var i = -1; ++i < n;) row[i] = 0;
         }
-
-        linkCount = 0;
-        for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
-            if(searchedPhenotypes[j].parentId === d.id) {
-                for(var i = 0; i < docs.length; i++) { // each document
-                    tempPhenotypes = docs[i].phenotypes;
-
-                    var uniquePhenos = tempPhenotypes.reduce(function(a,b){ // remove duplicate phenos
-                        if (a.indexOf(b) < 0 ) a.push(b);
-                        return a;
-                    },[]);
-
-                    for (var k = 0; k < uniquePhenos.length; k++) { // each document's phenotypes tags
-                        if(searchedPhenotypes[j].name.toUpperCase() === uniquePhenos[k].toUpperCase()) {
-                            linkCount++;
-                        }
-                    }   
-                }
-            }
-        }
-        log(linkCount);
-        if(linkCount<1) linkCount++; // To show at least the tag
-
-        row[indexByName[d.id]] = linkCount;
+        row[indexByName[d.id]] = chordLinkCount[indexByName[d.id]];
         totalLinkAmount+= linkCount;
     });
-
+    log(chordLinkCount);
     var tempLabels=[];
     var tempChords=[];
     chord.matrix(matrix);

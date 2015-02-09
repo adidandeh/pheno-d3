@@ -197,6 +197,49 @@ function onFetchDocuments(error, data) {
     endFetch();
 }
 
+dataInit = function() {
+    buf_indexByName=indexByName;
+    indexByName=[];
+    nameByIndex=[];
+    n = 0;
+    var totalLinkAmount=0;
+
+    phenotypeRoots.forEach(function(d) {
+        d = d.id;
+        if (!(d in indexByName)) {
+              nameByIndex[n] = d;
+              indexByName[d] = n++;
+        }
+    });
+
+    phenotypeRoots.forEach(function(d) {
+        linkCount = 0;
+        for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
+            if(searchedPhenotypes[j].parentId === d.id) {
+                for(var i = 0; i < documents.length; i++) { // each document
+                    tempPhenotypes = documents[i].phenotypes;
+
+                    var uniquePhenos = tempPhenotypes.reduce(function(a,b){ // remove duplicate phenos
+                        if (a.indexOf(b) < 0 ) a.push(b);
+                        return a;
+                    },[]);
+
+                    for (var k = 0; k < uniquePhenos.length; k++) { // each document's phenotypes tags
+                        if(searchedPhenotypes[j].name.toUpperCase() === uniquePhenos[k].toUpperCase()) {
+                            linkCount++;
+                        }
+                    }   
+                }
+            }
+        }
+
+        totalLinkAmount+=linkCount;
+        if(linkCount<1) linkCount++; // To show at least the chord tag TODO, artificially pumping by one
+        chordLinkCount[indexByName[d.id]] = linkCount;
+
+    });
+}
+
 function addStream(file,func,type) {
     var o={};
     o.file=file;
@@ -216,6 +259,7 @@ function endFetch() {
     numCalls--;
     if (numCalls==0) {
        // dataDispatch.end();
+        dataInit();
         main();
     }
 }

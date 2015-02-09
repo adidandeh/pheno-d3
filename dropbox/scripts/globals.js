@@ -41,6 +41,7 @@ var documents=[], // data
     phenotypeRootsById={},
     chordsById={},
     nodesById={},
+    chordLinkCount={},
 
     chordCount=20,
     pText=null,

@@ -4,35 +4,33 @@ function initialize() {
     phenoRoots=phenotypeRoots;
     docs=[];
 
-    if (office=="house") {
-        var root={};
-        var d={};
+    var root={};
+    var d={};
 
-        d.value=total_docs;
-        d.children=documents;
+    d.value=total_docs;
+    d.children=documents;
 
-        root.children=[d];
-        root.PTY="root";
+    root.children=[d];
+    root.PTY="root";
 
-        nodes=bubble.nodes(root);
+    nodes=bubble.nodes(root);
 
-        var totalDocAmount=0;
-        nodes.forEach (function (d) {
-            if (d.depth==2) {
-                nodesById[d.id]=d;
-                d.relatedLinks=[];
-                d.Amount=1;
-                d.currentAmount = 1;
-                docs.push(d);
-                totalDocAmount+= d.Amount;
+    var totalDocAmount=0;
+    nodes.forEach (function (d) {
+        if (d.depth==2) {
+            nodesById[d.id]=d;
+            d.relatedLinks=[];
+            d.Amount=1;
+            d.currentAmount = 1;
+            docs.push(d);
+            totalDocAmount+= d.Amount;
 
-            }
-        })
-        log("totalDocAmount=" + totalDocAmount);
-        searchedPhenotypes.forEach(function (d) {
-            searches.push(d);
-        });
-    }
+        }
+    })
+    log("totalDocAmount=" + totalDocAmount);
+    searchedPhenotypes.forEach(function (d) {
+        searches.push(d);
+    });
 
     buildChords();
     var totalSearchPhenotypes=0;
