@@ -144,6 +144,18 @@ var dataCalls=[];
 var numCalls=0;
 
 function fetchData() {
+
+    documents=[], // data
+    phenotypeRoots=[], // data
+    total_docs=0,
+    searchedPhenotypes =[],
+    searchLinks = [],
+    
+    documentsById={},
+    phenotypeRootsById={},
+    chordsById={},
+    nodesById={},
+    chordLinkCount={},
     dataCalls=[];
 //    dataDispatch.on("end",onDataFetched)
 

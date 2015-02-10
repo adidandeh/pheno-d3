@@ -90,7 +90,6 @@ function node_onMouseOut(d,type) {
     toolTip.transition()                                    // declare the transition properties to fade-out the div
         .duration(500)                                  // it shall take 500ms
         .style("opacity", "0");                         // and go all the way to an opacity of nil
-
 }
 
 function highlightLink(g,on,type) {
@@ -114,8 +113,6 @@ function highlightLink(g,on,type) {
              .style("fill",(on==true) ? "#000" : "#777")
              .style("font-size",(on==true) ? "10px" : "8px")
              .style("stroke-width",((on==true) ? 2 : 0));
-
-
 }
 
 function highlightLinks(d,on,type) {
