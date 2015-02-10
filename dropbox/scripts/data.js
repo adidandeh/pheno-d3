@@ -191,6 +191,7 @@ function onFetchDocuments(error, data) {
     for (var i=0; i < documents.length; i++) {
         var d = documents[i];
         d.value = d.phenotypes.length;
+        // d.value = 1;
         documentsById["documents_" + documents[i].id]=documents[i];
         total_docs+=1; 
     }
@@ -233,7 +234,7 @@ dataInit = function() {
                             s.doc = documents[i];
                             s.pheno = searchedPhenotypes[j];
                             s.key = linkCount;
-
+                            // documentsById["documents_" + documents[i].id].value += 1;
                             searchLinks.push(s);
                             linkCount++;
                         }
