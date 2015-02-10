@@ -141,14 +141,18 @@ function updateNodes() {
 
     enter.append("circle")
         .attr("r", function(d) { return d.r; })
-        .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.05})
+        // .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.05})
+        .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.10})
         .style("stroke",function(d) {
-            return demColor;
+            // return otherColor;
+                        return "black";
             // return ((d.PTY=='DEM') ? demColor : (d.PTY=="REP") ? repColor : otherColor);
         })
-        .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.2})
+        .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.25})
+        // .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.2})
         .style("fill", function(d) {
-            return demColor;
+            // return otherColor;
+            return "FFFFFF";
             // return ((d.PTY=='DEM') ? demColor : (d.PTY=="REP") ? repColor : otherColor);
         });
 
