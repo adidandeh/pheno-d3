@@ -23,19 +23,19 @@ function node_onMouseOver(d,type) {
                 return tempHeight + "px";
             });
 
-        highlightLinks(d,true,type);
+        highlightLinks(documentsById["documents_"+d.id],true,type);
     } 
     else if (type=="LINKHEAD") {
         toolTip.transition()
             .duration(200)
             .style("opacity", ".9");
-        header1.text(phenotypeRootsById["phenotypeRoot_" + d.parentId].name);
-        header.text(d.name);
-        header2.text(d.defn);
+        header1.text(d.pheno.name);
+        header.text("Document: " + d.doc.medline_article_title);
+        header2.text(d.pheno.defn);
 
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
-            .style("height","100px");
+            .style("height",200+"px");
         // log(d);
         highlightLink(d,true);
     }
@@ -46,15 +46,15 @@ function node_onMouseOver(d,type) {
         toolTip.transition()
             .duration(200)
             .style("opacity", ".9");
-        header1.text(phenotypeRootsById["phenotypeRoot_" + d.pheno.parentId].name);
-        header.text(d.pheno.name);
+        header1.text(d.pheno.name);
+        header.text("Document: " + d.doc.medline_article_title);
         header2.text(d.pheno.defn);
 
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
-            .style("height","100px");
+            .style("height",200+"px");
         // log(d);
-        highlightLink(d.pheno,true);
+        highlightLink(d,true);
     }
     else if (type=="ROOT") {
         /*
@@ -75,13 +75,13 @@ function node_onMouseOver(d,type) {
 
 function node_onMouseOut(d,type) {
     if (type=="DOC") {
-        highlightLinks(d,false,type);
+        highlightLinks(documentsById["documents_"+d.id],false,type);
     }
     else if (type=="LINKHEAD") {
         highlightLink(d,false);
     }
     else if (type=="LINK") {
-        highlightLink(d.pheno,false);
+        highlightLink(d,false);
     }
     else if (type=="ROOT") {
         highlightLinks(chordsById[d.label],false,type);
@@ -95,7 +95,6 @@ function node_onMouseOut(d,type) {
 
 function highlightLink(g,on,type) {
     var opacity=((on==true) ? .6 : .1);
-
       // console.log("fadeHandler(" + opacity + ")");
       // highlightSvg.style("opacity",opacity);
 
@@ -107,7 +106,7 @@ function highlightLink(g,on,type) {
         var arc=d3.select(document.getElementById("a_" + g.key));
         arc.transition().style("fill-opacity",(on==true) ? opacity :.2);
 
-        var circ=d3.select(document.getElementById("c_" + g.id));
+        var circ=d3.select(document.getElementById("d_" + g.id));
         circ.transition((on==true) ? 150:550)
         .style("opacity",((on==true) ?1 :0));
 
@@ -121,15 +120,9 @@ function highlightLink(g,on,type) {
 }
 
 function highlightLinks(d,on,type) {
-    if(type=="ROOT") {
-        d.relatedLinks.forEach(function (d) {
-            highlightLink(d.pheno,on);
-        })
-    } else {
-        d.relatedLinks.forEach(function (d) {
-            highlightLink(d,on);
-        })
-    }
+    d.relatedLinks.forEach(function (d) {
+        highlightLink(d,on, type);
+    })
 }
 
 

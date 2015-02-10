@@ -232,6 +232,7 @@ dataInit = function() {
                             s = {};
                             s.doc = documents[i];
                             s.pheno = searchedPhenotypes[j];
+                            s.key = linkCount;
 
                             searchLinks.push(s);
                             linkCount++;

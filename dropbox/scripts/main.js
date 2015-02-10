@@ -22,7 +22,7 @@ function onInterval() {
     }
     else {
        // renderLinks=[];
-       log("Rendering links");
+       // log("Rendering links");
         for (var i=0; i < counter; i++) {
             if (searchLinks.length > 0) {
                 renderLinks.push(searchLinks.pop());
@@ -30,6 +30,7 @@ function onInterval() {
         }
         counter=30;
         //counter++;
+        // log(renderLinks);
         updateLinks(renderLinks);
     }
 }

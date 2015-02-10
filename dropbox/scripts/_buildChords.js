@@ -18,10 +18,10 @@ function buildChords() {
 
     }
 
-    var counter = 1;
-     phenotypeRoots.forEach(function(d) {
+    phenotypeRoots.forEach(function(d) {
         var source = indexByName[d.id], // get HP id
             row = matrix[source];
+ 
         if (!row) {
             row = matrix[source] = [];
             for (var i = -1; ++i < n;) row[i] = 0;
@@ -33,7 +33,6 @@ function buildChords() {
     var tempChords=[];
     chord.matrix(matrix); // TODO: change matrix to allow for all the searchLinks
     chords=chord.chords();
-
     var i=0;
     chords.forEach(function (d) {
         d.label=nameByIndex[i];

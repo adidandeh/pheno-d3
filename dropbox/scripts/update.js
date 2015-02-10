@@ -7,10 +7,9 @@ updateChart = function() {
 }
 
 function updateLinks(links) {
-    log("updateLinks");
     linkGroup=linksSvg.selectAll("g.links")
         .data(links, function (d,i) {
-            return d.pheno.key; // i.e. 1_0
+            return d.key; // i.e. 1_0
         });
 
  //   linkGroup.selectAll("g.links").transition(500).style("opacity",1);
@@ -18,35 +17,34 @@ function updateLinks(links) {
     var enter=linkGroup.enter().append("g").attr("class","links");
     var update=linkGroup.transition();
 
-
    /*  ARC SEGMENTS */
     enter.append("g")
         .attr("class", "arc")
         .append("path")
-        .attr("id",function (d) { return "a_" + d.pheno.key;})
+        .attr("id",function (d) { return "a_" + d.key;})
         .style("fill", function(d) { 
             return demColor;
             // return (d.PTY=="DEM") ? demColor : (d.PTY=="REP") ? repColor : otherColor; 
         })
         .style("fill-opacity",.2)
         .attr("d", function (d,i) {
-            log(chordsById);
+
             var newArc={};
-            var relatedChord=chordsById[d.pheno.parentId];
+            var relatedChord=chordsById[d.pheno.parentId]; // rootPheno
             newArc.startAngle=relatedChord.currentAngle;
-            relatedChord.currentAngle=relatedChord.currentAngle+(1/*Number(d.TRANSACTION_AMT)*//relatedChord.value)*(relatedChord.endAngle-relatedChord.startAngle);
+            relatedChord.currentAngle=relatedChord.currentAngle+(1/relatedChord.value)*(relatedChord.endAngle-relatedChord.startAngle);
             newArc.endAngle=relatedChord.currentAngle;
-            newArc.value=1 /*Number(d.TRANSACTION_AMT)*/;
+            newArc.value=1;
             var arc=d3.svg.arc(d,i).innerRadius(linkRadius).outerRadius(innerRadius);
             return arc(newArc,i);
         })
-        .on("mouseover", function (d) { node_onMouseOver(d.pheno,"LINKHEAD");})
-        .on("mouseout", function (d) {node_onMouseOut(d.pheno,"LINKHEAD"); });
+        .on("mouseover", function (d) { node_onMouseOver(d,"LINKHEAD");})
+        .on("mouseout", function (d) {node_onMouseOut(d,"LINKHEAD"); });
 
     /* LINKS */
      enter.append("path")
         .attr("class","link")
-        .attr("id",function (d) { return "l_" + d.pheno.key;})
+        .attr("id",function (d) { return "l_" + d.key;})
         .attr("d", function (d,i) {
               d.pheno.links=createLinks(d);
               var diag = diagonal(d.pheno.links[0],i);
@@ -175,7 +173,7 @@ function updateNodes() {
         .style("stroke", "#000")
         .style("stroke-width",1.5)
         .style("stroke-opacity",1)
-        .on("mouseover", function (d) { node_onMouseOver(d,"DOC"); })
+        .on("mouseover", function (d) {node_onMouseOver(d,"DOC"); })
         .on("mouseout", function (d) {node_onMouseOut(d,"DOC"); });
 
 
