@@ -245,10 +245,11 @@ d3.select("body").on("keypress", function() {
 });
 
 clearPhenotypes = function() {
+
     data.forEach(function(d) {
         d.children = [];
     });
-    d3.select("#chart").selectAll("div").remove();
+    d3.select("#overview > .links").selectAll(".links").remove();
     activerow = -1;
     childrenNumStack = [1];
     currentTreeData = {};
@@ -293,6 +294,7 @@ createPhenoBox = function() { // use cursorData parent chain-up
 
 removeChild = function(row, column) {
     data[row].children.splice(column, 1);
+                d3.select("#overview > .links").selectAll(".links").remove();
     fetchData();
     // updateChart();
     // draw(svgBoxes, data);

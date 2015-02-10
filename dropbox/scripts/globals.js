@@ -68,6 +68,7 @@ var svgBoxes = d3.select("#phenobar").append("svg")
     .attr("height", height);
 
 var svg = d3.select("#phenobar").append("svg")
+    .attr("id", "overview")
     .attr("width", width)
     .attr("height", height);
 
