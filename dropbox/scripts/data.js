@@ -190,28 +190,69 @@ onFetchPhenotypes = function(error, pheno) {
     }
 
     // TODO: Take searchPhenotypes and do server search for datasets.
-    //searchSolr();
+    searchSolr();
 
     endFetch();
 }
 
 searchSolr = function() {
+    if(searchedPhenotypes.length < 1) return null;
     // searchPhenotypes
-    var url = "http://129.100.19.193:8983/solr/medline-citations/select?q="
-            + "phenotypes:(" 
-            + "abnormality+of+the+abdomen" // custom phenotype list. change cause its being ored
-            + ")%0A&wt=json&indent=true&start=0&rows=1000";
+    cleanedSearches = [];
 
-    function httpGet(theUrl) {
+    var re = /\s/g;
+    searchedPhenotypes.forEach(function(d){
+        searchTerm = d.name;
+        searchTerm = searchTerm.replace(re, "+");
+        cleanedSearches.push(searchTerm);
+    });
+
+    var searchString = "";
+    var first = true;
+    cleanedSearches.forEach(function(d){
+        if(!first) { 
+            searchString += "+AND+";
+        } else {
+            first = false;
+        }
+
+        searchString += '"' + d + '"';
+    });
+
+    handler = "select";
+    var search = {
+         core: 'medline-citations',
+         handler: handler,
+         searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
+         query: searchString,
+         years: {min: 1900, max: 2015},
+         start: 0,
+         rows: 1000
+    };
+
+
+    // $http({
+    //  method: 'get',
+    //  url: 'http://129.100.19.193/soscip/api/search.php',
+    //  headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    //  params: search
+    // });
+
+    // var url = "http://129.100.19.193:8983/solr/medline-citations/select?q="
+    //         + "phenotypes:(" 
+    //         + searchString
+    //         + ")%0A&wt=json&indent=true&start=0&rows=1000";
+
+    function httpGet() {
         var xmlHttp = null;
-
         xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", theUrl, false );
-        xmlHttp.send( null );
-        return xmlHttp.responseText;
+        xmlHttp.open( "GET", 'http://129.100.19.193/soscip/api/search.php', false);
+        xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xmlHttp.send(search);
+        return xmlHttp;
     }
 
-    response = httpGet(url);
+    response = httpGet();
 
     log(response);
     log("searchSolr");
