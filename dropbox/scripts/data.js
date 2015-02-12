@@ -143,7 +143,7 @@ var data = [{
 var dataCalls=[];
 var numCalls=0;
 
-function fetchData() {
+fetchData = function() {
     documentsById={},
     phenotypeRootsById={},
     chordsById={},
@@ -170,7 +170,7 @@ function fetchData() {
 }
 
 
-function onFetchPhenotypes(error, pheno) {
+onFetchPhenotypes = function(error, pheno) {
     phenotypeRootsById = [];
     phenotypeRoots = pheno.children;
     // build arc setup
@@ -188,10 +188,37 @@ function onFetchPhenotypes(error, pheno) {
             searchedPhenotypes.push(data[i].children[j]);
         }
     }
+
+    // TODO: Take searchPhenotypes and do server search for datasets.
+    //searchSolr();
+
     endFetch();
 }
 
-function onFetchDocuments(error, data) {
+searchSolr = function() {
+    // searchPhenotypes
+    var url = "http://129.100.19.193:8983/solr/medline-citations/select?q="
+            + "phenotypes:(" 
+            + "abnormality+of+the+abdomen" // custom phenotype list. change cause its being ored
+            + ")%0A&wt=json&indent=true&start=0&rows=1000";
+
+    function httpGet(theUrl) {
+        var xmlHttp = null;
+
+        xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false );
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
+
+    response = httpGet(url);
+
+    log(response);
+    log("searchSolr");
+    return response;
+}
+
+onFetchDocuments = function(error, data) {
     documents = data.response.docs;
     for (var i=0; i < documents.length; i++) {
         var d = documents[i];
@@ -255,7 +282,7 @@ dataInit = function() {
 
 }
 
-function addStream(file,func,type) {
+addStream = function(file,func,type) {
     var o={};
     o.file=file;
     o.function=func;
@@ -263,14 +290,14 @@ function addStream(file,func,type) {
     dataCalls.push(o);
 }
 
-function startFetch() {
+startFetch = function () {
     numCalls=dataCalls.length;
     dataCalls.forEach(function (d) {
         d3[d.type](d.file, d.function);
     })
 }
 
-function endFetch() {
+endFetch = function() {
     numCalls--;
     if (numCalls==0) {
        // dataDispatch.end();

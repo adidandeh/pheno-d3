@@ -6,11 +6,11 @@ function node_onMouseOver(d,type) {
             .duration(200)
             .style("opacity", ".9");
         tempHeight = 100;
-
+        log(d);
         header1.text(d.medline_journal_title);
         header.text(d.medline_article_title);
         header2.text("Year Published: " + d.medline_pub_year);
-        toolTip.style("left", (d3.event.pageX+15) + "px")
+        toolTip.styl("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
             .style("height", function() {
                 if (d.medline_article_title.length > 25*2) {
