@@ -1,5 +1,5 @@
 function initialize() {
-    renderLinks=[];
+    // renderLinks=[];
     searches=[],
     phenoRoots=phenotypeRoots;
     docs=[];

@@ -219,6 +219,7 @@ searchSolr = function() {
 }
 
 onFetchDocuments = function(error, data) {
+    documentsById = [];
     documents = data.response.docs;
     for (var i=0; i < documents.length; i++) {
         var d = documents[i];
