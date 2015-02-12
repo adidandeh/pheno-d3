@@ -219,17 +219,15 @@ searchSolr = function() {
         searchString += '"' + d + '"';
     });
 
-    handler = "select";
     var search = {
          core: 'medline-citations',
-         handler: handler,
+         handler: "select",
          searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
          query: searchString,
          years: {min: 1900, max: 2015},
          start: 0,
          rows: 1000
     };
-
 
     // $http({
     //  method: 'get',
@@ -238,25 +236,40 @@ searchSolr = function() {
     //  params: search
     // });
 
+    $.ajax({
+      url: "http://129.100.19.193/soscip/api/search.php",
+      type:"get", //send it through get method
+      data:search,
+      success: function(response) {
+        log(response);
+        log("searchSolr finish");
+        return response;
+      },
+      error: function(xhr) {
+        log("error searchSolr");
+        return null;
+      }
+    });
+
     // var url = "http://129.100.19.193:8983/solr/medline-citations/select?q="
     //         + "phenotypes:(" 
     //         + searchString
     //         + ")%0A&wt=json&indent=true&start=0&rows=1000";
 
-    function httpGet() {
-        var xmlHttp = null;
-        xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", 'http://129.100.19.193/soscip/api/search.php', false);
-        xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xmlHttp.send(search);
-        return xmlHttp;
-    }
+    // function httpGet() {
+    //     var xmlHttp = null;
+    //     xmlHttp = new XMLHttpRequest();
+    //     xmlHttp.open( "GET", 'http://129.100.19.193/soscip/api/search.php', false);
+    //     xmlHttp.setRequestHeader('Content-Type', 'application/x-www-formurlencoded-');
+    //     xmlHttp.send(search);
+    //     return xmlHttp;
+    // }
 
-    response = httpGet();
+    // response = httpGet();
 
-    log(response);
-    log("searchSolr");
-    return response;
+    // log(response);
+    // log("searchSolr");
+    // return response;
 }
 
 onFetchDocuments = function(error, data) {
