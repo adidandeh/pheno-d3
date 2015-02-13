@@ -151,19 +151,6 @@ fetchData = function() {
     chordLinkCount={},
     dataCalls=[];
 //    dataDispatch.on("end",onDataFetched)
-
-
-/* Need to generate: 
-    - Full phenotype listing, seperated by major subtree. 
-        - data.children is the arc main segments
-        - the individual divisions are the children phenotypes
-        - Used for arc divisions around the visual space.
-    - Full article sets.
-        - Used as the clusters within the visual space.
-    - Search input.
-        - Used to generate the links between the arc and the clusters.
-*/
-
     addStream("data/data.json", onFetchPhenotypes, "json");
     addStream("data/docs-1000.json", onFetchDocuments, "json");
     startFetch();
@@ -190,9 +177,12 @@ onFetchPhenotypes = function(error, pheno) {
     }
 
     // TODO: Take searchPhenotypes and do server search for datasets.
-   // searchSolr();
+  // documents = searchSolr();
 
+  $.when(searchSolr()).done(function(){
     endFetch();
+  });
+    // endFetch();
 }
 
 searchSolr = function() {
@@ -226,52 +216,31 @@ searchSolr = function() {
          query: searchString,
          years: {min: 1900, max: 2015},
          start: 0,
-         rows: 1000
+         rows: 100
     };
 
-    // $http({
-    //  method: 'get',
-    //  url: 'http://129.100.19.193/soscip/api/search.php',
-    //  headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    //  params: search
-    // });
-
-    $.ajax({
+    return $.ajax({ // TODO: Slowing down everything.
       url: "http://129.100.19.193/soscip/api/search.php",
       type:"get", //send it through get method
       data:search,
-      success: function(response) {
-        log(response);
+      success: function(result) {
+        var result = jQuery.parseJSON(result);
         log("searchSolr finish");
-        return response;
+        documents = result.response.docs;
       },
       error: function(xhr) {
         log("error searchSolr");
-        return null;
+        documents = [];
       }
     });
-
-    // var url = "http://129.100.19.193:8983/solr/medline-citations/select?q="
-    //         + "phenotypes:(" 
-    //         + searchString
-    //         + ")%0A&wt=json&indent=true&start=0&rows=1000";
-
-    // function httpGet() {
-    //     var xmlHttp = null;
-    //     xmlHttp = new XMLHttpRequest();
-    //     xmlHttp.open( "GET", 'http://129.100.19.193/soscip/api/search.php', false);
-    //     xmlHttp.setRequestHeader('Content-Type', 'application/x-www-formurlencoded-');
-    //     xmlHttp.send(search);
-    //     return xmlHttp;
-    // }
-
-    // response = httpGet();
-
 }
 
 onFetchDocuments = function(error, data) {
     documentsById = [];
-    documents = data.response.docs;
+    if(documents.length < 1) {
+        documents = data.response.docs;
+    }
+
     for (var i=0; i < documents.length; i++) {
         var d = documents[i];
         d.value = d.phenotypes.length;
@@ -304,25 +273,28 @@ dataInit = function() {
         for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
             if(searchedPhenotypes[j].parentId === d.id) {
                 for(var i = 0; i < documents.length; i++) { // each document
-                    tempPhenotypes = documents[i].phenotypes;
+                    log(documents[i]);
+                    if(typeof documents[i].phenotypes != "undefined") { // TODO : no nodes.
+                        tempPhenotypes = documents[i].phenotypes;
 
-                    var uniquePhenos = tempPhenotypes.reduce(function(a,b){ // remove duplicate phenos
-                        if (a.indexOf(b) < 0 ) a.push(b);
-                        return a;
-                    },[]);
+                        var uniquePhenos = tempPhenotypes.reduce(function(a,b){ // remove duplicate phenos
+                            if (a.indexOf(b) < 0 ) a.push(b);
+                            return a;
+                        },[]);
 
-                    for (var k = 0; k < uniquePhenos.length; k++) { // each document's phenotypes tags
-                        if(searchedPhenotypes[j].name.toUpperCase() === uniquePhenos[k].toUpperCase()) {
+                        for (var k = 0; k < uniquePhenos.length; k++) { // each document's phenotypes tags
+                            if(searchedPhenotypes[j].name.toUpperCase() === uniquePhenos[k].toUpperCase()) {
 
-                            s = {};
-                            s.doc = documents[i];
-                            s.pheno = searchedPhenotypes[j];
-                            s.key = linkCount;
-                            // documentsById["documents_" + documents[i].id].value += 1;
-                            searchLinks.push(s);
-                            linkCount++;
-                        }
-                    }   
+                                s = {};
+                                s.doc = documents[i];
+                                s.pheno = searchedPhenotypes[j];
+                                s.key = linkCount;
+                                // documentsById["documents_" + documents[i].id].value += 1;
+                                searchLinks.push(s);
+                                linkCount++;
+                            }
+                        }  
+                    } 
                 }
             }
         }

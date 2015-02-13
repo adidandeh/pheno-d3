@@ -24,7 +24,7 @@ function updateLinks(links) {
         .attr("id",function (d) { return "a_" + d.key;})
         .style("fill", function(d) { 
             log(d);
-            return color(d.pheno.parentOrder);
+            return color(d.pheno.parentOrder, 0);
         })
         .style("fill-opacity",.2)
         .attr("d", function (d,i) {
@@ -54,13 +54,13 @@ function updateLinks(links) {
               return diag;
         })
         .style("stroke",function(d) {
-            return color(d.pheno.parentOrder);
+            return color(d.pheno.parentOrder, 0);
           })
         .style("stroke-opacity",.07)
        // .style("stroke-width",function (d) { return d.links[0].strokeWeight;})
         .style("fill-opacity",0.1)
         .style("fill",function(d) { 
-            return color(d.pheno.parentOrder);
+            return color(d.pheno.parentOrder, 0);
         })
         .on("mouseover", function (d) { node_onMouseOver(d,"LINK");})
         .on("mouseout", function (d) {node_onMouseOut(d,"LINK"); });
@@ -71,7 +71,7 @@ function updateLinks(links) {
         .attr("class","node")
         .append("circle")
         .style("fill",function(d) { 
-            return color(d.pheno.parentOrder);
+            return color(d.pheno.parentOrder, 0);
         })
         .style("fill-opacity",0.2)
         .style("stroke-opacity",1)
@@ -355,7 +355,7 @@ update = function(source, row, startOffset) {
                 return d.id;
             })
             .style("fill", function(d) {
-                return color(data[activerow].order);
+                return color(data[activerow].order, 0);
             })
             .style("visibility", function(d) {
                 return d.parent == null ? "hidden" : "visible";
@@ -506,7 +506,7 @@ draw = function(svg, data) {
             return d.id;
         })
         .style("fill", function(d){
-            return color(d.order)})
+            return color(d.order, 0)})
         .on("click", function(d) {
             treeActive = true;
             activerow = d.order - 1;
@@ -591,7 +591,7 @@ draw = function(svg, data) {
                         return d.id;
                     })
                     .style("fill", function(d){
-                        return color(locData[row].order);
+                        return color(locData[row].order, 0);
                     })
                     .style("stroke-width", "1px")
                     .style("stroke", cursor)

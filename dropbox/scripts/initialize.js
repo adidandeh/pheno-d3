@@ -37,9 +37,11 @@ function initialize() {
 
     // connect phenotypes to documents and phenotypes to its root tree
     searches.forEach(function (d) {
-        documentsById["documents_"+d.doc.id].relatedLinks.push(d);
-        chordsById[d.pheno.parentId].relatedLinks.push(d);
-        totalSearchPhenotypes+=1;
+        if(typeof documentsById["documents_"+d.doc.id] != "undefined") { // TODO : Mhmm. 
+            documentsById["documents_"+d.doc.id].relatedLinks.push(d);
+            chordsById[d.pheno.parentId].relatedLinks.push(d);
+            totalSearchPhenotypes+=1;
+        }
     })
 
     log("totalSearchPhenotypes=" + totalSearchPhenotypes);
