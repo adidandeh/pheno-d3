@@ -23,8 +23,8 @@ function updateLinks(links) {
         .append("path")
         .attr("id",function (d) { return "a_" + d.key;})
         .style("fill", function(d) { 
-            return demColor;
-            // return (d.PTY=="DEM") ? demColor : (d.PTY=="REP") ? repColor : otherColor; 
+            log(d);
+            return color(d.pheno.parentOrder);
         })
         .style("fill-opacity",.2)
         .attr("d", function (d,i) {
@@ -54,15 +54,13 @@ function updateLinks(links) {
               return diag;
         })
         .style("stroke",function(d) {
-            return demColor;
-            // return (d.PTY=="DEM") ? demColor : (d.PTY=="REP") ? repColor : otherColor;
+            return color(d.pheno.parentOrder);
           })
         .style("stroke-opacity",.07)
        // .style("stroke-width",function (d) { return d.links[0].strokeWeight;})
         .style("fill-opacity",0.1)
         .style("fill",function(d) { 
-            return demColor;
-            // return (d.PTY=="DEM") ? demColor : (d.PTY=="REP") ? repColor : otherColor; 
+            return color(d.pheno.parentOrder);
         })
         .on("mouseover", function (d) { node_onMouseOver(d,"LINK");})
         .on("mouseout", function (d) {node_onMouseOut(d,"LINK"); });
@@ -73,15 +71,14 @@ function updateLinks(links) {
         .attr("class","node")
         .append("circle")
         .style("fill",function(d) { 
-            return demColor;
-            // return (d.PTY=="DEM") ? demColor : (d.PTY=="REP") ? repColor : otherColor; 
+            return color(d.pheno.parentOrder);
         })
         .style("fill-opacity",0.2)
         .style("stroke-opacity",1)
         .attr("r", function (d) {
             var relatedNode=nodesById[d.doc.id];
             //Decrement Related Node
-            relatedNode.currentAmount=relatedNode.currentAmount/*-Number(d.TRANSACTION_AMT)*/;
+            relatedNode.currentAmount=relatedNode.currentAmount;
             var ratio=((relatedNode.Amount-relatedNode.currentAmount)/relatedNode.Amount);
             return relatedNode.r*ratio;
         })
@@ -358,7 +355,7 @@ update = function(source, row, startOffset) {
                 return d.id;
             })
             .style("fill", function(d) {
-                return color(d);
+                return color(data[activerow].order);
             })
             .style("visibility", function(d) {
                 return d.parent == null ? "hidden" : "visible";
@@ -508,7 +505,8 @@ draw = function(svg, data) {
         .attr("hpid", function(d) {
             return d.id;
         })
-        .style("fill", color)
+        .style("fill", function(d){
+            return color(d.order)})
         .on("click", function(d) {
             treeActive = true;
             activerow = d.order - 1;
@@ -592,7 +590,9 @@ draw = function(svg, data) {
                     .attr("hpid", function(d) {
                         return d.id;
                     })
-                    .style("fill", color)
+                    .style("fill", function(d){
+                        return color(locData[row].order);
+                    })
                     .style("stroke-width", "1px")
                     .style("stroke", cursor)
                     .on("click", function(d) { // for now as the mouseover issues need to be addressed

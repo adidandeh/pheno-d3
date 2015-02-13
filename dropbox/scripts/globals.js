@@ -3,12 +3,15 @@ var activerow = -1,
     currentTreeData = {},
     cursorElement = null,
     cursorData = null,
-    colorArr = ["#98DDD3",
-        "#E2B8CC",
-        "#A3E0A4",
-        "#D5D481",
-        "#C6D2D7",
-        "#EDAA84"
+    colorArr = [
+        "#6b9799", "#ccb3ff", "#664753",
+        "#b3dbff", "#e6bea1", "#d9628d",
+        "#3f478c", "#401d2a", "#607334", 
+        "#8c613f", "#aacc5c", "#b25ccc",
+        "#22394d", "#ff7373", "#8c3f3f",
+        "#17331c", "#5ccc9f", "#73ff8a",
+        "#662e5b", "#73faff", "#2e6650",
+        "#7381ff", "#201733", "#3f688c"
     ],
     duration = 100,
     depth = 0,
@@ -171,12 +174,13 @@ cleanName = function(name) {
     return name;
 }
 
-color = function(d) {
-    var random = Math.floor(Math.random() * colorArr.length) + 0;
+color = function(rootOrder, weight) {
+    // var random = Math.floor(Math.random() * colorArr.length) + 0;
     //return colorArr[random];
     // insert generation function.
     //return "#D8C6C6";
-    return "#49B649"; // green
+   // return "#49B649"; // green
+   return colorArr[rootOrder];
 }
 
 

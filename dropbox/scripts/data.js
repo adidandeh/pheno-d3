@@ -188,7 +188,6 @@ onFetchPhenotypes = function(error, pheno) {
             searchedPhenotypes.push(data[i].children[j]);
         }
     }
-    log(searchedPhenotypes);
 
     // TODO: Take searchPhenotypes and do server search for datasets.
    // searchSolr();
