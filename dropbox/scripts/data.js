@@ -165,7 +165,7 @@ fetchData = function() {
 */
 
     addStream("data/data.json", onFetchPhenotypes, "json");
-    addStream("data/docs.json", onFetchDocuments, "json");
+    addStream("data/docs-1000.json", onFetchDocuments, "json");
     startFetch();
 }
 
@@ -188,6 +188,7 @@ onFetchPhenotypes = function(error, pheno) {
             searchedPhenotypes.push(data[i].children[j]);
         }
     }
+    log(searchedPhenotypes);
 
     // TODO: Take searchPhenotypes and do server search for datasets.
    // searchSolr();
