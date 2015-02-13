@@ -115,8 +115,8 @@ function highlightLink(g,on,type) {
 }
 
 function highlightLinks(d,on,type) {
-    if(typeof d.relatedLink != "undefined"){
-    ds.relatedLink.forEach(function (d) {
+    if(typeof d.relatedLinks != "undefined"){
+    d.relatedLinks.forEach(function (d) {
         highlightLink(d,on, type);
     })
     }

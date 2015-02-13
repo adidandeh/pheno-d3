@@ -190,7 +190,7 @@ onFetchPhenotypes = function(error, pheno) {
     }
 
     // TODO: Take searchPhenotypes and do server search for datasets.
-    searchSolr();
+   // searchSolr();
 
     endFetch();
 }
@@ -267,9 +267,6 @@ searchSolr = function() {
 
     // response = httpGet();
 
-    // log(response);
-    // log("searchSolr");
-    // return response;
 }
 
 onFetchDocuments = function(error, data) {
