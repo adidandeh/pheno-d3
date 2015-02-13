@@ -179,10 +179,10 @@ onFetchPhenotypes = function(error, pheno) {
     // TODO: Take searchPhenotypes and do server search for datasets.
   // documents = searchSolr();
 
-  $.when(searchSolr()).done(function(){
+  // $.when(searchSolr()).done(function(){
+  //   endFetch();
+  // });
     endFetch();
-  });
-    // endFetch();
 }
 
 searchSolr = function() {
@@ -273,7 +273,6 @@ dataInit = function() {
         for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
             if(searchedPhenotypes[j].parentId === d.id) {
                 for(var i = 0; i < documents.length; i++) { // each document
-                    log(documents[i]);
                     if(typeof documents[i].phenotypes != "undefined") { // TODO : no nodes.
                         tempPhenotypes = documents[i].phenotypes;
 
