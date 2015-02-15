@@ -2,19 +2,19 @@ var activerow = -1,
     childrenNumStack = [1],
     currentTreeData = {},
     cursorElement = null,
+    cursorDataPrior = null,
     cursorData = null,
     colorArr = [
-        "#6b9799", "#ccb3ff", "#664753",
-        "#b3dbff", "#e6bea1", "#d9628d",
-        "#3f478c", "#401d2a", "#607334", 
+        "#6b9799", "#96f", "#75525f",
+        "#6bbaff", "#e6bea1", "#d9628d",
+        "#4d57ac", "#8d3f5c", "#607334", 
         "#8c613f", "#aacc5c", "#b25ccc",
-        "#22394d", "#ff7373", "#8c3f3f",
-        "#17331c", "#5ccc9f", "#73ff8a",
-        "#662e5b", "#73faff", "#2e6650",
-        "#7381ff", "#201733", "#3f688c"
+        "#807438", "#ff7373", "#8c3f3f",
+        "#b35823", "#5ccc9f", "#47ff66",
+        "#743467", "#73faff", "#2e6650",
+        "#7381ff", "#513a82", "#3f688c"
     ],
     duration = 100,
-    depth = 0,
     drill = undefined,
     i = 0,
     margin = {
@@ -176,7 +176,6 @@ cleanName = function(name) {
 
 // http://www.sitepoint.com/javascript-generate-lighter-darker-color/
 function colorLuminance(hex, lum) {
-
     // validate hex string
     hex = String(hex).replace(/[^0-9a-f]/gi, '');
     if (hex.length < 6) {
@@ -184,6 +183,7 @@ function colorLuminance(hex, lum) {
     }
     lum = lum || 0;
 
+    lum = lum/10;
     // convert to decimal and change luminosity
     var rgb = "#", c, i;
     for (i = 0; i < 3; i++) {
@@ -202,6 +202,7 @@ color = function(rootOrder, weightDiff) { // TODO: Get working.
     // insert generation function.
     //return "#D8C6C6";
    // return "#49B649"; // green
+   log(weightDiff);
    return colorLuminance(colorArr[rootOrder], weightDiff);
 }
 

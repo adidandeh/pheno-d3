@@ -348,7 +348,7 @@ prepData = function(d, data, row) {
         root.x0 = (row + 1) * sqheight;
         root.y0 = phenobarheight + (sqwidth * (tempPheno.length - 1)) + 50;
 
-        function collapse(d) {
+        function collapse(d, dep) {
             if (d.children) {
                 //for(var i=0; i < d.children.length; i++) { // trying to cut out the junk ones.
                 //console.log(d.children);
@@ -356,14 +356,19 @@ prepData = function(d, data, row) {
                 //     d.children.splice(i,1);
                 // }
                 // }
-
                 d._children = d.children;
-                d._children.forEach(collapse);
+                d.depth = dep;
+                dep++;
+                d._children.forEach(function(d, dep){
+                    collapse(d, dep);
+                });
                 d.children = null;
             }
         }
 
-        root.children.forEach(collapse);
+        root.children.forEach(function(d, dep){
+                    collapse(d, 1);
+                });
         currentTreeData = root;
         update(currentTreeData, row, sqwidth * (tempPheno.length - 1));
     });

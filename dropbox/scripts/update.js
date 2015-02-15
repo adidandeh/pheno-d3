@@ -23,8 +23,7 @@ function updateLinks(links) {
         .append("path")
         .attr("id",function (d) { return "a_" + d.key;})
         .style("fill", function(d) { 
-            log(d);
-            return color(d.pheno.parentOrder, 0);
+            return color(d.pheno.parentOrder, d.pheno.depth);
         })
         .style("fill-opacity",.2)
         .attr("d", function (d,i) {
@@ -60,7 +59,7 @@ function updateLinks(links) {
        // .style("stroke-width",function (d) { return d.links[0].strokeWeight;})
         .style("fill-opacity",0.1)
         .style("fill",function(d) { 
-            return color(d.pheno.parentOrder, 0);
+            return color(d.pheno.parentOrder, d.pheno.depth);
         })
         .on("mouseover", function (d) { node_onMouseOver(d,"LINK");})
         .on("mouseout", function (d) {node_onMouseOut(d,"LINK"); });
@@ -71,7 +70,7 @@ function updateLinks(links) {
         .attr("class","node")
         .append("circle")
         .style("fill",function(d) { 
-            return color(d.pheno.parentOrder, 0);
+            return color(d.pheno.parentOrder, d.pheno.depth);
         })
         .style("fill-opacity",0.2)
         .style("stroke-opacity",1)
@@ -327,6 +326,7 @@ update = function(source, row, startOffset) {
             .on("mouseover", tooltipMouseOver)
             .on("mouseout", tooltipMouseOut)
             .on("click", function(d) {
+                cursorDataPrior = cursorData;
                 cursorData = d;
                 cursorElement["element"].id = "";
                 cursorElement["element"].style["stroke"] = "grey";
@@ -508,8 +508,10 @@ draw = function(svg, data) {
         .style("fill", function(d){
             return color(d.order, 0)})
         .on("click", function(d) {
+            depth = 0;
             treeActive = true;
             activerow = d.order - 1;
+            cursorDataPrior = cursorData;
             cursorData = d;
             if (cursorElement != null) {
                 cursorElement["element"].id = "";
@@ -591,7 +593,7 @@ draw = function(svg, data) {
                         return d.id;
                     })
                     .style("fill", function(d){
-                        return color(locData[row].order, 0);
+                        return color(locData[row].order, locData[row].children[count].depth);
                     })
                     .style("stroke-width", "1px")
                     .style("stroke", cursor)

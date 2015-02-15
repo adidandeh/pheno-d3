@@ -1,4 +1,3 @@
-
 function node_onMouseOver(d,type) {
     if (type=="DOC") {
         if(d.depth < 2) return;
@@ -121,7 +120,6 @@ function highlightLinks(d,on,type) {
         })
     }
 }
-
 
 d3.select("body").on("keydown", function(d) {
     if (treeActive) {
@@ -246,7 +244,6 @@ d3.select("body").on("keypress", function() {
 });
 
 clearPhenotypes = function() {
-
     data.forEach(function(d) {
         d.children = [];
     });
@@ -255,6 +252,7 @@ clearPhenotypes = function() {
     childrenNumStack = [1];
     currentTreeData = {};
     cursorElement = null;
+    cursorDataPrior = null;
     cursorData = null;
     depth = 0;
     drill = undefined;
@@ -277,17 +275,25 @@ createPhenoBox = function() { // use cursorData parent chain-up
         }
         tempPheno.pop();
         tempPheno.reverse();
+        tempPheno.depth = depth;
         var inArray;
         for (var i = 0; i < tempPheno.length; i++) {
             inArray = findWithAttr(data[activerow].children, "id", tempPheno[i].id);
             if (inArray == -1) {
+                // depthInArray = findWithAttr(data[activerow].children, "depth", tempPheno[i].depth);
+                // if(depthInArray !== -1) {
+                //     data[activerow].children.splice(depthInArray, 0, tempPheno[i]);
+                // } else {
+                //    data[activerow].children.splice(data[activerow].children.length-1, 0, tempPheno[i]); 
+                // }
                 data[activerow].children.push(tempPheno[i]);
             }
         }
-
+        cursorDataPrior = null;
         cursorData = null;
         treeActive = false;
-            fetchData();
+        depth = 0;
+        fetchData();
         // updateChart();
         // draw(svgBoxes, data);
     }
@@ -295,7 +301,7 @@ createPhenoBox = function() { // use cursorData parent chain-up
 
 removeChild = function(row, column) {
     data[row].children.splice(column, 1);
-                d3.select("#overview > .links").selectAll(".links").remove();
+    d3.select("#overview > .links").selectAll(".links").remove();
     fetchData();
     // updateChart();
     // draw(svgBoxes, data);
@@ -316,7 +322,6 @@ collapse = function(d) {
 }
 
 move = function(d) {
-    cursorData = d;
     if (d.children) {
         drill = false; // up to the parent
         d._children = d.children;
