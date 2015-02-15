@@ -121,6 +121,36 @@ function highlightLinks(d,on,type) {
     }
 }
 
+selectNode = function(d) { // TODO: Actually do something.
+    log(d);
+    position = selectedNodes.indexOf(d);
+    if(position === -1) {
+        selectedNodes.push(d);
+        var circ=d3.select(document.getElementById("d_" + d.id));
+        circ.style("opacity", 1);
+    }
+    log(selectedNodes);
+    log("selectNode");
+}
+
+unselectNode = function(d) {
+    position = selectedNodes.indexOf(d);
+    if(position !== -1) {
+        selectedNodes.splice(position, 1);
+        var circ=d3.select(document.getElementById("d_" + d.id));
+        circ.style("opacity", 0);
+    }
+    log("unselectNode");
+}
+
+resetSelectedNodes = function(){
+    selectedNodes.forEach(function(d){
+        var circ=d3.select(document.getElementById("d_" + d.id));
+        circ.style("opacity", 0);
+    });
+    selectedNodes = [];
+}
+
 d3.select("body").on("keydown", function(d) {
     if (treeActive) {
         var keyCode = d3.event.keyCode;
@@ -256,7 +286,7 @@ clearPhenotypes = function() {
     cursorData = null;
     depth = 0;
     drill = undefined;
-    
+    resetSelectedNodes();
     fetchData();
     // updateChart();
     // draw(svgBoxes, data);

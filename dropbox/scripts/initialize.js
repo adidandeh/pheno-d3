@@ -1,6 +1,7 @@
 function initialize() {
     // renderLinks=[];
     searches=[],
+    selectedNodes=[],
     phenoRoots=phenotypeRoots;
     docs=[];
 

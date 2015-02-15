@@ -140,16 +140,12 @@ function updateNodes() {
         // .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.05})
         .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.10})
         .style("stroke",function(d) {
-            // return otherColor;
-                        return "black";
-            // return ((d.PTY=='DEM') ? demColor : (d.PTY=="REP") ? repColor : otherColor);
+            return "black";
         })
         .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.25})
         // .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.2})
         .style("fill", function(d) {
-            // return otherColor;
             return "FFFFFF";
-            // return ((d.PTY=='DEM') ? demColor : (d.PTY=="REP") ? repColor : otherColor);
         });
 
 
@@ -158,10 +154,18 @@ function updateNodes() {
         .attr("id", function(d) { 
             return "d_" + d.id; 
         })
-        .style("opacity",0);
+        .style("opacity", function(d){
+            // position = selectedNodes.indexOf(d);
+            // log(position);
+            // if(position !== -1) {
+            //     log(d);
+            //     return 1;
+            // }
+            return 0;
+        });
 
         g.append("circle")
-        .attr("r", function(d) { return d.r+2; })
+        .attr("r", function(d) { return d.r/*+2*/; })
         .style("fill-opacity", 0)
         .style("stroke", "#FFF")
         .style("stroke-width",2.5)
@@ -173,6 +177,13 @@ function updateNodes() {
         .style("stroke", "#000")
         .style("stroke-width",1.5)
         .style("stroke-opacity",1)
+        .on("click", function(d){
+            selectNode(d);
+        })
+        .on("contextmenu", function(d) {
+            d3.event.preventDefault();
+            unselectNode(d);
+        })
         .on("mouseover", function (d) {node_onMouseOver(d,"DOC"); })
         .on("mouseout", function (d) {node_onMouseOut(d,"DOC"); });
 

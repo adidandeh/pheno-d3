@@ -41,7 +41,8 @@ var documents=[], // data
     total_docs=0,
     searchedPhenotypes =[],
     searchLinks = [],
-    
+    selectedNodes = [],
+
     documentsById={},
     phenotypeRootsById={},
     chordsById={},
@@ -196,13 +197,11 @@ function colorLuminance(hex, lum) {
 }
 
 color = function(rootOrder, weightDiff) { // TODO: Get working.
-
     // var random = Math.floor(Math.random() * colorArr.length) + 0;
     //return colorArr[random];
     // insert generation function.
     //return "#D8C6C6";
    // return "#49B649"; // green
-   log(weightDiff);
    return colorLuminance(colorArr[rootOrder], weightDiff);
 }
 
