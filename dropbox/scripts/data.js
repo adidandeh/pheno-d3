@@ -243,8 +243,8 @@ onFetchDocuments = function(error, data) {
 
     for (var i=0; i < documents.length; i++) {
         var d = documents[i];
-        d.value = d.phenotypes.length;
-        // d.value = 1;
+        // d.value = d.phenotypes.length;
+        d.value = 1;
         documentsById["documents_" + documents[i].id]=documents[i];
         total_docs+=1; 
     }
@@ -277,7 +277,7 @@ dataInit = function() {
                         tempPhenotypes = documents[i].phenotypes;
 
                         var uniquePhenos = tempPhenotypes.reduce(function(a,b){ // remove duplicate phenos
-                            if (a.indexOf(b) < 0 ) a.push(b);
+                            if (a.indexOf(b) < 0) a.push(b);
                             return a;
                         },[]);
 

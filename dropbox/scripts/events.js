@@ -122,14 +122,12 @@ function highlightLinks(d,on,type) {
 }
 
 selectNode = function(d) { // TODO: Actually do something.
-    log(d);
     position = selectedNodes.indexOf(d);
     if(position === -1) {
         selectedNodes.push(d);
         var circ=d3.select(document.getElementById("d_" + d.id));
         circ.style("opacity", 1);
     }
-    log(selectedNodes);
     log("selectNode");
 }
 
@@ -293,8 +291,7 @@ clearPhenotypes = function() {
 }
 
 searchPhenotypes = function() {
-        fetchData();
-    // updateChart();
+    fetchData();
 }
 
 createPhenoBox = function() { // use cursorData parent chain-up

@@ -136,14 +136,14 @@ function updateNodes() {
         });
 
     enter.append("circle")
-        .attr("r", function(d) { return d.r; })
-        // .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.05})
+        .attr("r", function(d) {
+            return d.r;
+        })
         .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.10})
         .style("stroke",function(d) {
             return "black";
         })
         .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.25})
-        // .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.2})
         .style("fill", function(d) {
             return "FFFFFF";
         });
@@ -154,15 +154,7 @@ function updateNodes() {
         .attr("id", function(d) { 
             return "d_" + d.id; 
         })
-        .style("opacity", function(d){
-            // position = selectedNodes.indexOf(d);
-            // log(position);
-            // if(position !== -1) {
-            //     log(d);
-            //     return 1;
-            // }
-            return 0;
-        });
+        .style("opacity", 0);
 
         g.append("circle")
         .attr("r", function(d) { return d.r/*+2*/; })
@@ -186,7 +178,6 @@ function updateNodes() {
         })
         .on("mouseover", function (d) {node_onMouseOver(d,"DOC"); })
         .on("mouseout", function (d) {node_onMouseOut(d,"DOC"); });
-
 
     node.exit().remove().transition(500).style("opacity",0);
 

@@ -17,7 +17,7 @@ function initialize() {
     nodes=bubble.nodes(root);
 
     var totalDocAmount=0;
-    nodes.forEach (function (d) {
+    nodes.forEach(function (d) {
         if (d.depth==2) {
             nodesById[d.id]=d;
             d.relatedLinks=[];
@@ -25,7 +25,6 @@ function initialize() {
             d.currentAmount = 1;
             docs.push(d);
             totalDocAmount+= d.Amount;
-
         }
     })
     log("totalDocAmount=" + totalDocAmount);
@@ -40,10 +39,16 @@ function initialize() {
     searches.forEach(function (d) {
         if(typeof documentsById["documents_"+d.doc.id] != "undefined") { // TODO : Mhmm. 
             documentsById["documents_"+d.doc.id].relatedLinks.push(d);
+            documentsById["documents_"+d.doc.id].value+=1;
+
             chordsById[d.pheno.parentId].relatedLinks.push(d);
             totalSearchPhenotypes+=1;
         }
     })
+
+    docs.forEach(function(d){
+        d.value = documentsById["documents_"+d.id].value;
+    });
 
     log("totalSearchPhenotypes=" + totalSearchPhenotypes);
     log("initialize()");

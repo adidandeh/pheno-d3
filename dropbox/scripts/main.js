@@ -30,7 +30,6 @@ function onInterval() {
         }
         counter=30;
         //counter++;
-        // log(renderLinks);
         updateLinks(renderLinks);
     }
 }

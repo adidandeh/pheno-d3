@@ -119,15 +119,9 @@ var toolTip = d3.select(document.getElementById("toolTip"));
 var header = d3.select(document.getElementById("head"));
 var header1 = d3.select(document.getElementById("header1"));
 var header2 = d3.select(document.getElementById("header2"));
-var repColor="#F80018";
-var demColor="#0543bc";
-var otherColor="#FFa400";
 
 var fills= d3.scale.ordinal().range(["#00AC6B","#20815D","#007046","#35D699","#60D6A9"]);
 var linkGroup;
-
-var formatNumber = d3.format(",.0f"),
-    formatCurrency = function(d) { return "$" + formatNumber(d)};
 
 var buf_indexByName={},
     indexByName = {},
