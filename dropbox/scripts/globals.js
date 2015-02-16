@@ -95,7 +95,6 @@ var nodesSvg=svg.append("g")
     .attr("transform", "translate(" + nodesTranslate + "," + nodesTranslate + ")");
 
  var bubble = d3.layout.pack()
-    .sort(null)
     .size([bubbleRadius*2, bubbleRadius*2])
     .padding(1.5);
 

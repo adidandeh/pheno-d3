@@ -137,7 +137,7 @@ function updateNodes() {
 
     enter.append("circle")
         .attr("r", function(d) {
-            return d.r;
+            return d.r * d.value;
         })
         .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.10})
         .style("stroke",function(d) {
@@ -148,8 +148,6 @@ function updateNodes() {
             return "FFFFFF";
         });
 
-
-
     var g=enter.append("g")
         .attr("id", function(d) { 
             return "d_" + d.id; 
@@ -157,14 +155,14 @@ function updateNodes() {
         .style("opacity", 0);
 
         g.append("circle")
-        .attr("r", function(d) { return d.r/*+2*/; })
+        .attr("r", function(d) { return d.r * d.value/*+2*/; })
         .style("fill-opacity", 0)
         .style("stroke", "#FFF")
         .style("stroke-width",2.5)
         .style("stroke-opacity",.7);
 
         g.append("circle")
-        .attr("r", function(d) { return d.r; })
+        .attr("r", function(d) { return d.r * d.value; })
         .style("fill-opacity", 0)
         .style("stroke", "#000")
         .style("stroke-width",1.5)
@@ -178,6 +176,18 @@ function updateNodes() {
         })
         .on("mouseover", function (d) {node_onMouseOver(d,"DOC"); })
         .on("mouseout", function (d) {node_onMouseOut(d,"DOC"); });
+
+    var nodeUpdate = node.transition().duration(500);
+
+    nodeUpdate.select("circle")
+        .attr("r", function (d) {
+            return d.r * d.value;
+        });
+
+    // nodeUpdate.select("g").select("circle")
+    //     .attr("r", function (d) {
+    //         return d.r * d.value;
+    //     });
 
     node.exit().remove().transition(500).style("opacity",0);
 

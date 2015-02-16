@@ -126,7 +126,10 @@ selectNode = function(d) { // TODO: Actually do something.
     if(position === -1) {
         selectedNodes.push(d);
         var circ=d3.select(document.getElementById("d_" + d.id));
-        circ.style("opacity", 1);
+        circ.style("opacity", 1)
+            .attr("r", function (d) {
+                return d.r * d.value;
+            });
     }
     log("selectNode");
 }
