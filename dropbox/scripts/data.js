@@ -139,7 +139,6 @@ var data = [{
     "children": []
 }]
 
-
 var dataCalls=[];
 var numCalls=0;
 
@@ -150,12 +149,11 @@ fetchData = function() {
     nodesById={},
     chordLinkCount={},
     dataCalls=[];
-//    dataDispatch.on("end",onDataFetched)
+
     addStream("data/data.json", onFetchPhenotypes, "json");
     addStream("data/docs-1000.json", onFetchDocuments, "json");
     startFetch();
 }
-
 
 onFetchPhenotypes = function(error, pheno) {
     phenotypeRootsById = [];
@@ -302,7 +300,6 @@ dataInit = function() {
         chordLinkCount[indexByName[d.id]] = linkCount;
 
     });
-
 }
 
 addStream = function(file,func,type) {
