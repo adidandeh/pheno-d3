@@ -103,7 +103,7 @@ var nodesSvg=svg.append("g")
     //     log(d);
     //     return d.value;
     // })
-    .sort(function (a,b) {return b.value - a.value})
+    // .sort(function (a,b) {return b.value - a.value})
     .padding(1.5);
 
 var chord = d3.layout.chord()

@@ -189,7 +189,6 @@ function updateNodes() {
 
     nodeUpdate.select("circle")
         .attr("r", function (d) {
-            // log(d.r);
             return d.r /* * d.value */;
         });
 
@@ -203,13 +202,7 @@ function updateNodes() {
             return d.r;
         });
 
-    // nodeUpdate.select("g").select("circle")
-    //     .attr("r", function (d) {
-    //         return d.r * d.value;
-    //     });
-
     node.exit().remove().transition(500).style("opacity",0);
-
 
     log("updateBubble()");
 }

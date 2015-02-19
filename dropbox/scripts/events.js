@@ -305,6 +305,11 @@ clearPhenotypes = function() {
     // chords = [];
     documents = [];
     docs = [];
+    nodes = [];
+    documentsById={},
+    phenotypeRootsById={},
+    chordsById={},
+    nodesById={},
     searchLinks = [];
     renderLinks=[];
     fetchData();
@@ -313,10 +318,15 @@ clearPhenotypes = function() {
 }
 
 searchPhenotypes = function() {
-        documents = [];
-        docs = [];
-            searchLinks = [];
+    documents = [];
+    docs = [];
+    searchLinks = [];
+    documentsById={},
+    phenotypeRootsById={},
+    chordsById={},
+    nodesById={},
     renderLinks=[];
+    nodes = [];
     fetchData();
 }
 
@@ -355,7 +365,17 @@ createPhenoBox = function() { // use cursorData parent chain-up
 removeChild = function(row, column) {
     data[row].children.splice(column, 1);
     d3.select("#overview > .links").selectAll(".links").remove();
-    fetchData();
+    found = false;
+
+    for (var i = 0; i < data.length; i++) {
+        if(data[i].children.length > 0) {
+            found = true;
+            break;
+        }
+    }
+
+    found ? fetchData() : clearPhenotypes();
+    // fetchData();
     // updateChart();
     // draw(svgBoxes, data);
 }

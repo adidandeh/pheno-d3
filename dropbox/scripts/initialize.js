@@ -19,7 +19,6 @@ function initialize() {
     var totalDocAmount=0;
     nodes.forEach(function (d) {
         if (d.depth==2) {
-            log(d);
             nodesById[d.id]=d;
             d.relatedLinks=[];
             d.Amount=1;
