@@ -10,9 +10,14 @@ function node_onMouseOver(d,type) {
         // header2.text("Year Published: " + d.medline_pub_year);
         tempPheno = "";
 
-        d.phenotypes.forEach(function(p) {
-            tempPheno += p + ", ";
-        });
+        if(typeof d.phenotypes != "undefined") {
+            d.phenotypes.forEach(function(p) {
+                tempPheno += p + ", ";
+            });
+        } else {
+            tempPheno = "No phenotypes found."
+        }
+
         header2.text("phenotypes: " + tempPheno);
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
@@ -110,6 +115,9 @@ function highlightLink(g,on,type) {
 
         var circ=d3.select(document.getElementById("d_" + g.doc.id));
         circ.transition((on==true) ? 150:550)
+        .attr("r", function (d) {
+            return d.r;
+        })
         .style("opacity",((on==true) ?1 :0));
 
         var text=d3.select(document.getElementById("t_" + g.id));

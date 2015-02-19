@@ -311,7 +311,7 @@ dataInit = function() {
     phenotypeRoots.forEach(function(d) { // TODO: Need to change to remove roots from arc
         linkCount = 0;
         for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
-            log(searchedPhenotypes[j]); 
+            // log(searchedPhenotypes[j]); 
             if(searchedPhenotypes[j].rootId === d.id) {
                 for(var i = 0; i < documents.length; i++) { // each document
                     if(typeof documents[i].phenotypes != "undefined") { // TODO : no nodes.

@@ -27,7 +27,6 @@ function updateLinks(links) {
         })
         .style("fill-opacity",.2)
         .attr("d", function (d,i) {
-
             var newArc={};
             var relatedChord=chordsById[d.pheno.rootId]; // rootPheno
             newArc.startAngle=relatedChord.currentAngle;
@@ -157,14 +156,21 @@ function updateNodes() {
         .style("opacity", 0);
 
         g.append("circle")
-        .attr("r", function(d) { return d.r /* * d.value*/ /*+2*/; })
+        .attr("r", function(d) { 
+            return 0;
+            // return d.r  * d.value /*+2*/;
+        })
+        .attr("class", "nodeCircle1")
         .style("fill-opacity", 0)
         .style("stroke", "#FFF")
         .style("stroke-width",2.5)
         .style("stroke-opacity",.7);
 
         g.append("circle")
-        .attr("r", function(d) { return d.r /* *d.value */;})
+        .attr("r", function(d) { 
+            return 0 /* *d.value */;
+        })
+        .attr("class", "nodeCircle2")
         .style("fill-opacity", 0)
         .style("stroke", "#000")
         .style("stroke-width",1.5)
@@ -183,7 +189,18 @@ function updateNodes() {
 
     nodeUpdate.select("circle")
         .attr("r", function (d) {
+            // log(d.r);
             return d.r /* * d.value */;
+        });
+
+    nodeUpdate.select(".nodeCircle1")
+        .attr("r", function (d) {
+            return d.r;
+        });
+
+    nodeUpdate.select(".nodeCircle2")
+        .attr("r", function (d) {
+            return d.r;
         });
 
     // nodeUpdate.select("g").select("circle")
