@@ -128,7 +128,7 @@ selectNode = function(d) { // TODO: Actually do something.
         var circ=d3.select(document.getElementById("d_" + d.id));
         circ.style("opacity", 1)
             .attr("r", function (d) {
-                return d.r * d.value;
+                return d.r /* * d.value */;
             });
     }
     log("selectNode");

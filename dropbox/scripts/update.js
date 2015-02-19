@@ -137,7 +137,8 @@ function updateNodes() {
 
     enter.append("circle")
         .attr("r", function(d) {
-            return d.r * d.value;
+            // return d.r * d.value;
+            return 0;
         })
         .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.10})
         .style("stroke",function(d) {
@@ -155,14 +156,14 @@ function updateNodes() {
         .style("opacity", 0);
 
         g.append("circle")
-        .attr("r", function(d) { return d.r * d.value/*+2*/; })
+        .attr("r", function(d) { return d.r /* * d.value*/ /*+2*/; })
         .style("fill-opacity", 0)
         .style("stroke", "#FFF")
         .style("stroke-width",2.5)
         .style("stroke-opacity",.7);
 
         g.append("circle")
-        .attr("r", function(d) { return d.r * d.value; })
+        .attr("r", function(d) { return d.r /* *d.value */;})
         .style("fill-opacity", 0)
         .style("stroke", "#000")
         .style("stroke-width",1.5)
@@ -181,7 +182,7 @@ function updateNodes() {
 
     nodeUpdate.select("circle")
         .attr("r", function (d) {
-            return d.r * d.value;
+            return d.r /* * d.value */;
         });
 
     // nodeUpdate.select("g").select("circle")

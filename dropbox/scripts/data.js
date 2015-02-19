@@ -151,8 +151,14 @@ fetchData = function() {
     dataCalls=[];
 
     addStream("data/data.json", onFetchPhenotypes, "json");
-    addStream("data/docs-1000.json", onFetchDocuments, "json");
+    // addStream("", onFetchLiveDocuments, "json");
+    // addStream("data/docs-1000.json", onFetchDocuments, "json");
     startFetch();
+    // $.when(addStream("data/data.json", onFetchPhenotypes, "json"))
+    //     .then(addStream("", onFetchLiveDocuments, "json"))
+    //     .then(function(){
+    //         startFetch();
+    //     });
 }
 
 onFetchPhenotypes = function(error, pheno) {
@@ -178,16 +184,21 @@ onFetchPhenotypes = function(error, pheno) {
   // documents = searchSolr();
 
   // $.when(searchSolr()).done(function(){
-  //   endFetch();
+  //   log(documents);
+  //   // endFetch();
   // });
+    log("onFetchPhenotypes");
     endFetch();
 }
 
 searchSolr = function() {
-    if(searchedPhenotypes.length < 1) return null;
+    if(searchedPhenotypes.length < 1) {
+        dataInit();
+        main();
+        return null;
+    };
     // searchPhenotypes
     cleanedSearches = [];
-
     var re = /\s/g;
     searchedPhenotypes.forEach(function(d){
         searchTerm = d.name;
@@ -225,15 +236,45 @@ searchSolr = function() {
         var result = jQuery.parseJSON(result);
         log("searchSolr finish");
         documents = result.response.docs;
+
+        for (var i=0; i < documents.length; i++) {
+            var d = documents[i];
+            // d.value = d.phenotypes.length;
+            d.value = 1;
+            documentsById["documents_" + documents[i].id]=documents[i];
+            total_docs+=1; 
+        }
+        dataInit();
+        main();
       },
       error: function(xhr) {
         log("error searchSolr");
         documents = [];
+        dataInit();
+        main();
       }
     });
 }
 
-onFetchDocuments = function(error, data) {
+onFetchLiveDocuments = function() {
+    if(documents.length < 1) {
+        $.when(searchSolr()).done(function(){
+            // endFetch();
+
+            // for (var i=0; i < documents.length; i++) {
+            //     var d = documents[i];
+            //     // d.value = d.phenotypes.length;
+            //     d.value = 1;
+            //     documentsById["documents_" + documents[i].id]=documents[i];
+            //     total_docs+=1; 
+            // }
+            log("onFetchLiveDocuments");
+        });
+        // load query of # of rootPheno docs.
+    }
+}
+
+onFetchDocuments = function(error, data) { // TODO: If using Solr, instead search for #of docs in roots
     documentsById = [];
     if(documents.length < 1) {
         documents = data.response.docs;
@@ -320,9 +361,7 @@ startFetch = function () {
 endFetch = function() {
     numCalls--;
     if (numCalls==0) {
-       // dataDispatch.end();
-        dataInit();
-        main();
+        onFetchLiveDocuments();
     }
 }
 
