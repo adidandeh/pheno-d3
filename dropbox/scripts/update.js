@@ -153,6 +153,7 @@ function updateNodes() {
         .attr("id", function(d) { 
             return "d_" + d.id; 
         })
+        // .attr("r", function(d) { return d.r * d.value;})
         .style("opacity", 0);
 
         g.append("circle")

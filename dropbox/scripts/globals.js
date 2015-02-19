@@ -96,6 +96,13 @@ var nodesSvg=svg.append("g")
 
  var bubble = d3.layout.pack()
     .size([bubbleRadius*2, bubbleRadius*2])
+    // .value(function (d) {
+    //     return d.value;
+    // })
+    // .radius(function (d) {
+    //     log(d);
+    //     return d.value;
+    // })
     .sort(function (a,b) {return b.value - a.value})
     .padding(1.5);
 
