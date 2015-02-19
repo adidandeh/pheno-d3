@@ -41,7 +41,6 @@ function buildChords() {
     var i=0;
     chords.forEach(function (d) {
         d.label=nameByIndex[i];
-        log(d.label);
         d.angle=(d.source.startAngle + d.source.endAngle) / 2
         var o={};
         o.startAngle= d.source.startAngle;

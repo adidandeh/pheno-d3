@@ -23,13 +23,13 @@ function updateLinks(links) {
         .append("path")
         .attr("id",function (d) { return "a_" + d.key;})
         .style("fill", function(d) { 
-            return color(d.pheno.parentOrder, d.pheno.depth);
+            return color(d.pheno.rootOrder, d.pheno.depth);
         })
         .style("fill-opacity",.2)
         .attr("d", function (d,i) {
 
             var newArc={};
-            var relatedChord=chordsById[d.pheno.parentId]; // rootPheno
+            var relatedChord=chordsById[d.pheno.rootId]; // rootPheno
             newArc.startAngle=relatedChord.currentAngle;
             relatedChord.currentAngle=relatedChord.currentAngle+(1/relatedChord.value)*(relatedChord.endAngle-relatedChord.startAngle);
             newArc.endAngle=relatedChord.currentAngle;
@@ -53,13 +53,13 @@ function updateLinks(links) {
               return diag;
         })
         .style("stroke",function(d) {
-            return color(d.pheno.parentOrder, 0);
+            return color(d.pheno.rootOrder, 0);
           })
         .style("stroke-opacity",.07)
        // .style("stroke-width",function (d) { return d.links[0].strokeWeight;})
         .style("fill-opacity",0.1)
         .style("fill",function(d) { 
-            return color(d.pheno.parentOrder, d.pheno.depth);
+            return color(d.pheno.rootOrder, d.pheno.depth);
         })
         .on("mouseover", function (d) { node_onMouseOver(d,"LINK");})
         .on("mouseout", function (d) {node_onMouseOut(d,"LINK"); });
@@ -70,7 +70,7 @@ function updateLinks(links) {
         .attr("class","node")
         .append("circle")
         .style("fill",function(d) { 
-            return color(d.pheno.parentOrder, d.pheno.depth);
+            return color(d.pheno.rootOrder, d.pheno.depth);
         })
         .style("fill-opacity",0.2)
         .style("stroke-opacity",1)
@@ -96,7 +96,7 @@ function updateLinks(links) {
         var link2={};
         var source2={};
 
-        var relatedChord=chordsById[d.pheno.parentId];
+        var relatedChord=chordsById[d.pheno.rootId];
         var relatedNode=nodesById[d.doc.id];
         var r=linkRadius;
         var currX=(r * Math.cos(relatedChord.currentLinkAngle-1.57079633));
@@ -313,7 +313,7 @@ update = function(source, row, startOffset) {
 
         // Compute the new tree layout.
         var nodes = tree.nodes(currentTreeData).reverse(),
-            links = tree.links(nodes);
+            treelinks = tree.links(nodes);
 
         nodes.forEach(function(d) {
 
@@ -464,8 +464,9 @@ update = function(source, row, startOffset) {
             })
         // Update the links…
         var link = svg.selectAll("path.link")
-            .data(links, function(d) {
-                return d.target.id;
+            .data(treelinks, function(d) {
+                // log(d);
+                return d.target.id; // TODO name issue with links
             });
 
         // Transition links to their new position.

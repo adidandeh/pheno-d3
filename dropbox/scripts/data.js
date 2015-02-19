@@ -174,8 +174,8 @@ onFetchPhenotypes = function(error, pheno) {
     for(var i=0; i<data.length; i++) {
         for(var j=0; j<data[i].children.length; j++) {
             data[i].children[j].key = data[i].order + "_" + j;
-            data[i].children[j].parentId = data[i].id;
-            data[i].children[j].parentOrder = data[i].order;
+            data[i].children[j].rootId = data[i].id;
+            data[i].children[j].rootOrder = data[i].order;
             searchedPhenotypes.push(data[i].children[j]);
         }
     }
@@ -225,7 +225,7 @@ searchSolr = function() {
          query: searchString,
          years: {min: 1900, max: 2015},
          start: 0,
-         rows: 100
+         rows: 10
     };
 
     return $.ajax({ // TODO: Slowing down everything.
@@ -244,6 +244,7 @@ searchSolr = function() {
             documentsById["documents_" + documents[i].id]=documents[i];
             total_docs+=1; 
         }
+
         dataInit();
         main();
       },
@@ -310,7 +311,8 @@ dataInit = function() {
     phenotypeRoots.forEach(function(d) { // TODO: Need to change to remove roots from arc
         linkCount = 0;
         for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
-            if(searchedPhenotypes[j].parentId === d.id) {
+            log(searchedPhenotypes[j]); 
+            if(searchedPhenotypes[j].rootId === d.id) {
                 for(var i = 0; i < documents.length; i++) { // each document
                     if(typeof documents[i].phenotypes != "undefined") { // TODO : no nodes.
                         tempPhenotypes = documents[i].phenotypes;

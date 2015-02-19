@@ -4,10 +4,16 @@ function node_onMouseOver(d,type) {
         toolTip.transition()
             .duration(200)
             .style("opacity", ".9");
-        tempHeight = 100;
+        tempHeight = 140;
         header1.text(d.medline_journal_title);
         header.text(d.medline_article_title);
-        header2.text("Year Published: " + d.medline_pub_year);
+        // header2.text("Year Published: " + d.medline_pub_year);
+        tempPheno = "";
+
+        d.phenotypes.forEach(function(p) {
+            tempPheno += p + ", ";
+        });
+        header2.text("phenotypes: " + tempPheno);
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
             .style("height", function() {
@@ -290,6 +296,8 @@ clearPhenotypes = function() {
     resetSelectedNodes();
     // chords = [];
     documents = [];
+    docs = [];
+    searchLinks = [];
     renderLinks=[];
     fetchData();
     // updateChart();
@@ -297,6 +305,10 @@ clearPhenotypes = function() {
 }
 
 searchPhenotypes = function() {
+        documents = [];
+        docs = [];
+            searchLinks = [];
+    renderLinks=[];
     fetchData();
 }
 
