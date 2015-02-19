@@ -288,6 +288,9 @@ clearPhenotypes = function() {
     depth = 0;
     drill = undefined;
     resetSelectedNodes();
+    // chords = [];
+    documents = [];
+    renderLinks=[];
     fetchData();
     // updateChart();
     // draw(svgBoxes, data);

@@ -1,8 +1,13 @@
 function buildChords() {
+    log("buildChords Start");
     var  matrix = [];
     labels=[];
     chords=[];
 
+    // if(searchedPhenotypes.length < 1) {
+    //     searchedPhenotypes = phenotypeRoots;
+    // }
+    
     for (var i=0; i < phenotypeRoots.length; i++) {
         var l={};
         l.index=i;
@@ -36,6 +41,7 @@ function buildChords() {
     var i=0;
     chords.forEach(function (d) {
         d.label=nameByIndex[i];
+        log(d.label);
         d.angle=(d.source.startAngle + d.source.endAngle) / 2
         var o={};
         o.startAngle= d.source.startAngle;

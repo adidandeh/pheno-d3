@@ -257,7 +257,7 @@ searchSolr = function() {
 }
 
 onFetchLiveDocuments = function() {
-    if(documents.length < 1) {
+    // if(documents.length < 1) {
         $.when(searchSolr()).done(function(){
             // endFetch();
 
@@ -271,7 +271,7 @@ onFetchLiveDocuments = function() {
             log("onFetchLiveDocuments");
         });
         // load query of # of rootPheno docs.
-    }
+    // }
 }
 
 onFetchDocuments = function(error, data) { // TODO: If using Solr, instead search for #of docs in roots
@@ -299,7 +299,7 @@ dataInit = function() {
 
     var totalLinkAmount=0;
 
-    phenotypeRoots.forEach(function(d) {
+    phenotypeRoots.forEach(function(d) { // TODO: Need to change to remove roots from arc
         d = d.id;
         if (!(d in indexByName)) {
               nameByIndex[n] = d;
@@ -307,7 +307,7 @@ dataInit = function() {
         }
     });
 
-    phenotypeRoots.forEach(function(d) {
+    phenotypeRoots.forEach(function(d) { // TODO: Need to change to remove roots from arc
         linkCount = 0;
         for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
             if(searchedPhenotypes[j].parentId === d.id) {

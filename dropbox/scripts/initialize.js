@@ -40,8 +40,8 @@ function initialize() {
         if(typeof documentsById["documents_"+d.doc.id] != "undefined") { // TODO : Mhmm. 
             documentsById["documents_"+d.doc.id].relatedLinks.push(d);
             documentsById["documents_"+d.doc.id].value+=1;
-
             chordsById[d.pheno.parentId].relatedLinks.push(d);
+            // chordsById[d.pheno.parentId].relatedLinks.push(d);
             totalSearchPhenotypes+=1;
         }
     })
