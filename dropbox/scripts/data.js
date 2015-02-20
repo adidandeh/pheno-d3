@@ -225,7 +225,7 @@ searchSolr = function() {
          query: searchString,
          years: {min: 1900, max: 2015},
          start: 0,
-         rows: 1000
+         rows: 10
     };
 
     return $.ajax({ // TODO: Slowing down everything.

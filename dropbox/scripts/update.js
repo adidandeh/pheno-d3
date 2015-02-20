@@ -190,7 +190,7 @@ function updateNodes() {
 
     nodeUpdate.selectAll("circle")
         .attr("r", function (d) {
-            return d.r /* * d.value */;
+            return d.r /** d.value*/;
         });
 
     // nodeUpdate.select(".nodeCircle1")
