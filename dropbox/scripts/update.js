@@ -4,13 +4,13 @@ updateChart = function() {
     updateNodes();
     updateChords();
     prepLinks();
-    //intervalId=setInterval(onInterval,1);
+    // intervalId=setInterval(onInterval,1);
 }
 
 function updateLinks(links) {
     linkGroup=linksSvg.selectAll("g.links")
         .data(links, function (d,i) {
-            return d.key; // i.e. 1_0
+            return d.key; // i.e. 1_0 TODO Key's not getting prepended
         });
 
  //   linkGroup.selectAll("g.links").transition(500).style("opacity",1);

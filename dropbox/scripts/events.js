@@ -328,6 +328,7 @@ searchPhenotypes = function() {
     renderLinks=[];
     nodes = [];
     nodesSvg.selectAll("g.node").remove();
+    linksSvg.selectAll("g.links").remove();
     fetchData();
 }
 

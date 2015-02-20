@@ -225,7 +225,7 @@ searchSolr = function() {
          query: searchString,
          years: {min: 1900, max: 2015},
          start: 0,
-         rows: 10
+         rows: 1000
     };
 
     return $.ajax({ // TODO: Slowing down everything.
@@ -327,7 +327,7 @@ dataInit = function() {
                                 s = {};
                                 s.doc = documents[i];
                                 s.pheno = searchedPhenotypes[j];
-                                s.key = linkCount;
+                                s.key = searchedPhenotypes[j].rootOrder + "_" + linkCount;
                                 // documentsById["documents_" + documents[i].id].value += 1;
                                 searchLinks.push(s);
                                 linkCount++;
