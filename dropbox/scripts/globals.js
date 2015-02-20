@@ -94,15 +94,16 @@ var nodesSvg=svg.append("g")
     .attr("class","nodes")
     .attr("transform", "translate(" + nodesTranslate + "," + nodesTranslate + ")");
 
+  gScale = d3.scale.linear()
+                     .domain([0, 10])
+                     .range([0.2, 350]);
+
  var bubble = d3.layout.pack()
     .size([bubbleRadius*2, bubbleRadius*2])
     // .value(function (d) {
     //     return d.value;
     // })
-    // .radius(function (d) {
-    //     log(d);
-    //     return d.value;
-    // })
+    // .radius(15)
     // .sort(function (a,b) {return b.value - a.value})
     .padding(1.5);
 

@@ -3,7 +3,8 @@ updateChart = function() {
     initialize();
     updateNodes();
     updateChords();
-    intervalId=setInterval(onInterval,1);
+    prepLinks();
+    //intervalId=setInterval(onInterval,1);
 }
 
 function updateLinks(links) {
@@ -187,20 +188,20 @@ function updateNodes() {
 
     var nodeUpdate = node.transition().duration(500);
 
-    nodeUpdate.select("circle")
+    nodeUpdate.selectAll("circle")
         .attr("r", function (d) {
             return d.r /* * d.value */;
         });
 
-    nodeUpdate.select(".nodeCircle1")
-        .attr("r", function (d) {
-            return d.r;
-        });
+    // nodeUpdate.select(".nodeCircle1")
+    //     .attr("r", function (d) {
+    //         return d.r;
+    //     });
 
-    nodeUpdate.select(".nodeCircle2")
-        .attr("r", function (d) {
-            return d.r;
-        });
+    // nodeUpdate.select(".nodeCircle2")
+    //     .attr("r", function (d) {
+    //         return d.r;
+    //     });
 
     node.exit().remove().transition(500).style("opacity",0);
 

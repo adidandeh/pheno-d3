@@ -15,22 +15,30 @@ function onDataFetched() {
 }
 */
 
-function onInterval() {
-    log("onInterval");
-    if(searchLinks.length==0) {
-        clearInterval(intervalId);
-    }
-    else {
-       // renderLinks=[];
-       // log("Rendering links");
-        for (var i=0; i < counter; i++) {
-            if (searchLinks.length > 0) {
-                renderLinks.push(searchLinks.pop());
-            }
-        }
-        counter=30;
-        //counter++;
-        updateLinks(renderLinks);
-    }
+prepLinks = function () {
+    renderLinks = searchLinks;
+    // for (var i=0; i < searchLinks.length; i++) {
+    //     renderLinks.push(searchLinks.pop());
+    // }
+    updateLinks(renderLinks);
 }
+
+// function onInterval() {
+//     log("onInterval");
+//     if(searchLinks.length==0) {
+//         clearInterval(intervalId);
+//     }
+//     else {
+//        // renderLinks=[];
+//        // log("Rendering links");
+//         for (var i=0; i < counter; i++) {
+//             if (searchLinks.length > 0) {
+//                 renderLinks.push(searchLinks.pop());
+//             }
+//         }
+//         counter=30;
+//         //counter++;
+//         updateLinks(renderLinks);
+//     }
+// }
 

@@ -327,6 +327,7 @@ searchPhenotypes = function() {
     nodesById={},
     renderLinks=[];
     nodes = [];
+    nodesSvg.selectAll("g.node").remove();
     fetchData();
 }
 
@@ -356,7 +357,7 @@ createPhenoBox = function() { // use cursorData parent chain-up
         cursorData = null;
         treeActive = false;
         depth = 0;
-        fetchData();
+        searchPhenotypes();
         // updateChart();
         // draw(svgBoxes, data);
     }
