@@ -218,14 +218,82 @@ searchSolr = function() {
         searchString += '"' + d + '"';
     });
 
+ //     new strategy
+    var searchmax = 100;
+    // var doccount = 0;
+    // var searchcount = 0;
+    // var resultNumber;
+    // searchNumber = function(query) {
+    //     var search = {
+    //          core: 'medline-citations',
+    //          handler: "select",
+    //          searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
+    //          query: query,
+    //          years: JSON.stringify({min: 1900, max: 2015}),
+    //          start: 0,
+    //          rows: 0
+    //     };
+
+    //     return $.ajax({ // TODO: Slowing down everything.
+    //       url: "http://129.100.19.193/soscip/api/search.php",
+    //       type:"get", //send it through get method
+    //       data:search,
+    //       success: function(result) {
+    //         var result = jQuery.parseJSON(result);
+    //         log("searchSolr finish");
+    //         resultNumber = result.response.numFound;
+
+    //       },
+    //       error: function(xhr) {
+    //         log("error searchSolr");
+    //       }
+    //     });
+    // }
+    // searchNumber(searchString);
+
+
+
+    /* 
+    NEW SEARCH STRATEGY
+
+    SET MAX TO X, I.E. 100
+    
+    DOCCOUNT = 0;
+    
+    SEARCHCOUNT = 0
+    RESULT = <SEARCH FOR THE NUMBER OF BOTTOM LEVEL 
+            PHENOTYPES TOGETHER (P1 AND P2 AND ... 
+            AND Pn)>
+    ARR.PUSH = {SEARCHTERMS:<>,
+                    NUMBER OF RESULTS: <RESULT>
+    DOCCOUNT += RESULT;
+    SEARCHCOUNT++;
+
+    
+    IF DOCCOUNT < MAX:
+        RELAX ONE UP FOR ALL THAT CAN RELAX, AND GET THE NUMBER OF DOC RESULTS FROM EACH
+        GET THE LARGEST, AND PUSH THAT INTO THE ARR.
+        DOCCOUNT += THIS AMOUNT
+        IF DOCCOUNT < MAX STILL
+            REPEAT UNTIL DOCOUNT > MAX, AND DETERMINE BY HOW MUCH.
+
+    NOW GO BACK TO THE ARR, AND START SEARCHING THOSE DOCS, FILL THE REST UNTIL
+        THE LAST SEARCH IS THERE, THEN LIMIT THE LAST SEARCH BY HOW MANY THE REMAINDER.
+
+    THIS IS THE DOC SET FOR DISPLAY.
+
+    */ 
+
+
+
     var search = {
          core: 'medline-citations',
          handler: "select",
          searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
          query: searchString,
-         years: {min: 1900, max: 2015},
+         years: JSON.stringify({min: 1900, max: 2015}),
          start: 0,
-         rows: 10
+         rows: searchmax
     };
 
     return $.ajax({ // TODO: Slowing down everything.
