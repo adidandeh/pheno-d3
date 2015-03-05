@@ -198,28 +198,109 @@ searchSolr = function() {
         return null;
     };
     // searchPhenotypes
+
+    var searchmax = 100;
+    var searchString = "";
     cleanedSearches = [];
     var re = /\s/g;
-    searchedPhenotypes.forEach(function(d){
-        searchTerm = d.name;
-        searchTerm = searchTerm.replace(re, "+");
-        cleanedSearches.push(searchTerm);
-    });
+    if(searchedPhenotypes.length > 0) {
+        searchedPhenotypes.forEach(function(d){
+            searchTerm = d.name;
+            searchTerm = searchTerm.replace(re, "+");
+            cleanedSearches.push(searchTerm);
+        });
 
-    var searchString = "";
-    var first = true;
-    cleanedSearches.forEach(function(d){
-        if(!first) { 
-            searchString += "+AND+";
-        } else {
-            first = false;
+        var first = true;
+        cleanedSearches.forEach(function(d){
+            if(!first) { 
+                searchString += "+AND+";
+            } else {
+                first = false;
+            }
+
+            searchString += '"' + d + '"';
+        });
+
+        var search = {
+             core: 'medline-citations',
+             handler: "select",
+             searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
+             query: searchString,
+             years: JSON.stringify({min: 1900, max: 2015}),
+             start: 0,
+             rows: searchmax
+        };
+
+        return $.ajax({ // TODO: Slowing down everything.
+          url: "http://129.100.19.193/soscip/api/search.php",
+          type:"get", //send it through get method
+          data:search,
+          success: function(result) {
+            var result = jQuery.parseJSON(result);
+            log("searchSolr finish");
+            documents = result.response.docs;
+
+            for (var i=0; i < documents.length; i++) {
+                var d = documents[i];
+                // d.value = d.phenotypes.length;
+                d.value = 1;
+                documentsById["documents_" + documents[i].id]=documents[i];
+                total_docs+=1; 
+            }
+
+            dataInit();
+            main();
+          },
+          error: function(xhr) {
+            log("error searchSolr");
+            documents = [];
+            dataInit();
+            main();
+          }
+        });
+    } else { // no searched phenotypes
+        searchmax = 0;
+        var phenoRootNum = [];
+
+        emptySearch = function(searchString) {
+            var search = {
+                 core: 'medline-citations',
+                 handler: "select",
+                 searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
+                 query: searchString,
+                 years: JSON.stringify({min: 1900, max: 2015}),
+                 start: 0,
+                 rows: searchmax
+            };
+
+            return $.ajax({ // TODO: Slowing down everything.
+                url: "http://129.100.19.193/soscip/api/search.php",
+                type:"get", //send it through get method
+                data:search,
+                success: function(result) {
+                    var result = jQuery.parseJSON(result);
+                    phenoRootNum.push(result.response.numFound);
+                    log("emptySearch finish");
+                },
+                error: function(xhr) {
+                    log("error emptySearch");
+                    documents = [];
+                    dataInit();
+                    main();
+                }
+            });
         }
 
-        searchString += '"' + d + '"';
-    });
+        data.forEach(function (d) {
+            var searchTerm = d.name;
+            searchTerm = searchTerm.replace(re, "+");
+            emptySearch('"'+searchTerm+'"');
+        });
+
+        log(phenoRootNum);
+    }
 
  //     new strategy
-    var searchmax = 100;
     // var doccount = 0;
     // var searchcount = 0;
     // var resultNumber;
@@ -286,43 +367,43 @@ searchSolr = function() {
 
 
 
-    var search = {
-         core: 'medline-citations',
-         handler: "select",
-         searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
-         query: searchString,
-         years: JSON.stringify({min: 1900, max: 2015}),
-         start: 0,
-         rows: searchmax
-    };
+    // var search = {
+    //      core: 'medline-citations',
+    //      handler: "select",
+    //      searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
+    //      query: searchString,
+    //      years: JSON.stringify({min: 1900, max: 2015}),
+    //      start: 0,
+    //      rows: searchmax
+    // };
 
-    return $.ajax({ // TODO: Slowing down everything.
-      url: "http://129.100.19.193/soscip/api/search.php",
-      type:"get", //send it through get method
-      data:search,
-      success: function(result) {
-        var result = jQuery.parseJSON(result);
-        log("searchSolr finish");
-        documents = result.response.docs;
+    // return $.ajax({ // TODO: Slowing down everything.
+    //   url: "http://129.100.19.193/soscip/api/search.php",
+    //   type:"get", //send it through get method
+    //   data:search,
+    //   success: function(result) {
+    //     var result = jQuery.parseJSON(result);
+    //     log("searchSolr finish");
+    //     documents = result.response.docs;
 
-        for (var i=0; i < documents.length; i++) {
-            var d = documents[i];
-            // d.value = d.phenotypes.length;
-            d.value = 1;
-            documentsById["documents_" + documents[i].id]=documents[i];
-            total_docs+=1; 
-        }
+    //     for (var i=0; i < documents.length; i++) {
+    //         var d = documents[i];
+    //         // d.value = d.phenotypes.length;
+    //         d.value = 1;
+    //         documentsById["documents_" + documents[i].id]=documents[i];
+    //         total_docs+=1; 
+    //     }
 
-        dataInit();
-        main();
-      },
-      error: function(xhr) {
-        log("error searchSolr");
-        documents = [];
-        dataInit();
-        main();
-      }
-    });
+    //     dataInit();
+    //     main();
+    //   },
+    //   error: function(xhr) {
+    //     log("error searchSolr");
+    //     documents = [];
+    //     dataInit();
+    //     main();
+    //   }
+    // });
 }
 
 onFetchLiveDocuments = function() {
