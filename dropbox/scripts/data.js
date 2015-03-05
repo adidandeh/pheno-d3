@@ -192,11 +192,11 @@ onFetchPhenotypes = function(error, pheno) {
 }
 
 searchSolr = function() {
-    if(searchedPhenotypes.length < 1) {
-        dataInit();
-        main();
-        return null;
-    };
+    // if(searchedPhenotypes.length < 1) {
+    //     dataInit();
+    //     main();
+    //     return null;
+    // };
     // searchPhenotypes
 
     var searchmax = 100;
@@ -262,42 +262,53 @@ searchSolr = function() {
         searchmax = 0;
         var phenoRootNum = [];
 
-        emptySearch = function(searchString) {
-            var search = {
-                 core: 'medline-citations',
-                 handler: "select",
-                 searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
-                 query: searchString,
-                 years: JSON.stringify({min: 1900, max: 2015}),
-                 start: 0,
-                 rows: searchmax
-            };
+        emptySearch = function(cleanedData) {
+                var search = {
+                     core: 'medline-citations',
+                     handler: "select",
+                     searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
+                     query: cleanedData.pop(),
+                     years: JSON.stringify({min: 1900, max: 2015}),
+                     start: 0,
+                     rows: searchmax
+                };
 
-            return $.ajax({ // TODO: Slowing down everything.
-                url: "http://129.100.19.193/soscip/api/search.php",
-                type:"get", //send it through get method
-                data:search,
-                success: function(result) {
-                    var result = jQuery.parseJSON(result);
-                    phenoRootNum.push(result.response.numFound);
-                    log("emptySearch finish");
-                },
-                error: function(xhr) {
-                    log("error emptySearch");
-                    documents = [];
-                    dataInit();
-                    main();
-                }
-            });
+                $.ajax({ // TODO: Slowing down everything.
+                    url: "http://129.100.19.193/soscip/api/search.php",
+                    type:"get", //send it through get method
+                    data:search,
+                    success: function(result) {
+                        var result = jQuery.parseJSON(result);
+                        phenoRootNum.push(result.response.numFound);
+                        if(cleanedData.length > 0) { 
+                            emptySearch(cleanedData);
+                        } else {
+                            log(phenoRootNum);
+
+                            // HERE, now that we've got the amount of docs under each heading,
+                            // signal to generate 24 or whatever circle nodes of relational size
+                            // based on their individual amount.
+                        }
+
+                        log("emptySearch finish");
+                    },
+                    error: function(xhr) {
+                        log("error emptySearch");
+                        documents = [];
+                        dataInit();
+                        main();
+                    }
+                });
         }
 
+        var cleanedData = [];
         data.forEach(function (d) {
             var searchTerm = d.name;
             searchTerm = searchTerm.replace(re, "+");
-            emptySearch('"'+searchTerm+'"');
+            cleanedData.push(searchTerm);
         });
 
-        log(phenoRootNum);
+        emptySearch(cleanedData.reverse());
     }
 
  //     new strategy
