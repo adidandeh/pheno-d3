@@ -150,6 +150,17 @@ function updateNodes() {
             return "FFFFFF";
         });
 
+    enter.append("text")
+     .attr("text-anchor", "middle")
+            .text(function(d) { 
+                log(d);
+                if (d.resultType === "cluster") {
+                    return cleanName(d.name).substring(0, 10); 
+                } else if (d.resultType === "doc") {
+                    return cleanName(d.medline_journal_title).substring(0, 10);
+                }
+            });
+
     var g=enter.append("g")
         .attr("id", function(d) { 
             return "d_" + d.id; 
