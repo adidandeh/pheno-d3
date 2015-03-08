@@ -236,7 +236,6 @@ searchSolr = function() {
                 // d.value = d.phenotypes.length;
                 d.value = 1;
                 d.resultType = "doc";
-                // log(d);
                 documentsById["documents_" + documents[i].id]=documents[i];
                 total_docs+=1; 
             }
@@ -285,7 +284,6 @@ searchSolr = function() {
                         phenoRootNum.forEach(function (d) {
                             d.phenotype.resultType = "cluster";
                             d.phenotype.value = d.numFound;
-                            //log(d);
                             documents.push(d.phenotype);
                             documentsById["documents_" + d.phenotype.id]=d.phenotype;
                             // total_docs+=1;

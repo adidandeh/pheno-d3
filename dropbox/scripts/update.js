@@ -149,7 +149,6 @@ function updateNodes() {
     enter.append("text")
      .attr("text-anchor", "middle")
             .text(function(d) { 
-                log(d);
                 if (d.resultType === "cluster") {
                     return cleanName(d.name).substring(0, 10); 
                 } else if (d.resultType === "doc") {
