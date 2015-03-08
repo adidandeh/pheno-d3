@@ -1,4 +1,4 @@
-fetchData(); // in data.js:16
+fetchData();
 
 var intervalId;
 var counter=2;

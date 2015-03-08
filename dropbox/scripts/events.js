@@ -24,7 +24,6 @@ function node_onMouseOver(d,type) {
             tempHeight = 140;
             header1.text(d.medline_journal_title);
             header.text(d.medline_article_title);
-            // header2.text("Year Published: " + d.medline_pub_year);
             tempPheno = "";
 
             if(typeof d.phenotypes != "undefined") {
@@ -80,7 +79,6 @@ function node_onMouseOver(d,type) {
         toolTip.style("left", (d3.event.pageX+15) + "px")
             .style("top", (d3.event.pageY-75) + "px")
             .style("height",200+"px");
-        // log(d);
         highlightLink(d,true);
     }
     else if (type=="ROOT") {
@@ -114,35 +112,33 @@ function node_onMouseOut(d,type) {
         highlightLinks(chordsById[d.label],false,type);
     }
 
-    toolTip.transition()                                    // declare the transition properties to fade-out the div
-        .duration(500)                                  // it shall take 500ms
-        .style("opacity", "0");                         // and go all the way to an opacity of nil
+    toolTip.transition()
+        .duration(500)
+        .style("opacity", "0");
 }
 
 function highlightLink(g,on,type) {
     var opacity=((on==true) ? .6 : .1);
-      // console.log("fadeHandler(" + opacity + ")");
-      // highlightSvg.style("opacity",opacity);
-       var link=d3.select(document.getElementById("l_" + g.key));
-        link.transition((on==true) ? 150:550)
-            .style("fill-opacity",opacity)
-            .style("stroke-opacity",opacity);
+    var link=d3.select(document.getElementById("l_" + g.key));
+    link.transition((on==true) ? 150:550)
+        .style("fill-opacity",opacity)
+        .style("stroke-opacity",opacity);
 
-        var arc=d3.select(document.getElementById("a_" + g.key));
-        arc.transition().style("fill-opacity",(on==true) ? opacity :.2);
+    var arc=d3.select(document.getElementById("a_" + g.key));
+    arc.transition().style("fill-opacity",(on==true) ? opacity :.2);
 
-        var circ=d3.select(document.getElementById("d_" + g.doc.id));
-        circ.transition((on==true) ? 150:550)
-        .attr("r", function (d) {
-            return d.r;
-        })
-        .style("opacity",((on==true) ?1 :0));
+    var circ=d3.select(document.getElementById("d_" + g.doc.id));
+    circ.transition((on==true) ? 150:550)
+    .attr("r", function (d) {
+        return d.r;
+    })
+    .style("opacity",((on==true) ?1 :0));
 
-        var text=d3.select(document.getElementById("t_" + g.id));
-         text.transition((on==true) ? 0:550)
-             .style("fill",(on==true) ? "#000" : "#777")
-             .style("font-size",(on==true) ? "10px" : "8px")
-             .style("stroke-width",((on==true) ? 2 : 0));
+    var text=d3.select(document.getElementById("t_" + g.id));
+    text.transition((on==true) ? 0:550)
+        .style("fill",(on==true) ? "#000" : "#777")
+        .style("font-size",(on==true) ? "10px" : "8px")
+        .style("stroke-width",((on==true) ? 2 : 0));
 }
 
 function highlightLinks(d,on,type) {
@@ -154,7 +150,6 @@ function highlightLinks(d,on,type) {
 }
 
 selectNode = function(d) { // TODO: Actually do something.
-    // log(d);
     position = selectedNodes.indexOf(d);
     if(position === -1) {
         selectedNodes.push(d);

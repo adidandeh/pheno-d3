@@ -10,10 +10,8 @@ updateChart = function() {
 function updateLinks(links) {
     linkGroup=linksSvg.selectAll("g.links")
         .data(links, function (d,i) {
-            return d.key; // i.e. 1_0 TODO Key's not getting prepended
+            return d.key;
         });
-
- //   linkGroup.selectAll("g.links").transition(500).style("opacity",1);
 
     var enter=linkGroup.enter().append("g").attr("class","links");
     var update=linkGroup.transition();
@@ -56,7 +54,6 @@ function updateLinks(links) {
             return color(d.pheno.rootOrder, 0);
           })
         .style("stroke-opacity",.07)
-       // .style("stroke-width",function (d) { return d.links[0].strokeWeight;})
         .style("fill-opacity",0.1)
         .style("fill",function(d) { 
             return color(d.pheno.rootOrder, d.pheno.depth);
@@ -126,7 +123,6 @@ function updateLinks(links) {
 function updateNodes() {
     var node = nodesSvg.selectAll("g.node")
         .data(docs, function (d,i) {
-            // log(d);
             return d.id;
         });
 
@@ -205,16 +201,6 @@ function updateNodes() {
             return d.r /** d.value*/;
         });
 
-    // nodeUpdate.select(".nodeCircle1")
-    //     .attr("r", function (d) {
-    //         return d.r;
-    //     });
-
-    // nodeUpdate.select(".nodeCircle2")
-    //     .attr("r", function (d) {
-    //         return d.r;
-    //     });
-
     node.exit().remove().transition(500).style("opacity",0);
 
     log("updateBubble()");
@@ -258,16 +244,14 @@ function updateChords() {
              return trimLabel(cleanName(phenotypeRootsById["phenotypeRoot_" + d.label].name));
         });
 
-
-
      enter.append("path")
         .style("fill-opacity",0)
         .style("stroke", "#555")
         .style("stroke-opacity",0.4)
         .attr("d", function (d,i) {
-                var arc=d3.svg.arc(d,i).innerRadius(innerRadius-20).outerRadius(innerRadius);
-                return arc(d.source,i);
-            });
+            var arc=d3.svg.arc(d,i).innerRadius(innerRadius-20).outerRadius(innerRadius);
+            return arc(d.source,i);
+        });
 
     arcGroup.transition()
         .select("path")
@@ -275,7 +259,6 @@ function updateChords() {
             var arc=d3.svg.arc(d,i).innerRadius(innerRadius-20).outerRadius(innerRadius);
             return arc(d.source,i);
         });
-
 
     arcGroup.exit().remove();
 

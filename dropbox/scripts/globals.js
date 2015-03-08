@@ -100,20 +100,13 @@ var nodesSvg=svg.append("g")
 
  var bubble = d3.layout.pack()
     .size([bubbleRadius*2, bubbleRadius*2])
-    // .value(function (d) {
-    //     return d.value;
-    // })
-    // .radius(15)
-    // .sort(function (a,b) {return b.value - a.value})
     .padding(1.5);
 
 var chord = d3.layout.chord()
     .padding(.05)
     .sortSubgroups(d3.descending);
-    // .sortChords(d3.descending);
 
 var diagonal = d3.svg.diagonal.radial();
-    //.projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
 
 var arc = d3.svg.arc()
     .innerRadius(innerRadius)
@@ -140,11 +133,6 @@ var buf_indexByName={},
 // phenoTree
 var tree = d3.layout.tree()
     .size([treeHeight, treeWidth]);
-
-// var diagonal = d3.svg.diagonal()
-//     .projection(function(d) {
-//         return [d.y, d.x];
-//     });
 
 var div = d3.select("body").append("div")
     .attr("class", "tooltipPhenoBox");
@@ -198,12 +186,7 @@ function colorLuminance(hex, lum) {
     return rgb;
 }
 
-color = function(rootOrder, weightDiff) { // TODO: Get working.
-    // var random = Math.floor(Math.random() * colorArr.length) + 0;
-    //return colorArr[random];
-    // insert generation function.
-    //return "#D8C6C6";
-   // return "#49B649"; // green
+color = function(rootOrder, weightDiff) {
    return colorLuminance(colorArr[rootOrder], weightDiff);
 }
 
@@ -246,8 +229,7 @@ generateBreadCrumb = function(d) {
 
     if (typeof d["lineage"] !== "undefined") {
         tempLineageArr = tempLineageArr.concat(d["lineage"]);
-    } //else if (barStack.length > 0){ 
-    // }
+    }
     tempLineageArr.push(d);
 
     for (var x = 0; x < tempLineageArr.length; x++) {

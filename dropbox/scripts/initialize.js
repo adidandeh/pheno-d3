@@ -11,12 +11,9 @@ function initialize() {
     d.children=documents
     root.children=[d];
     root.PTY="root";
-    // log(dataPheno[0].children);
-    // log(root);
     nodes=bubble.nodes(root);
-    
-    // log(dataPheno[0].children);
     var totalDocAmount=0;
+
     nodes.forEach(function (d) {
         if (d.depth==2) {
             nodesById[d.id]=d;
@@ -41,7 +38,6 @@ function initialize() {
             documentsById["documents_"+d.doc.id].relatedLinks.push(d);
             documentsById["documents_"+d.doc.id].value+=1;
             chordsById[d.pheno.rootId].relatedLinks.push(d);
-            // chordsById[d.pheno.rootId].relatedLinks.push(d);
             totalSearchPhenotypes+=1;
         }
     })

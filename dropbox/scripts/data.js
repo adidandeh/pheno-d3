@@ -157,14 +157,7 @@ fetchData = function() {
     dataCalls=[];
 
     addStream("data/data.json", onFetchPhenotypes, "json");
-    // addStream("", onFetchLiveDocuments, "json");
-    // addStream("data/docs-1000.json", onFetchDocuments, "json");
     startFetch();
-    // $.when(addStream("data/data.json", onFetchPhenotypes, "json"))
-    //     .then(addStream("", onFetchLiveDocuments, "json"))
-    //     .then(function(){
-    //         startFetch();
-    //     });
 }
 
 onFetchPhenotypes = function(error, pheno) {
@@ -185,13 +178,6 @@ onFetchPhenotypes = function(error, pheno) {
         }
     }
 
-    // TODO: Take searchPhenotypes and do server search for datasets.
-  // documents = searchSolr();
-
-  // $.when(searchSolr()).done(function(){
-  //   log(documents);
-  //   // endFetch();
-  // });
     log("onFetchPhenotypes");
     endFetch();
 }
@@ -445,8 +431,6 @@ prepData = function(d, row) {
         for (var x = 0; x < tempPheno.length; x++) {
             if (typeof root == "undefined") break // leaf node
             if (typeof root.children !== "undefined") { // stops if at leaf
-                // log(root.children);
-                // log(tempPheno[x]);
                 root = root.children[findWithAttr(root.children, 'id', tempPheno[x].id)];
             }
         }

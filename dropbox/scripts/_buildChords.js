@@ -3,10 +3,6 @@ function buildChords() {
     var  matrix = [];
     labels=[];
     chords=[];
-
-    // if(searchedPhenotypes.length < 1) {
-    //     searchedPhenotypes = phenotypeRoots;
-    // }
     
     for (var i=0; i < phenotypeRoots.length; i++) {
         var l={};
