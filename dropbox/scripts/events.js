@@ -295,7 +295,7 @@ d3.select("body").on("keypress", function() {
 
 clearPhenotypes = function() {
     dataPheno.forEach(function(d) {
-        d.children = [];
+        d.searches = [];
     });
     d3.select("#overview > .links").selectAll(".links").remove();
     activerow = -1;
@@ -348,15 +348,9 @@ createPhenoBox = function() { // use cursorData parent chain-up
         tempPheno.depth = depth;
         var inArray;
         for (var i = 0; i < tempPheno.length; i++) {
-            inArray = findWithAttr(dataPheno[activerow].children, "id", tempPheno[i].id);
+            inArray = findWithAttr(dataPheno[activerow].searches, "id", tempPheno[i].id);
             if (inArray == -1) {
-                // depthInArray = findWithAttr(data[activerow].children, "depth", tempPheno[i].depth);
-                // if(depthInArray !== -1) {
-                //     data[activerow].children.splice(depthInArray, 0, tempPheno[i]);
-                // } else {
-                //    data[activerow].children.splice(data[activerow].children.length-1, 0, tempPheno[i]); 
-                // }
-                dataPheno[activerow].children.push(tempPheno[i]);
+                dataPheno[activerow].searches.push(tempPheno[i]);
             }
         }
         cursorDataPrior = null;
@@ -364,18 +358,16 @@ createPhenoBox = function() { // use cursorData parent chain-up
         treeActive = false;
         depth = 0;
         searchPhenotypes();
-        // updateChart();
-        // draw(svgBoxes, data);
     }
 }
 
 removeChild = function(row, column) {
-    dataPheno[row].children.splice(column, 1);
+    dataPheno[row].searches.splice(column, 1);
     d3.select("#overview > .links").selectAll(".links").remove();
     found = false;
 
     for (var i = 0; i < dataPheno.length; i++) {
-        if(dataPheno[i].children.length > 0) {
+        if(dataPheno[i].searches.length > 0) {
             found = true;
             break;
         }

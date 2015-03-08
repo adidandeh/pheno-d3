@@ -593,17 +593,17 @@ draw = function(svg) {
     // attempt to create children boxes.
     var locData = dataPheno;
     for (var row = 0; row < locData.length; row++) {
-        if(typeof locData[row].children !== "undefined") {
-        if (locData[row].children.length > 0) {
+        if(typeof locData[row].searches !== "undefined") {
+        if (locData[row].searches.length > 0) {
             var barChildren = svg.selectAll(locData[row].name) // the bar which will hold the phenotype boxes.
-                .data(locData[row].children)
+                .data(locData[row].searches)
                 .enter().append("g")
                 .attr("transform", function(d, i) {
                     return "translate(" + 0 + ", " + 0 + ")";
                 });
 
-            for (var count = 0; count < locData[row].children.length; count++) {
-                var tempName = locData[row].children[count].name;
+            for (var count = 0; count < locData[row].searches.length; count++) {
+                var tempName = locData[row].searches[count].name;
 
                 barChildren.append("rect") // top majority of phenotype box
                 .attr("y", function(d) {
@@ -621,7 +621,7 @@ draw = function(svg) {
                         return d.id;
                     })
                     .style("fill", function(d){
-                        return color(locData[row].order, locData[row].children[count].depth);
+                        return color(locData[row].order, locData[row].searches[count].depth);
                     })
                     .style("stroke-width", "1px")
                     .style("stroke", cursor)
@@ -667,8 +667,8 @@ draw = function(svg) {
                         var tempName = "";
                         var tempRow = d3.select(this).attr("row");
                         if (typeof dataPheno[tempRow] !== "undefined" &&
-                            typeof dataPheno[tempRow].children[tempColumn] !== "undefined") {
-                            tempName = dataPheno[tempRow].children[tempColumn] /*.name*/ ;
+                            typeof dataPheno[tempRow].searches[tempColumn] !== "undefined") {
+                            tempName = dataPheno[tempRow].searches[tempColumn] /*.name*/ ;
                         }
 
                         div.transition()
@@ -696,7 +696,7 @@ draw = function(svg) {
                     .style("text-anchor", "middle")
                     .attr("pointer-events", "none")
                     .text(function(d) {
-                        return cleanName(locData[row].children[count].name).substring(0, 10);
+                        return cleanName(locData[row].searches[count].name).substring(0, 10);
                     });
             }
         }

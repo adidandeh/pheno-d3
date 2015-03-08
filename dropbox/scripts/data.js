@@ -10,139 +10,139 @@ var dataPheno = [{
     "order": 1,
     "id": "HP:0001438",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of Blood and Blood-Forming Tissue",
     "order": 2,
     "id": "HP:0001871",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Breast",
     "order": 3,
     "id": "HP:0000769",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Cardiovascular System",
     "order": 4,
     "id": "HP:0001626",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of Connective Tissue",
     "order": 5,
     "id": "HP:0003549",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Ear",
     "order": 6,
     "id": "HP:0000598",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Endocrine System",
     "order": 7,
     "id": "HP:0000818",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Eye",
     "order": 8,
     "id": "HP:0000478",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Genitourinary System",
     "order": 9,
     "id": "HP:0000119",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Growth Abnormality",
     "order": 10,
     "id": "HP:0001507",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of Head or Neck",
     "order": 11,
     "id": "HP:0000152",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Immune System",
     "order": 12,
     "id": "HP:0002715",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Integument",
     "id": "HP:0001574",
     "order": 13,
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of Limbs",
     "order": 14,
     "id": "HP:0040064",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of Metabolism",
     "order": 15,
     "id": "HP:0001939",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Musculature",
     "order": 16,
     "id": "HP:0003011",
     "active": 0,
-    "children": []
+    "searches": []
 },  {
     "name": "Neoplasm",
     "order": 17,
     "id": "HP:0002664",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Nervous System",
     "order": 18,
     "id": "HP:0000707",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of Prenatal Development or Birth",
     "order": 19,
     "id": "HP:0001197",
     "active": 0,
-    "children": []
+    "searches": []
 },  {
     "name": "Abnormality of the Respiratory System",
     "order": 20,
     "id": "HP:0002086",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Skeletal System",
     "order": 21,
     "id": "HP:0000924",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Thoracic Cavity",
     "order": 22,
     "id": "HP:0045027",
     "active": 0,
-    "children": []
+    "searches": []
 }, {
     "name": "Abnormality of the Voice",
     "order": 23,
     "id": "HP:0001608",
     "active": 0,
-    "children": []
+    "searches": []
 }]
 
 var dataCalls=[];
@@ -177,11 +177,11 @@ onFetchPhenotypes = function(error, pheno) {
     searchedPhenotypes = [];
     // build search links
     for(var i=0; i<dataPheno.length; i++) {
-        for(var j=0; j<dataPheno[i].children.length; j++) {
-            dataPheno[i].children[j].key = dataPheno[i].order + "_" + j;
-            dataPheno[i].children[j].rootId = dataPheno[i].id;
-            dataPheno[i].children[j].rootOrder = dataPheno[i].order;
-            searchedPhenotypes.push(dataPheno[i].children[j]);
+        for(var j=0; j<dataPheno[i].searches.length; j++) {
+            dataPheno[i].searches[j].key = dataPheno[i].order + "_" + j;
+            dataPheno[i].searches[j].rootId = dataPheno[i].id;
+            dataPheno[i].searches[j].rootOrder = dataPheno[i].order;
+            searchedPhenotypes.push(dataPheno[i].searches[j]);
         }
     }
 
@@ -197,11 +197,11 @@ onFetchPhenotypes = function(error, pheno) {
 }
 
 searchSolr = function() {
-    if(searchedPhenotypes.length < 1) {
-        dataInit();
-        main();
-        return null;
-    };
+    // if(searchedPhenotypes.length < 1) {
+    //     dataInit();
+    //     main();
+    //     return null;
+    // };
 
     var searchmax = 100;
     var searchString = "";
@@ -319,7 +319,7 @@ searchSolr = function() {
         }
 
         var cleanedData = [];
-        data.forEach(function (d) {
+        dataPheno.forEach(function (d) {
             var searchTerm = d.name;
             searchTerm = searchTerm.replace(re, "+");
             cleanedData.push({phenotype: d, searchTerm: searchTerm});
@@ -329,21 +329,9 @@ searchSolr = function() {
 }
 
 onFetchLiveDocuments = function() {
-    // if(documents.length < 1) {
-        $.when(searchSolr()).done(function(){
-            // endFetch();
-
-            // for (var i=0; i < documents.length; i++) {
-            //     var d = documents[i];
-            //     // d.value = d.phenotypes.length;
-            //     d.value = 1;
-            //     documentsById["documents_" + documents[i].id]=documents[i];
-            //     total_docs+=1; 
-            // }
-            log("onFetchLiveDocuments");
-        });
-        // load query of # of rootPheno docs.
-    // }
+    $.when(searchSolr()).done(function(){
+        log("onFetchLiveDocuments");
+    });
 }
 
 onFetchDocuments = function(error, data) { // TODO: If using Solr, instead search for #of docs in roots
@@ -412,7 +400,6 @@ dataInit = function() {
         } else { // no searched phenotypes.
 
         }
-
         totalLinkAmount+=linkCount;
         if(linkCount<1) linkCount++; // To show at least the chord tag TODO, artificially pumping by one
         chordLinkCount[indexByName[d.id]] = linkCount;
@@ -448,13 +435,13 @@ prepData = function(d, row) {
         while (typeof tempPheno[tempPheno.length - 1].parent != "undefined") {
             tempPheno.push(tempPheno[tempPheno.length - 1].parent);
         }
-        // tempPheno.pop();
-        // tempPheno.pop();
-        // log(root);
-        // root = root
-        // log(tempPheno);
+
+        if(tempPheno[0].resultType == "cluster") {
+            tempPheno.pop();
+            tempPheno.pop();
+        }
         tempPheno.reverse();
-        // log(tempPheno[0]);
+
         for (var x = 0; x < tempPheno.length; x++) {
             if (typeof root == "undefined") break // leaf node
             if (typeof root.children !== "undefined") { // stops if at leaf
