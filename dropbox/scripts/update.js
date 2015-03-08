@@ -21,13 +21,22 @@ function updateLinks(links) {
         .attr("class", "arc")
         .append("path")
         .attr("id",function (d) { return "a_" + d.key;})
-        .style("fill", function(d) { 
-            return color(d.pheno.rootOrder, d.pheno.depth);
+        .style("fill", function(d) {
+            if(d.doc.resultType === "cluster") {
+                return color(d.pheno.order, d.pheno.depth);
+            } else {
+                return color(d.pheno.rootOrder, d.pheno.depth);
+            }
         })
         .style("fill-opacity",.2)
         .attr("d", function (d,i) {
             var newArc={};
-            var relatedChord=chordsById[d.pheno.rootId]; // rootPheno
+            var relatedChord;
+            if(d.doc.resultType === "cluster") {
+                relatedChord=chordsById[d.pheno.id]; // rootPheno
+            } else {
+                relatedChord=chordsById[d.pheno.rootId]; // rootPheno
+            }
             newArc.startAngle=relatedChord.currentAngle;
             relatedChord.currentAngle=relatedChord.currentAngle+(1/relatedChord.value)*(relatedChord.endAngle-relatedChord.startAngle);
             newArc.endAngle=relatedChord.currentAngle;
@@ -51,12 +60,20 @@ function updateLinks(links) {
               return diag;
         })
         .style("stroke",function(d) {
-            return color(d.pheno.rootOrder, 0);
+            if(d.doc.resultType === "cluster") {
+                return color(d.pheno.order, 0);
+            } else {
+                return color(d.pheno.rootOrder, 0);
+            }
           })
         .style("stroke-opacity",.07)
         .style("fill-opacity",0.1)
-        .style("fill",function(d) { 
-            return color(d.pheno.rootOrder, d.pheno.depth);
+        .style("fill",function(d) {
+            if(d.doc.resultType === "cluster") { 
+                return color(d.pheno.order, d.pheno.depth);
+            } else {
+                return color(d.pheno.rootOrder, d.pheno.depth);
+            }
         })
         .on("mouseover", function (d) { node_onMouseOver(d,"LINK");})
         .on("mouseout", function (d) {node_onMouseOut(d,"LINK"); });
@@ -67,7 +84,11 @@ function updateLinks(links) {
         .attr("class","node")
         .append("circle")
         .style("fill",function(d) { 
-            return color(d.pheno.rootOrder, d.pheno.depth);
+            if(d.doc.resultType === "cluster") { 
+                return color(d.pheno.order, d.pheno.depth);
+            } else {
+                return color(d.pheno.rootOrder, d.pheno.depth);
+            }
         })
         .style("fill-opacity",0.2)
         .style("stroke-opacity",1)
@@ -93,7 +114,13 @@ function updateLinks(links) {
         var link2={};
         var source2={};
 
-        var relatedChord=chordsById[d.pheno.rootId];
+        var relatedChord;
+        if(d.doc.resultType === "cluster") {
+            relatedChord=chordsById[d.pheno.id];
+        } else {
+            relatedChord=chordsById[d.pheno.rootId]; 
+        }
+
         var relatedNode=nodesById[d.doc.id];
         var r=linkRadius;
         var currX=(r * Math.cos(relatedChord.currentLinkAngle-1.57079633));

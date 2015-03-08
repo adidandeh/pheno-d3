@@ -351,6 +351,7 @@ dataInit = function() {
         }
     });
 
+    var tempCount = 0;
     phenotypeRoots.forEach(function(d) { // TODO: Need to change to remove roots from arc
         linkCount = 0;
         if(searchedPhenotypes.length > 0) {
@@ -367,7 +368,6 @@ dataInit = function() {
 
                             for (var k = 0; k < uniquePhenos.length; k++) { // each document's phenotypes tags
                                 if(searchedPhenotypes[j].name.toUpperCase() === uniquePhenos[k].toUpperCase()) {
-
                                     s = {};
                                     s.doc = documents[i];
                                     s.pheno = searchedPhenotypes[j];
@@ -382,7 +382,16 @@ dataInit = function() {
                 }
             }
         } else { // no searched phenotypes.
-
+            // if(searchedPhenotypes[j].name.toUpperCase() === uniquePhenos[k].toUpperCase()) {
+                s = {};
+                s.doc = documents[tempCount];
+                s.pheno = dataPheno[tempCount];
+                s.key = dataPheno[tempCount].order + "_" + linkCount;
+                documentsById["documents_" + documents[tempCount].id].value += 1;
+                searchLinks.push(s);
+                // linkCount++;
+            // }
+            tempCount++;
         }
         totalLinkAmount+=linkCount;
         if(linkCount<1) linkCount++; // To show at least the chord tag TODO, artificially pumping by one
