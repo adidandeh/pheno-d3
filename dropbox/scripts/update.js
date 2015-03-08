@@ -126,6 +126,7 @@ function updateLinks(links) {
 function updateNodes() {
     var node = nodesSvg.selectAll("g.node")
         .data(docs, function (d,i) {
+            // log(d);
             return d.id;
         });
 
@@ -380,7 +381,7 @@ update = function(source, row, startOffset) {
                 return d.id;
             })
             .style("fill", function(d) {
-                return color(data[activerow].order, 0);
+                return color(dataPheno[activerow].order, 0);
             })
             .style("visibility", function(d) {
                 return d.parent == null ? "hidden" : "visible";
@@ -508,11 +509,11 @@ update = function(source, row, startOffset) {
     }
 }
 
-draw = function(svg, data) {
+draw = function(svg) {
     svg.selectAll("*").remove();
 
     var bar = svg.selectAll("g") // the bar which will hold the phenotype boxes.
-        .data(data, function(d) {
+        .data(dataPheno, function(d) {
             return d.order;
         })
         .enter().append("g")
@@ -562,7 +563,7 @@ draw = function(svg, data) {
                 childPhenos[0][i].style["opacity"] = 0;
                 childPhenos[0][i].nextSibling.style["opacity"] = 0;
             }
-            prepData(d, data, activerow);
+            prepData(d, activerow);
         })
         .on("contextmenu", function(d) {
             d3.event.preventDefault();
@@ -590,8 +591,9 @@ draw = function(svg, data) {
         });
 
     // attempt to create children boxes.
-    var locData = data;
+    var locData = dataPheno;
     for (var row = 0; row < locData.length; row++) {
+        if(typeof locData[row].children !== "undefined") {
         if (locData[row].children.length > 0) {
             var barChildren = svg.selectAll(locData[row].name) // the bar which will hold the phenotype boxes.
                 .data(locData[row].children)
@@ -664,9 +666,9 @@ draw = function(svg, data) {
                         var tempColumn = d3.select(this).attr("id");
                         var tempName = "";
                         var tempRow = d3.select(this).attr("row");
-                        if (typeof data[tempRow] !== "undefined" &&
-                            typeof data[tempRow].children[tempColumn] !== "undefined") {
-                            tempName = data[tempRow].children[tempColumn] /*.name*/ ;
+                        if (typeof dataPheno[tempRow] !== "undefined" &&
+                            typeof dataPheno[tempRow].children[tempColumn] !== "undefined") {
+                            tempName = dataPheno[tempRow].children[tempColumn] /*.name*/ ;
                         }
 
                         div.transition()
@@ -697,6 +699,7 @@ draw = function(svg, data) {
                         return cleanName(locData[row].children[count].name).substring(0, 10);
                     });
             }
+        }
         }
     }
 }

@@ -7,15 +7,14 @@ function initialize() {
 
     var root={};
     var d={};
-
     d.value=total_docs;
-    d.children=documents;
-
+    d.children=documents
     root.children=[d];
     root.PTY="root";
-
+    log(dataPheno[0].children);
+    log(root);
     nodes=bubble.nodes(root);
-
+    log(dataPheno[0].children);
     var totalDocAmount=0;
     nodes.forEach(function (d) {
         if (d.depth==2) {

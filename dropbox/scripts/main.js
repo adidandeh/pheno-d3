@@ -6,7 +6,7 @@ var renderLinks=[];
 
 function main() {
     updateChart();
-    draw(svgBoxes, data);
+    draw(svgBoxes);
 }
 
 /*

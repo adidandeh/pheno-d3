@@ -1,5 +1,11 @@
+var remote = true;
+var url = "http://129.100.19.193/soscip/api/search.php";
+
+if (remote) {
+    url = "http://localhost:8080/soscip/api/search.php";
+}
 // hardcoded pheno bar data
-var data = [{
+var dataPheno = [{
     "name": "Abnormality of the Abdomen",
     "order": 1,
     "id": "HP:0001438",
@@ -168,15 +174,14 @@ onFetchPhenotypes = function(error, pheno) {
     for (var i=0; i < phenotypeRoots.length; i++) {
         phenotypeRootsById["phenotypeRoot_" + phenotypeRoots[i].id]=phenotypeRoots[i];
     }
-
     searchedPhenotypes = [];
     // build search links
-    for(var i=0; i<data.length; i++) {
-        for(var j=0; j<data[i].children.length; j++) {
-            data[i].children[j].key = data[i].order + "_" + j;
-            data[i].children[j].rootId = data[i].id;
-            data[i].children[j].rootOrder = data[i].order;
-            searchedPhenotypes.push(data[i].children[j]);
+    for(var i=0; i<dataPheno.length; i++) {
+        for(var j=0; j<dataPheno[i].children.length; j++) {
+            dataPheno[i].children[j].key = dataPheno[i].order + "_" + j;
+            dataPheno[i].children[j].rootId = dataPheno[i].id;
+            dataPheno[i].children[j].rootOrder = dataPheno[i].order;
+            searchedPhenotypes.push(dataPheno[i].children[j]);
         }
     }
 
@@ -192,17 +197,17 @@ onFetchPhenotypes = function(error, pheno) {
 }
 
 searchSolr = function() {
-    // if(searchedPhenotypes.length < 1) {
-    //     dataInit();
-    //     main();
-    //     return null;
-    // };
-    // searchPhenotypes
+    if(searchedPhenotypes.length < 1) {
+        dataInit();
+        main();
+        return null;
+    };
 
     var searchmax = 100;
     var searchString = "";
     cleanedSearches = [];
     var re = /\s/g;
+
     if(searchedPhenotypes.length > 0) {
         searchedPhenotypes.forEach(function(d){
             searchTerm = d.name;
@@ -232,7 +237,7 @@ searchSolr = function() {
         };
 
         return $.ajax({ // TODO: Slowing down everything.
-          url: "http://129.100.19.193/soscip/api/search.php",
+          url: url,
           type:"get", //send it through get method
           data:search,
           success: function(result) {
@@ -244,6 +249,8 @@ searchSolr = function() {
                 var d = documents[i];
                 // d.value = d.phenotypes.length;
                 d.value = 1;
+                d.resultType = "doc";
+                // log(d);
                 documentsById["documents_" + documents[i].id]=documents[i];
                 total_docs+=1; 
             }
@@ -263,158 +270,62 @@ searchSolr = function() {
         var phenoRootNum = [];
 
         emptySearch = function(cleanedData) {
-                var search = {
-                     core: 'medline-citations',
-                     handler: "select",
-                     searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
-                     query: cleanedData.pop(),
-                     years: JSON.stringify({min: 1900, max: 2015}),
-                     start: 0,
-                     rows: searchmax
-                };
+            var current = cleanedData.pop();
+            var search = {
+                 core: 'medline-citations',
+                 handler: "select",
+                 searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
+                 query: current.searchTerm,
+                 years: JSON.stringify({min: 1900, max: 2015}),
+                 start: 0,
+                 rows: searchmax
+            };
 
-                $.ajax({ // TODO: Slowing down everything.
-                    url: "http://129.100.19.193/soscip/api/search.php",
-                    type:"get", //send it through get method
-                    data:search,
-                    success: function(result) {
-                        var result = jQuery.parseJSON(result);
-                        phenoRootNum.push(result.response.numFound);
-                        if(cleanedData.length > 0) { 
-                            emptySearch(cleanedData);
-                        } else {
-                            log(phenoRootNum);
+            $.ajax({ // TODO: Slowing down everything.
+                url: url,
+                type: "get", //send it through get method
+                data: search,
+                success: function(result) {
+                    var result = jQuery.parseJSON(result);
 
-                            // HERE, now that we've got the amount of docs under each heading,
-                            // signal to generate 24 or whatever circle nodes of relational size
-                            // based on their individual amount.
-                        }
+                    phenoRootNum.push({
+                        phenotype: current.phenotype,
+                        numFound: result.response.numFound
+                    });
 
-                        log("emptySearch finish");
-                    },
-                    error: function(xhr) {
-                        log("error emptySearch");
-                        documents = [];
+                    if(cleanedData.length > 0) { 
+                        emptySearch(cleanedData);
+                    } else {
+                        phenoRootNum.forEach(function (d) {
+                            d.phenotype.resultType = "cluster";
+                            d.phenotype.value = d.numFound;
+                            //log(d);
+                            documents.push(d.phenotype);
+                            documentsById["documents_" + d.phenotype.id]=d.phenotype;
+                            // total_docs+=1;
+                        });
                         dataInit();
-                        main();
+                        main(); 
                     }
-                });
+                    // log("emptySearch finish");
+                },
+                error: function(xhr) {
+                    log("error emptySearch");
+                    documents = [];
+                    dataInit();
+                    main();
+                }
+            });
         }
 
         var cleanedData = [];
         data.forEach(function (d) {
             var searchTerm = d.name;
             searchTerm = searchTerm.replace(re, "+");
-            cleanedData.push(searchTerm);
+            cleanedData.push({phenotype: d, searchTerm: searchTerm});
         });
-
         emptySearch(cleanedData.reverse());
     }
-
- //     new strategy
-    // var doccount = 0;
-    // var searchcount = 0;
-    // var resultNumber;
-    // searchNumber = function(query) {
-    //     var search = {
-    //          core: 'medline-citations',
-    //          handler: "select",
-    //          searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
-    //          query: query,
-    //          years: JSON.stringify({min: 1900, max: 2015}),
-    //          start: 0,
-    //          rows: 0
-    //     };
-
-    //     return $.ajax({ // TODO: Slowing down everything.
-    //       url: "http://129.100.19.193/soscip/api/search.php",
-    //       type:"get", //send it through get method
-    //       data:search,
-    //       success: function(result) {
-    //         var result = jQuery.parseJSON(result);
-    //         log("searchSolr finish");
-    //         resultNumber = result.response.numFound;
-
-    //       },
-    //       error: function(xhr) {
-    //         log("error searchSolr");
-    //       }
-    //     });
-    // }
-    // searchNumber(searchString);
-
-
-
-    /* 
-    NEW SEARCH STRATEGY
-
-    SET MAX TO X, I.E. 100
-    
-    DOCCOUNT = 0;
-    
-    SEARCHCOUNT = 0
-    RESULT = <SEARCH FOR THE NUMBER OF BOTTOM LEVEL 
-            PHENOTYPES TOGETHER (P1 AND P2 AND ... 
-            AND Pn)>
-    ARR.PUSH = {SEARCHTERMS:<>,
-                    NUMBER OF RESULTS: <RESULT>
-    DOCCOUNT += RESULT;
-    SEARCHCOUNT++;
-
-    
-    IF DOCCOUNT < MAX:
-        RELAX ONE UP FOR ALL THAT CAN RELAX, AND GET THE NUMBER OF DOC RESULTS FROM EACH
-        GET THE LARGEST, AND PUSH THAT INTO THE ARR.
-        DOCCOUNT += THIS AMOUNT
-        IF DOCCOUNT < MAX STILL
-            REPEAT UNTIL DOCOUNT > MAX, AND DETERMINE BY HOW MUCH.
-
-    NOW GO BACK TO THE ARR, AND START SEARCHING THOSE DOCS, FILL THE REST UNTIL
-        THE LAST SEARCH IS THERE, THEN LIMIT THE LAST SEARCH BY HOW MANY THE REMAINDER.
-
-    THIS IS THE DOC SET FOR DISPLAY.
-
-    */ 
-
-
-
-    // var search = {
-    //      core: 'medline-citations',
-    //      handler: "select",
-    //      searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
-    //      query: searchString,
-    //      years: JSON.stringify({min: 1900, max: 2015}),
-    //      start: 0,
-    //      rows: searchmax
-    // };
-
-    // return $.ajax({ // TODO: Slowing down everything.
-    //   url: "http://129.100.19.193/soscip/api/search.php",
-    //   type:"get", //send it through get method
-    //   data:search,
-    //   success: function(result) {
-    //     var result = jQuery.parseJSON(result);
-    //     log("searchSolr finish");
-    //     documents = result.response.docs;
-
-    //     for (var i=0; i < documents.length; i++) {
-    //         var d = documents[i];
-    //         // d.value = d.phenotypes.length;
-    //         d.value = 1;
-    //         documentsById["documents_" + documents[i].id]=documents[i];
-    //         total_docs+=1; 
-    //     }
-
-    //     dataInit();
-    //     main();
-    //   },
-    //   error: function(xhr) {
-    //     log("error searchSolr");
-    //     documents = [];
-    //     dataInit();
-    //     main();
-    //   }
-    // });
 }
 
 onFetchLiveDocuments = function() {
@@ -470,38 +381,42 @@ dataInit = function() {
 
     phenotypeRoots.forEach(function(d) { // TODO: Need to change to remove roots from arc
         linkCount = 0;
-        for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
-            if(searchedPhenotypes[j].rootId === d.id) {
-                for(var i = 0; i < documents.length; i++) { // each document
-                    if(typeof documents[i].phenotypes != "undefined") { // TODO : no nodes.
-                        tempPhenotypes = documents[i].phenotypes;
+        if(searchedPhenotypes.length > 0) {
+            for(var j = 0; j < searchedPhenotypes.length; j++) { // eadh searched phenotype
+                if(searchedPhenotypes[j].rootId === d.id) {
+                    for(var i = 0; i < documents.length; i++) { // each document
+                        if(typeof documents[i].phenotypes != "undefined") { // TODO : no nodes.
+                            tempPhenotypes = documents[i].phenotypes;
 
-                        var uniquePhenos = tempPhenotypes.reduce(function(a,b){ // remove duplicate phenos
-                            if (a.indexOf(b) < 0) a.push(b);
-                            return a;
-                        },[]);
+                            var uniquePhenos = tempPhenotypes.reduce(function(a,b){ // remove duplicate phenos
+                                if (a.indexOf(b) < 0) a.push(b);
+                                return a;
+                            },[]);
 
-                        for (var k = 0; k < uniquePhenos.length; k++) { // each document's phenotypes tags
-                            if(searchedPhenotypes[j].name.toUpperCase() === uniquePhenos[k].toUpperCase()) {
+                            for (var k = 0; k < uniquePhenos.length; k++) { // each document's phenotypes tags
+                                if(searchedPhenotypes[j].name.toUpperCase() === uniquePhenos[k].toUpperCase()) {
 
-                                s = {};
-                                s.doc = documents[i];
-                                s.pheno = searchedPhenotypes[j];
-                                s.key = searchedPhenotypes[j].rootOrder + "_" + linkCount;
-                                // documentsById["documents_" + documents[i].id].value += 1;
-                                searchLinks.push(s);
-                                linkCount++;
-                            }
-                        }  
-                    } 
+                                    s = {};
+                                    s.doc = documents[i];
+                                    s.pheno = searchedPhenotypes[j];
+                                    s.key = searchedPhenotypes[j].rootOrder + "_" + linkCount;
+                                    // documentsById["documents_" + documents[i].id].value += 1;
+                                    searchLinks.push(s);
+                                    linkCount++;
+                                }
+                            }  
+                        } 
+                    }
                 }
             }
+        } else { // no searched phenotypes.
+
         }
+
         totalLinkAmount+=linkCount;
         if(linkCount<1) linkCount++; // To show at least the chord tag TODO, artificially pumping by one
         chordLinkCount[indexByName[d.id]] = linkCount;
-
-    });
+    });                       
 }
 
 addStream = function(file,func,type) {
@@ -526,18 +441,25 @@ endFetch = function() {
     }
 }
 
-prepData = function(d, data, row) {
+prepData = function(d, row) {
     d3.json("data/data.json", function(error, flare) {
         root = flare;
-
         var tempPheno = [cursorData];
         while (typeof tempPheno[tempPheno.length - 1].parent != "undefined") {
             tempPheno.push(tempPheno[tempPheno.length - 1].parent);
         }
+        // tempPheno.pop();
+        // tempPheno.pop();
+        // log(root);
+        // root = root
+        // log(tempPheno);
         tempPheno.reverse();
+        // log(tempPheno[0]);
         for (var x = 0; x < tempPheno.length; x++) {
             if (typeof root == "undefined") break // leaf node
             if (typeof root.children !== "undefined") { // stops if at leaf
+                // log(root.children);
+                // log(tempPheno[x]);
                 root = root.children[findWithAttr(root.children, 'id', tempPheno[x].id)];
             }
         }

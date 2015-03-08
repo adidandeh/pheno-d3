@@ -1,38 +1,42 @@
 function node_onMouseOver(d,type) {
     if (type=="DOC") {
         if(d.depth < 2) return;
-        toolTip.transition()
-            .duration(200)
-            .style("opacity", ".9");
-        tempHeight = 140;
-        header1.text(d.medline_journal_title);
-        header.text(d.medline_article_title);
-        // header2.text("Year Published: " + d.medline_pub_year);
-        tempPheno = "";
-
-        if(typeof d.phenotypes != "undefined") {
-            d.phenotypes.forEach(function(p) {
-                tempPheno += p + ", ";
-            });
+        if(d.resultType === "cluster") {
+                //
         } else {
-            tempPheno = "No phenotypes found."
+            toolTip.transition()
+                .duration(200)
+                .style("opacity", ".9");
+            tempHeight = 140;
+            header1.text(d.medline_journal_title);
+            header.text(d.medline_article_title);
+            // header2.text("Year Published: " + d.medline_pub_year);
+            tempPheno = "";
+
+            if(typeof d.phenotypes != "undefined") {
+                d.phenotypes.forEach(function(p) {
+                    tempPheno += p + ", ";
+                });
+            } else {
+                tempPheno = "No phenotypes found."
+            }
+
+            header2.text("phenotypes: " + tempPheno);
+            toolTip.style("left", (d3.event.pageX+15) + "px")
+                .style("top", (d3.event.pageY-75) + "px")
+                .style("height", function() {
+                    if (d.medline_article_title.length > 25*2) {
+                        tempHeight += (d.medline_article_title.length/31*20);
+                    } 
+
+                    if (d.medline_journal_title.length > 30) {
+                        tempHeight += (d.medline_journal_title.length/30*10)
+                    }
+                    return tempHeight + "px";
+                });
+
+            highlightLinks(documentsById["documents_"+d.id],true,type);
         }
-
-        header2.text("phenotypes: " + tempPheno);
-        toolTip.style("left", (d3.event.pageX+15) + "px")
-            .style("top", (d3.event.pageY-75) + "px")
-            .style("height", function() {
-                if (d.medline_article_title.length > 25*2) {
-                    tempHeight += (d.medline_article_title.length/31*20);
-                } 
-
-                if (d.medline_journal_title.length > 30) {
-                    tempHeight += (d.medline_journal_title.length/30*10)
-                }
-                return tempHeight + "px";
-            });
-
-        highlightLinks(documentsById["documents_"+d.id],true,type);
     } 
     else if (type=="LINKHEAD") {
         toolTip.transition()
@@ -136,6 +140,7 @@ function highlightLinks(d,on,type) {
 }
 
 selectNode = function(d) { // TODO: Actually do something.
+    // log(d);
     position = selectedNodes.indexOf(d);
     if(position === -1) {
         selectedNodes.push(d);
@@ -289,7 +294,7 @@ d3.select("body").on("keypress", function() {
 });
 
 clearPhenotypes = function() {
-    data.forEach(function(d) {
+    dataPheno.forEach(function(d) {
         d.children = [];
     });
     d3.select("#overview > .links").selectAll(".links").remove();
@@ -343,7 +348,7 @@ createPhenoBox = function() { // use cursorData parent chain-up
         tempPheno.depth = depth;
         var inArray;
         for (var i = 0; i < tempPheno.length; i++) {
-            inArray = findWithAttr(data[activerow].children, "id", tempPheno[i].id);
+            inArray = findWithAttr(dataPheno[activerow].children, "id", tempPheno[i].id);
             if (inArray == -1) {
                 // depthInArray = findWithAttr(data[activerow].children, "depth", tempPheno[i].depth);
                 // if(depthInArray !== -1) {
@@ -351,7 +356,7 @@ createPhenoBox = function() { // use cursorData parent chain-up
                 // } else {
                 //    data[activerow].children.splice(data[activerow].children.length-1, 0, tempPheno[i]); 
                 // }
-                data[activerow].children.push(tempPheno[i]);
+                dataPheno[activerow].children.push(tempPheno[i]);
             }
         }
         cursorDataPrior = null;
@@ -365,21 +370,18 @@ createPhenoBox = function() { // use cursorData parent chain-up
 }
 
 removeChild = function(row, column) {
-    data[row].children.splice(column, 1);
+    dataPheno[row].children.splice(column, 1);
     d3.select("#overview > .links").selectAll(".links").remove();
     found = false;
 
-    for (var i = 0; i < data.length; i++) {
-        if(data[i].children.length > 0) {
+    for (var i = 0; i < dataPheno.length; i++) {
+        if(dataPheno[i].children.length > 0) {
             found = true;
             break;
         }
     }
 
     found ? fetchData() : clearPhenotypes();
-    // fetchData();
-    // updateChart();
-    // draw(svgBoxes, data);
 }
 
 moveSignal = function(target) {
