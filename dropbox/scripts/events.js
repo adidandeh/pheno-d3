@@ -2,7 +2,21 @@ function node_onMouseOver(d,type) {
     if (type=="DOC") {
         if(d.depth < 2) return;
         if(d.resultType === "cluster") {
-                //
+            toolTip.transition()
+                .duration(200)
+                .style("opacity", ".9");
+            tempHeight = 140;
+            header1.text(d.name);
+            header.text("Number of Documents: " + d.value);
+
+            header2.text(d.id);
+            toolTip.style("left", (d3.event.pageX+15) + "px")
+                .style("top", (d3.event.pageY-75) + "px")
+                .style("height", function() {
+                    return 100 + "px";
+                });
+
+            highlightLinks(documentsById["documents_"+d.id],true,type);
         } else {
             toolTip.transition()
                 .duration(200)
