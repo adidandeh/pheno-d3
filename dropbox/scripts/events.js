@@ -52,34 +52,63 @@ function node_onMouseOver(d,type) {
         }
     } 
     else if (type=="LINKHEAD") {
-        toolTip.transition()
-            .duration(200)
-            .style("opacity", ".9");
-        header1.text(d.pheno.name);
-        header.text("Document: " + d.doc.medline_article_title);
-        header2.text(d.pheno.defn);
+        if(d.doc.resultType === "cluster") {
+            toolTip.transition()
+                .duration(200)
+                .style("opacity", ".9");
+            header1.text(d.doc.name);
+            header.text("Number of Documents: " + d.doc.value);
 
-        toolTip.style("left", (d3.event.pageX+15) + "px")
-            .style("top", (d3.event.pageY-75) + "px")
-            .style("height",200+"px");
-        // log(d);
-        highlightLink(d,true);
+            header2.text(d.doc.id);
+
+            toolTip.style("left", (d3.event.pageX+15) + "px")
+                .style("top", (d3.event.pageY-75) + "px")
+                .style("height",100+"px");
+            highlightLink(d,true); 
+        } else {
+            toolTip.transition()
+                .duration(200)
+                .style("opacity", ".9");
+            header1.text(d.pheno.name);
+            header.text("Document: " + d.doc.medline_article_title);
+            header2.text(d.pheno.defn);
+
+            toolTip.style("left", (d3.event.pageX+15) + "px")
+                .style("top", (d3.event.pageY-75) + "px")
+                .style("height",200+"px");
+            highlightLink(d,true);     
+        }
     }
     else if (type=="LINK") {
         /*
         Highlight chord stroke
          */
-        toolTip.transition()
-            .duration(200)
-            .style("opacity", ".9");
-        header1.text(d.pheno.name);
-        header.text("Document: " + d.doc.medline_article_title);
-        header2.text(d.pheno.defn);
+        if(d.doc.resultType === "cluster") {
+            toolTip.transition()
+                .duration(200)
+                .style("opacity", ".9");
+            header1.text(d.doc.name);
+            header.text("Number of Documents: " + d.doc.value);
 
-        toolTip.style("left", (d3.event.pageX+15) + "px")
-            .style("top", (d3.event.pageY-75) + "px")
-            .style("height",200+"px");
-        highlightLink(d,true);
+            header2.text(d.doc.id);
+
+            toolTip.style("left", (d3.event.pageX+15) + "px")
+                .style("top", (d3.event.pageY-75) + "px")
+                .style("height",100+"px");
+            highlightLink(d,true); 
+        } else {
+            toolTip.transition()
+                .duration(200)
+                .style("opacity", ".9");
+            header1.text(d.pheno.name);
+            header.text("Document: " + d.doc.medline_article_title);
+            header2.text(d.pheno.defn);
+
+            toolTip.style("left", (d3.event.pageX+15) + "px")
+                .style("top", (d3.event.pageY-75) + "px")
+                .style("height",200+"px");
+            highlightLink(d,true);     
+        }
     }
     else if (type=="ROOT") {
         /*

@@ -164,13 +164,18 @@ function updateNodes() {
             // return d.r * d.value;
             return 0;
         })
-        .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.10})
+        .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.40})
         .style("stroke",function(d) {
             return "black";
         })
-        .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.25})
+        .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.35})
         .style("fill", function(d) {
-            return "FFFFFF";
+            if(d.resultType === "cluster") { 
+                return color(d.order, d.depth);
+            } else {
+                return color(d.relatedLinks[0].pheno.rootOrder, d.depth);
+            }
+            // return "FFFFFF";
         });
 
     enter.append("text")
