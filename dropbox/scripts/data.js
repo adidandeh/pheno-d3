@@ -150,11 +150,14 @@ var numCalls = 0;
 
 fetchData = function() {
     documentsById = {},
+    documents = [],
     phenotypeRootsById = {},
     chordsById = {},
     nodesById = {},
     chordLinkCount = {},
     dataCalls = [];
+    searchLinks = [];
+    renderLinks = [];
 
     addStream("data/data.json", onFetchPhenotypes, "json");
     startFetch();
@@ -183,12 +186,6 @@ onFetchPhenotypes = function(error, pheno) {
 }
 
 searchSolr = function() {
-    // if(searchedPhenotypes.length < 1) {
-    //     dataInit();
-    //     main();
-    //     return null;
-    // };
-
     var searchmax = 100;
     var searchString = "";
     var cleanedSearches = [];
@@ -251,10 +248,11 @@ searchSolr = function() {
                 success: function(result) {
                     var result = jQuery.parseJSON(result);
                     log("searchSolr finish");
-                    documents = result.response.docs;
+                    temp_documents = result.response.docs;
 
-                    for (var i = 0; i < documents.length; i++) {
-                        var d = documents[i];
+                    for (var i = 0; i < temp_documents.length; i++) {
+                        var d = temp_documents[i];
+
                         if (typeof d.phenotypes !== "undefined") {
                             d.value = d.phenotypes.length;
                         } else {
@@ -262,9 +260,14 @@ searchSolr = function() {
                         }
 
                         d.resultType = "doc";
-                        documentsById["documents_" + documents[i].id] = documents[i];
-                        total_docs += 1;
-                        searchmax--;
+
+                        // if not in the document already
+                        if(typeof documentsById["documents_" + d.id] === "undefined") {
+                            documents.push(d);
+                            documentsById["documents_" + d.id] = d;
+                            total_docs += 1;
+                            searchmax--;
+                        }
                     }
 
                     if (searchmax > 0 && queries.length > 0) {

@@ -730,8 +730,8 @@ draw = function(svg) {
                                 .duration(200)
                                 .style("opacity", 10);
                             div.html("<h3>" + generateBreadCrumb(tempName) + "</h3><br/>") // issue only remembers last name
-                            .style("left", 100 + "px") // horizontal
-                            .style("top", 50 + "px"); // vertical
+                            .style("left", 0 + "px") // horizontal
+                            .style("top", 5 + verticalPadding + "px"); // vertical
                         })
                         .on("mouseout", function(d) {
                             div.transition()

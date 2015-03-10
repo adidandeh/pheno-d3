@@ -349,6 +349,8 @@ clearPhenotypes = function() {
     nodesById = {},
     searchLinks = [];
     renderLinks = [];
+    nodesSvg.selectAll("g.node").remove();
+    linksSvg.selectAll("g.links").remove();
     fetchData();
     // updateChart();
     // draw(svgBoxes, data);
@@ -404,7 +406,9 @@ removeChild = function(row, column) {
             break;
         }
     }
-
+    nodesSvg.selectAll("g.node").remove();
+    linksSvg.selectAll("g.links").remove();
+    
     found ? fetchData() : clearPhenotypes();
 }
 
