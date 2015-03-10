@@ -1,8 +1,8 @@
 fetchData();
 
 var intervalId;
-var counter=2;
-var renderLinks=[];
+var counter = 2;
+var renderLinks = [];
 
 function main() {
     updateChart();
@@ -15,7 +15,7 @@ function onDataFetched() {
 }
 */
 
-prepLinks = function () {
+prepLinks = function() {
     renderLinks = searchLinks;
     // for (var i=0; i < searchLinks.length; i++) {
     //     renderLinks.push(searchLinks.pop());
@@ -41,4 +41,3 @@ prepLinks = function () {
 //         updateLinks(renderLinks);
 //     }
 // }
-

@@ -8,140 +8,152 @@ updateChart = function() {
 }
 
 function updateLinks(links) {
-    linkGroup=linksSvg.selectAll("g.links")
-        .data(links, function (d,i) {
+    linkGroup = linksSvg.selectAll("g.links")
+        .data(links, function(d, i) {
             return d.key;
         });
 
-    var enter=linkGroup.enter().append("g").attr("class","links");
-    var update=linkGroup.transition();
+    var enter = linkGroup.enter().append("g").attr("class", "links");
+    var update = linkGroup.transition();
 
-   /*  ARC SEGMENTS */
+    /*  ARC SEGMENTS */
     enter.append("g")
         .attr("class", "arc")
         .append("path")
-        .attr("id",function (d) { return "a_" + d.key;})
+        .attr("id", function(d) {
+            return "a_" + d.key;
+        })
         .style("fill", function(d) {
-            if(d.doc.resultType === "cluster") {
+            if (d.doc.resultType === "cluster") {
                 return color(d.pheno.order, d.pheno.depth);
             } else {
                 return color(d.pheno.rootOrder, d.pheno.depth);
             }
         })
-        .style("fill-opacity",.2)
-        .attr("d", function (d,i) {
-            var newArc={};
+        .style("fill-opacity", .2)
+        .attr("d", function(d, i) {
+            var newArc = {};
             var relatedChord;
-            if(d.doc.resultType === "cluster") {
-                relatedChord=chordsById[d.pheno.id]; // rootPheno
+            if (d.doc.resultType === "cluster") {
+                relatedChord = chordsById[d.pheno.id]; // rootPheno
             } else {
-                relatedChord=chordsById[d.pheno.rootId]; // rootPheno
+                relatedChord = chordsById[d.pheno.rootId]; // rootPheno
             }
-            newArc.startAngle=relatedChord.currentAngle;
-            relatedChord.currentAngle=relatedChord.currentAngle+(1/relatedChord.value)*(relatedChord.endAngle-relatedChord.startAngle);
-            newArc.endAngle=relatedChord.currentAngle;
-            newArc.value=1;
-            var arc=d3.svg.arc(d,i).innerRadius(linkRadius).outerRadius(innerRadius);
-            return arc(newArc,i);
+            newArc.startAngle = relatedChord.currentAngle;
+            relatedChord.currentAngle = relatedChord.currentAngle + (1 / relatedChord.value) * (relatedChord.endAngle - relatedChord.startAngle);
+            newArc.endAngle = relatedChord.currentAngle;
+            newArc.value = 1;
+            var arc = d3.svg.arc(d, i).innerRadius(linkRadius).outerRadius(innerRadius);
+            return arc(newArc, i);
         })
-        .on("mouseover", function (d) { node_onMouseOver(d,"LINKHEAD");})
-        .on("mouseout", function (d) {node_onMouseOut(d,"LINKHEAD"); });
+        .on("mouseover", function(d) {
+            node_onMouseOver(d, "LINKHEAD");
+        })
+        .on("mouseout", function(d) {
+            node_onMouseOut(d, "LINKHEAD");
+        });
 
     /* LINKS */
-     enter.append("path")
-        .attr("class","link")
-        .attr("id",function (d) { return "l_" + d.key;})
-        .attr("d", function (d,i) {
-              d.pheno.links=createLinks(d);
-              var diag = diagonal(d.pheno.links[0],i);
-              diag += "L" + String(diagonal(d.pheno.links[1],i)).substr(1);
-              diag += "A" + (linkRadius) + "," + (linkRadius) + " 0 0,0 " +  d.pheno.links[0].source.x + "," + d.pheno.links[0].source.y;
-
-              return diag;
+    enter.append("path")
+        .attr("class", "link")
+        .attr("id", function(d) {
+            return "l_" + d.key;
         })
-        .style("stroke",function(d) {
-            if(d.doc.resultType === "cluster") {
+        .attr("d", function(d, i) {
+            d.pheno.links = createLinks(d);
+            var diag = diagonal(d.pheno.links[0], i);
+            diag += "L" + String(diagonal(d.pheno.links[1], i)).substr(1);
+            diag += "A" + (linkRadius) + "," + (linkRadius) + " 0 0,0 " + d.pheno.links[0].source.x + "," + d.pheno.links[0].source.y;
+
+            return diag;
+        })
+        .style("stroke", function(d) {
+            if (d.doc.resultType === "cluster") {
                 return color(d.pheno.order, 0);
             } else {
                 return color(d.pheno.rootOrder, 0);
             }
-          })
-        .style("stroke-opacity",.07)
-        .style("fill-opacity",0.1)
-        .style("fill",function(d) {
-            if(d.doc.resultType === "cluster") { 
+        })
+        .style("stroke-opacity", .07)
+        .style("fill-opacity", 0.1)
+        .style("fill", function(d) {
+            if (d.doc.resultType === "cluster") {
                 return color(d.pheno.order, d.pheno.depth);
             } else {
                 return color(d.pheno.rootOrder, d.pheno.depth);
             }
         })
-        .on("mouseover", function (d) { node_onMouseOver(d,"LINK");})
-        .on("mouseout", function (d) {node_onMouseOut(d,"LINK"); });
+        .on("mouseover", function(d) {
+            node_onMouseOver(d, "LINK");
+        })
+        .on("mouseout", function(d) {
+            node_onMouseOut(d, "LINK");
+        });
 
 
-        /* NODES */
-     enter.append("g")
-        .attr("class","node")
+    /* NODES */
+    enter.append("g")
+        .attr("class", "node")
         .append("circle")
-        .style("fill",function(d) { 
-            if(d.doc.resultType === "cluster") { 
+        .style("fill", function(d) {
+            if (d.doc.resultType === "cluster") {
                 return color(d.pheno.order, d.pheno.depth);
             } else {
                 return color(d.pheno.rootOrder, d.pheno.depth);
             }
         })
-        .style("fill-opacity",0.2)
-        .style("stroke-opacity",1)
-        .attr("r", function (d) {
-            var relatedNode=nodesById[d.doc.id];
+        .style("fill-opacity", 0.2)
+        .style("stroke-opacity", 1)
+        .attr("r", function(d) {
+            var relatedNode = nodesById[d.doc.id];
             //Decrement Related Node
-            relatedNode.currentAmount=relatedNode.currentAmount;
-            var ratio=((relatedNode.Amount-relatedNode.currentAmount)/relatedNode.Amount);
-            return relatedNode.r*ratio;
+            relatedNode.currentAmount = relatedNode.currentAmount;
+            var ratio = ((relatedNode.Amount - relatedNode.currentAmount) / relatedNode.Amount);
+            return relatedNode.r * ratio;
         })
-        .attr("transform", function (d,i) {
+        .attr("transform", function(d, i) {
             return "translate(" + (d.pheno.links[0].target.x) + "," + (d.pheno.links[0].target.y) + ")";
         })
 
 
-      linkGroup.exit().remove();
+    linkGroup.exit().remove();
 
 
     function createLinks(d) {
-        var target={};
-        var source={};
-        var link={};
-        var link2={};
-        var source2={};
+        var target = {};
+        var source = {};
+        var link = {};
+        var link2 = {};
+        var source2 = {};
 
         var relatedChord;
-        if(d.doc.resultType === "cluster") {
-            relatedChord=chordsById[d.pheno.id];
+        if (d.doc.resultType === "cluster") {
+            relatedChord = chordsById[d.pheno.id];
         } else {
-            relatedChord=chordsById[d.pheno.rootId]; 
+            relatedChord = chordsById[d.pheno.rootId];
         }
 
-        var relatedNode=nodesById[d.doc.id];
-        var r=linkRadius;
-        var currX=(r * Math.cos(relatedChord.currentLinkAngle-1.57079633));
-        var currY=(r * Math.sin(relatedChord.currentLinkAngle-1.57079633));
+        var relatedNode = nodesById[d.doc.id];
+        var r = linkRadius;
+        var currX = (r * Math.cos(relatedChord.currentLinkAngle - 1.57079633));
+        var currY = (r * Math.sin(relatedChord.currentLinkAngle - 1.57079633));
 
-        var a=relatedChord.currentLinkAngle-1.57079633; //-90 degrees
-        relatedChord.currentLinkAngle=relatedChord.currentLinkAngle+(1/*Number(d.TRANSACTION_AMT)*//relatedChord.value)*(relatedChord.endAngle-relatedChord.startAngle);
-        var a1=relatedChord.currentLinkAngle-1.57079633;
+        var a = relatedChord.currentLinkAngle - 1.57079633; //-90 degrees
+        relatedChord.currentLinkAngle = relatedChord.currentLinkAngle + (1 /*Number(d.TRANSACTION_AMT)*/ / relatedChord.value) * (relatedChord.endAngle - relatedChord.startAngle);
+        var a1 = relatedChord.currentLinkAngle - 1.57079633;
 
-        source.x=(r * Math.cos(a));
-        source.y=(r * Math.sin(a));
-        target.x=relatedNode.x-(chordsTranslate-nodesTranslate);
-        target.y=relatedNode.y-(chordsTranslate-nodesTranslate);
-        source2.x=(r * Math.cos(a1));
-        source2.y=(r * Math.sin(a1));
-        link.source=source;
-        link.target=target;
-        link2.source=target;
-        link2.target=source2;
+        source.x = (r * Math.cos(a));
+        source.y = (r * Math.sin(a));
+        target.x = relatedNode.x - (chordsTranslate - nodesTranslate);
+        target.y = relatedNode.y - (chordsTranslate - nodesTranslate);
+        source2.x = (r * Math.cos(a1));
+        source2.y = (r * Math.sin(a1));
+        link.source = source;
+        link.target = target;
+        link2.source = target;
+        link2.target = source2;
 
-        return [link,link2];
+        return [link, link2];
 
     }
     log("updateLinks");
@@ -149,11 +161,11 @@ function updateLinks(links) {
 
 function updateNodes() {
     var node = nodesSvg.selectAll("g.node")
-        .data(docs, function (d,i) {
+        .data(docs, function(d, i) {
             return d.id;
         });
 
-    var enter=node.enter().append("g")
+    var enter = node.enter().append("g")
         .attr("class", "node")
         .attr("transform", function(d) {
             return "translate(" + d.x + "," + d.y + ")";
@@ -164,16 +176,20 @@ function updateNodes() {
             // return d.r * d.value;
             return 0;
         })
-        .style("fill-opacity", function (d) { return (d.depth < 2) ? 0 : 0.40})
-        .style("stroke",function(d) {
+        .style("fill-opacity", function(d) {
+            return (d.depth < 2) ? 0 : 0.40
+        })
+        .style("stroke", function(d) {
             return "black";
         })
-        .style("stroke-opacity", function (d) { return (d.depth < 2) ? 0 : 0.35})
+        .style("stroke-opacity", function(d) {
+            return (d.depth < 2) ? 0 : 0.35
+        })
         .style("fill", function(d) {
-            if(d.resultType === "cluster") { 
+            if (d.resultType === "cluster") {
                 return color(d.order, d.depth);
             } else {
-                if(typeof d.relatedLinks[0] !== "undefined") {
+                if (typeof d.relatedLinks[0] !== "undefined") {
                     return color(d.relatedLinks[0].pheno.rootOrder, d.depth);
                 } else {
                     return "#FFFFFF";
@@ -183,116 +199,126 @@ function updateNodes() {
         });
 
     enter.append("text")
-     .attr("text-anchor", "middle")
-            .text(function(d) { 
-                if (d.resultType === "cluster") {
-                    return cleanName(d.name).substring(0, 10); 
-                } else if (d.resultType === "doc") {
-                    return cleanName(d.medline_journal_title).substring(0, 10);
-                }
-            });
+        .attr("text-anchor", "middle")
+        .text(function(d) {
+            if (d.resultType === "cluster") {
+                return cleanName(d.name).substring(0, 10);
+            } else if (d.resultType === "doc") {
+                return cleanName(d.medline_journal_title).substring(0, 10);
+            }
+        });
 
-    var g=enter.append("g")
-        .attr("id", function(d) { 
-            return "d_" + d.id; 
+    var g = enter.append("g")
+        .attr("id", function(d) {
+            return "d_" + d.id;
         })
         // .attr("r", function(d) { return d.r * d.value;})
         .style("opacity", 0);
 
-        g.append("circle")
-        .attr("r", function(d) { 
+    g.append("circle")
+        .attr("r", function(d) {
             return 0;
             // return d.r  * d.value /*+2*/;
         })
         .attr("class", "nodeCircle1")
         .style("fill-opacity", 0)
         .style("stroke", "#FFF")
-        .style("stroke-width",2.5)
-        .style("stroke-opacity",.7);
+        .style("stroke-width", 2.5)
+        .style("stroke-opacity", .7);
 
-        g.append("circle")
-        .attr("r", function(d) { 
-            return 0 /* *d.value */;
+    g.append("circle")
+        .attr("r", function(d) {
+            return 0 /* *d.value */ ;
         })
         .attr("class", "nodeCircle2")
         .style("fill-opacity", 0)
         .style("stroke", "#000")
-        .style("stroke-width",1.5)
-        .style("stroke-opacity",1)
-        .on("click", function(d){
+        .style("stroke-width", 1.5)
+        .style("stroke-opacity", 1)
+        .on("click", function(d) {
             selectNode(d);
         })
         .on("contextmenu", function(d) {
             d3.event.preventDefault();
             unselectNode(d);
         })
-        .on("mouseover", function (d) {node_onMouseOver(d,"DOC"); })
-        .on("mouseout", function (d) {node_onMouseOut(d,"DOC"); });
+        .on("mouseover", function(d) {
+            node_onMouseOver(d, "DOC");
+        })
+        .on("mouseout", function(d) {
+            node_onMouseOut(d, "DOC");
+        });
 
     var nodeUpdate = node.transition().duration(500);
 
     nodeUpdate.selectAll("circle")
-        .attr("r", function (d) {
-            return d.r /** d.value*/;
+        .attr("r", function(d) {
+            return d.r /** d.value*/ ;
         });
 
-    node.exit().remove().transition(500).style("opacity",0);
+    node.exit().remove().transition(500).style("opacity", 0);
 
     log("updateBubble()");
 }
 
 function updateChords() {
     var arcGroup = chordsSvg.selectAll("g.arc")
-        .data(chords, function (d) {
+        .data(chords, function(d) {
             return d.label;
         });
 
-    var enter =arcGroup.enter().append("g").attr("class","arc");
+    var enter = arcGroup.enter().append("g").attr("class", "arc");
 
     enter.append("text")
-        .attr("class","chord")
+        .attr("class", "chord")
         .attr("dy", ".35em")
-        .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
-        .attr("transform", function(d) {
-            return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-                + "translate(" + (innerRadius + 6) + ")"
-                + (d.angle > Math.PI ? "rotate(180)" : "");
+        .attr("text-anchor", function(d) {
+            return d.angle > Math.PI ? "end" : null;
         })
-        .text(function(d) { 
+        .attr("transform", function(d) {
+            return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")" + "translate(" + (innerRadius + 6) + ")" + (d.angle > Math.PI ? "rotate(180)" : "");
+        })
+        .text(function(d) {
             return trimLabel(phenotypeRootsById["phenotypeRoot_" + d.label].name);
         })
-        .on("mouseover", function (d) { node_onMouseOver(d,"ROOT");})
-        .on("mouseout", function (d) {node_onMouseOut(d,"ROOT"); });
+        .on("mouseover", function(d) {
+            node_onMouseOver(d, "ROOT");
+        })
+        .on("mouseout", function(d) {
+            node_onMouseOut(d, "ROOT");
+        });
 
     arcGroup.transition()
         .select("text")
-        .attr("id",function (d) { return "t_"+ d.label;})
+        .attr("id", function(d) {
+            return "t_" + d.label;
+        })
         .attr("dy", ".35em")
-        .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+        .attr("text-anchor", function(d) {
+            return d.angle > Math.PI ? "end" : null;
+        })
         .attr("transform", function(d) {
-            return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-                + "translate(" + (innerRadius + 6) + ")"
-                + (d.angle > Math.PI ? "rotate(180)" : "");
+            return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")" + "translate(" + (innerRadius + 6) + ")" + (d.angle > Math.PI ? "rotate(180)" : "");
         })
         .style("fill", "#777")
-        .text(function(d) { 
-             return trimLabel(cleanName(phenotypeRootsById["phenotypeRoot_" + d.label].name));
+        .text(function(d) {
+            return trimLabel(cleanName(phenotypeRootsById["phenotypeRoot_" + d.label].name));
         });
 
-     enter.append("path")
-        .style("fill-opacity",0)
+    enter.append("path")
+        .style("fill-opacity", 0)
         .style("stroke", "#555")
-        .style("stroke-opacity",0.4)
-        .attr("d", function (d,i) {
-            var arc=d3.svg.arc(d,i).innerRadius(innerRadius-20).outerRadius(innerRadius);
-            return arc(d.source,i);
+        .style("stroke-opacity", 0.4)
+        .attr("d", function(d, i) {
+            var arc = d3.svg.arc(d, i).innerRadius(innerRadius - 20).outerRadius(innerRadius);
+            return arc(d.source, i);
         });
 
     arcGroup.transition()
         .select("path")
-        .attr("d", function (d,i) {
-            var arc=d3.svg.arc(d,i).innerRadius(innerRadius-20).outerRadius(innerRadius);
-            return arc(d.source,i);
+        .attr("d", function(d, i) {
+            var arc = d3.svg.arc(d, i).innerRadius(innerRadius - 20).outerRadius(innerRadius);
+            return arc(d.source, i);
         });
 
     arcGroup.exit().remove();
@@ -302,17 +328,16 @@ function updateChords() {
 
 function trimLabel(label) {
     if (label.length > 25) {
-        return String(label).substr(0,25) + "...";
-    }
-    else {
+        return String(label).substr(0, 25) + "...";
+    } else {
         return label;
     }
 }
 
 function getChordColor(i) {
-    var country=nameByIndex[i];
-    if (colorByName[country]==undefined) {
-        colorByName[country]=fills(i);
+    var country = nameByIndex[i];
+    if (colorByName[country] == undefined) {
+        colorByName[country] = fills(i);
     }
 
     return colorByName[country];
@@ -561,8 +586,9 @@ draw = function(svg) {
         .attr("hpid", function(d) {
             return d.id;
         })
-        .style("fill", function(d){
-            return color(d.order, 0)})
+        .style("fill", function(d) {
+            return color(d.order, 0)
+        })
         .on("click", function(d) {
             depth = 0;
             treeActive = true;
@@ -622,113 +648,113 @@ draw = function(svg) {
     // attempt to create children boxes.
     var locData = dataPheno;
     for (var row = 0; row < locData.length; row++) {
-        if(typeof locData[row].searches !== "undefined") {
-        if (locData[row].searches.length > 0) {
-            var barChildren = svg.selectAll(locData[row].name) // the bar which will hold the phenotype boxes.
-                .data(locData[row].searches)
-                .enter().append("g")
-                .attr("transform", function(d, i) {
-                    return "translate(" + 0 + ", " + 0 + ")";
-                });
-
-            for (var count = 0; count < locData[row].searches.length; count++) {
-                var tempName = locData[row].searches[count].name;
-
-                barChildren.append("rect") // top majority of phenotype box
-                .attr("y", function(d) {
-                    return (locData[row].order * (sqheight + sqspacing)) + verticalPadding;
-                })
-                    .attr("x", function(d) {
-                        return ((1 + sqwidth) * (count + sqspacing) + horizontalPadding);
-                    })
-                    .attr("width", sqwidth)
-                    .attr("height", sqheight)
-                    .attr("id", count)
-                    .attr("class", "childPheno")
-                    .attr("row", row)
-                    .attr("hpid", function(d) {
-                        return d.id;
-                    })
-                    .style("fill", function(d){
-                        return color(locData[row].order, locData[row].searches[count].depth);
-                    })
-                    .style("stroke-width", "1px")
-                    .style("stroke", cursor)
-                    .on("click", function(d) { // for now as the mouseover issues need to be addressed
-                        // treeActive = true;
-                        // var tempColumn = d3.select(this).attr("id");
-                        // var tempRow = d3.select(this).attr("row"); 
-                        // cursorData = d;
-
-                        // if (cursorElement != null) {
-                        //     cursorElement["element"].id = "";
-                        // }
-                        // this.id = "cursor";
-                        // cursorElement = {"element":this, "location":"list"};
-
-                        // var rootPhenos = d3.selectAll(".rootPheno"); // CSS adjustments
-                        // for(var i = 0; i < rootPhenos[0].length; i++) {
-                        //    rootPhenos[0][i].style["stroke"] = "";
-                        //    rootPhenos[0][i].style["opacity"] = 0.6;
-                        // }
-
-                        // var childPhenos = d3.selectAll(".childPheno"); // CSS adjustments
-                        // for(var i = 0; i < childPhenos[0].length; i++) {
-                        //     childPhenos[0][i].style["opacity"] = 0;
-                        //     childPhenos[0][i].nextSibling.style["opacity"] = 0;
-                        // }
-
-                        // this.style["stroke"] = "grey";
-                        // this.style["opacity"] = 1.0;
-                        // this.nextSibling.style["opacity"] = 1.0;
-
-                        // pheno = data[tempRow].children[tempColumn];
-                        // prepData(pheno, data, tempRow);
-                    })
-                    .on("contextmenu", function(d) {
-                        d3.event.preventDefault();
-                        var tempColumn = d3.select(this).attr("id");
-                        var tempRow = d3.select(this).attr("row");
-                        removeChild(tempRow, tempColumn);
-                    })
-                    .on("mouseover", function(d) { // tool tip 
-                        var tempColumn = d3.select(this).attr("id");
-                        var tempName = "";
-                        var tempRow = d3.select(this).attr("row");
-                        if (typeof dataPheno[tempRow] !== "undefined" &&
-                            typeof dataPheno[tempRow].searches[tempColumn] !== "undefined") {
-                            tempName = dataPheno[tempRow].searches[tempColumn] /*.name*/ ;
-                        }
-
-                        div.transition()
-                            .duration(200)
-                            .style("opacity", 10);
-                        div.html("<h3>" + generateBreadCrumb(tempName) + "</h3><br/>") // issue only remembers last name
-                        .style("left", 100 + "px") // horizontal
-                        .style("top", 50 + "px"); // vertical
-                    })
-                    .on("mouseout", function(d) {
-                        div.transition()
-                            .duration(200)
-                            .style("opacity", 0);
+        if (typeof locData[row].searches !== "undefined") {
+            if (locData[row].searches.length > 0) {
+                var barChildren = svg.selectAll(locData[row].name) // the bar which will hold the phenotype boxes.
+                    .data(locData[row].searches)
+                    .enter().append("g")
+                    .attr("transform", function(d, i) {
+                        return "translate(" + 0 + ", " + 0 + ")";
                     });
 
-                barChildren.append("text") // phenotype name
-                .attr("y", function(d) {
-                    return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2) + sqspacing + verticalPadding;
-                })
-                    .attr("x", 51 * (count + 1) + horizontalPadding + 55 + (count * 20)) // hardcoded until better option is found
-                .attr("dy", ".35em")
-                    .style("font-size", function(d) {
-                        return 0.15 * sqwidth + "px";
+                for (var count = 0; count < locData[row].searches.length; count++) {
+                    var tempName = locData[row].searches[count].name;
+
+                    barChildren.append("rect") // top majority of phenotype box
+                    .attr("y", function(d) {
+                        return (locData[row].order * (sqheight + sqspacing)) + verticalPadding;
                     })
-                    .style("text-anchor", "middle")
-                    .attr("pointer-events", "none")
-                    .text(function(d) {
-                        return cleanName(locData[row].searches[count].name).substring(0, 10);
-                    });
+                        .attr("x", function(d) {
+                            return ((1 + sqwidth) * (count + sqspacing) + horizontalPadding);
+                        })
+                        .attr("width", sqwidth)
+                        .attr("height", sqheight)
+                        .attr("id", count)
+                        .attr("class", "childPheno")
+                        .attr("row", row)
+                        .attr("hpid", function(d) {
+                            return d.id;
+                        })
+                        .style("fill", function(d) {
+                            return color(locData[row].order, locData[row].searches[count].depth);
+                        })
+                        .style("stroke-width", "1px")
+                        .style("stroke", cursor)
+                        .on("click", function(d) { // for now as the mouseover issues need to be addressed
+                            // treeActive = true;
+                            // var tempColumn = d3.select(this).attr("id");
+                            // var tempRow = d3.select(this).attr("row"); 
+                            // cursorData = d;
+
+                            // if (cursorElement != null) {
+                            //     cursorElement["element"].id = "";
+                            // }
+                            // this.id = "cursor";
+                            // cursorElement = {"element":this, "location":"list"};
+
+                            // var rootPhenos = d3.selectAll(".rootPheno"); // CSS adjustments
+                            // for(var i = 0; i < rootPhenos[0].length; i++) {
+                            //    rootPhenos[0][i].style["stroke"] = "";
+                            //    rootPhenos[0][i].style["opacity"] = 0.6;
+                            // }
+
+                            // var childPhenos = d3.selectAll(".childPheno"); // CSS adjustments
+                            // for(var i = 0; i < childPhenos[0].length; i++) {
+                            //     childPhenos[0][i].style["opacity"] = 0;
+                            //     childPhenos[0][i].nextSibling.style["opacity"] = 0;
+                            // }
+
+                            // this.style["stroke"] = "grey";
+                            // this.style["opacity"] = 1.0;
+                            // this.nextSibling.style["opacity"] = 1.0;
+
+                            // pheno = data[tempRow].children[tempColumn];
+                            // prepData(pheno, data, tempRow);
+                        })
+                        .on("contextmenu", function(d) {
+                            d3.event.preventDefault();
+                            var tempColumn = d3.select(this).attr("id");
+                            var tempRow = d3.select(this).attr("row");
+                            removeChild(tempRow, tempColumn);
+                        })
+                        .on("mouseover", function(d) { // tool tip 
+                            var tempColumn = d3.select(this).attr("id");
+                            var tempName = "";
+                            var tempRow = d3.select(this).attr("row");
+                            if (typeof dataPheno[tempRow] !== "undefined" &&
+                                typeof dataPheno[tempRow].searches[tempColumn] !== "undefined") {
+                                tempName = dataPheno[tempRow].searches[tempColumn] /*.name*/ ;
+                            }
+
+                            div.transition()
+                                .duration(200)
+                                .style("opacity", 10);
+                            div.html("<h3>" + generateBreadCrumb(tempName) + "</h3><br/>") // issue only remembers last name
+                            .style("left", 100 + "px") // horizontal
+                            .style("top", 50 + "px"); // vertical
+                        })
+                        .on("mouseout", function(d) {
+                            div.transition()
+                                .duration(200)
+                                .style("opacity", 0);
+                        });
+
+                    barChildren.append("text") // phenotype name
+                    .attr("y", function(d) {
+                        return ((locData[row].order) * (sqheight + sqspacing) + sqheight / 2) + sqspacing + verticalPadding;
+                    })
+                        .attr("x", 51 * (count + 1) + horizontalPadding + 55 + (count * 20)) // hardcoded until better option is found
+                    .attr("dy", ".35em")
+                        .style("font-size", function(d) {
+                            return 0.15 * sqwidth + "px";
+                        })
+                        .style("text-anchor", "middle")
+                        .attr("pointer-events", "none")
+                        .text(function(d) {
+                            return cleanName(locData[row].searches[count].name).substring(0, 10);
+                        });
+                }
             }
-        }
         }
     }
 }

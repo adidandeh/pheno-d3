@@ -1,7 +1,7 @@
-function node_onMouseOver(d,type) {
-    if (type=="DOC") {
-        if(d.depth < 2) return;
-        if(d.resultType === "cluster") {
+function node_onMouseOver(d, type) {
+    if (type == "DOC") {
+        if (d.depth < 2) return;
+        if (d.resultType === "cluster") {
             toolTip.transition()
                 .duration(200)
                 .style("opacity", ".9");
@@ -10,13 +10,13 @@ function node_onMouseOver(d,type) {
             header.text("Number of Documents: " + d.value);
 
             header2.text(d.id);
-            toolTip.style("left", (d3.event.pageX+15) + "px")
-                .style("top", (d3.event.pageY-75) + "px")
+            toolTip.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px")
                 .style("height", function() {
                     return 100 + "px";
                 });
 
-            highlightLinks(documentsById["documents_"+d.id],true,type);
+            highlightLinks(documentsById["documents_" + d.id], true, type);
         } else {
             toolTip.transition()
                 .duration(200)
@@ -26,7 +26,7 @@ function node_onMouseOver(d,type) {
             header.text(d.medline_article_title);
             tempPheno = "";
 
-            if(typeof d.phenotypes != "undefined") {
+            if (typeof d.phenotypes != "undefined") {
                 d.phenotypes.forEach(function(p) {
                     tempPheno += p + ", ";
                 });
@@ -35,24 +35,23 @@ function node_onMouseOver(d,type) {
             }
 
             header2.text("phenotypes: " + tempPheno);
-            toolTip.style("left", (d3.event.pageX+15) + "px")
-                .style("top", (d3.event.pageY-75) + "px")
+            toolTip.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px")
                 .style("height", function() {
-                    if (d.medline_article_title.length > 25*2) {
-                        tempHeight += (d.medline_article_title.length/31*20);
-                    } 
+                    if (d.medline_article_title.length > 25 * 2) {
+                        tempHeight += (d.medline_article_title.length / 31 * 20);
+                    }
 
                     if (d.medline_journal_title.length > 30) {
-                        tempHeight += (d.medline_journal_title.length/30*10)
+                        tempHeight += (d.medline_journal_title.length / 30 * 10)
                     }
                     return tempHeight + "px";
                 });
 
-            highlightLinks(documentsById["documents_"+d.id],true,type);
+            highlightLinks(documentsById["documents_" + d.id], true, type);
         }
-    } 
-    else if (type=="LINKHEAD") {
-        if(d.doc.resultType === "cluster") {
+    } else if (type == "LINKHEAD") {
+        if (d.doc.resultType === "cluster") {
             toolTip.transition()
                 .duration(200)
                 .style("opacity", ".9");
@@ -61,10 +60,10 @@ function node_onMouseOver(d,type) {
 
             header2.text(d.doc.id);
 
-            toolTip.style("left", (d3.event.pageX+15) + "px")
-                .style("top", (d3.event.pageY-75) + "px")
-                .style("height",100+"px");
-            highlightLink(d,true); 
+            toolTip.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px")
+                .style("height", 100 + "px");
+            highlightLink(d, true);
         } else {
             toolTip.transition()
                 .duration(200)
@@ -73,17 +72,16 @@ function node_onMouseOver(d,type) {
             header.text("Document: " + d.doc.medline_article_title);
             header2.text(d.pheno.defn);
 
-            toolTip.style("left", (d3.event.pageX+15) + "px")
-                .style("top", (d3.event.pageY-75) + "px")
-                .style("height",200+"px");
-            highlightLink(d,true);     
+            toolTip.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px")
+                .style("height", 200 + "px");
+            highlightLink(d, true);
         }
-    }
-    else if (type=="LINK") {
+    } else if (type == "LINK") {
         /*
         Highlight chord stroke
          */
-        if(d.doc.resultType === "cluster") {
+        if (d.doc.resultType === "cluster") {
             toolTip.transition()
                 .duration(200)
                 .style("opacity", ".9");
@@ -92,10 +90,10 @@ function node_onMouseOver(d,type) {
 
             header2.text(d.doc.id);
 
-            toolTip.style("left", (d3.event.pageX+15) + "px")
-                .style("top", (d3.event.pageY-75) + "px")
-                .style("height",100+"px");
-            highlightLink(d,true); 
+            toolTip.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px")
+                .style("height", 100 + "px");
+            highlightLink(d, true);
         } else {
             toolTip.transition()
                 .duration(200)
@@ -104,13 +102,12 @@ function node_onMouseOver(d,type) {
             header.text("Document: " + d.doc.medline_article_title);
             header2.text(d.pheno.defn);
 
-            toolTip.style("left", (d3.event.pageX+15) + "px")
-                .style("top", (d3.event.pageY-75) + "px")
-                .style("height",200+"px");
-            highlightLink(d,true);     
+            toolTip.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px")
+                .style("height", 200 + "px");
+            highlightLink(d, true);
         }
-    }
-    else if (type=="ROOT") {
+    } else if (type == "ROOT") {
         /*
         highlight all contributions and all candidates
          */
@@ -120,25 +117,22 @@ function node_onMouseOver(d,type) {
         header1.text("Phenotype Root");
         header.text(phenotypeRootsById["phenotypeRoot_" + d.label].name);
         header2.text("Number of Children: " + phenotypeRootsById["phenotypeRoot_" + d.label].children.length);
-        toolTip.style("left", (d3.event.pageX+15) + "px")
-            .style("top", (d3.event.pageY-75) + "px")
-            .style("height","110px");
-        highlightLinks(chordsById[d.label],true,type);
+        toolTip.style("left", (d3.event.pageX + 15) + "px")
+            .style("top", (d3.event.pageY - 75) + "px")
+            .style("height", "110px");
+        highlightLinks(chordsById[d.label], true, type);
     }
 }
 
-function node_onMouseOut(d,type) {
-    if (type=="DOC") {
-        highlightLinks(documentsById["documents_"+d.id],false,type);
-    }
-    else if (type=="LINKHEAD") {
-        highlightLink(d,false);
-    }
-    else if (type=="LINK") {
-        highlightLink(d,false);
-    }
-    else if (type=="ROOT") {
-        highlightLinks(chordsById[d.label],false,type);
+function node_onMouseOut(d, type) {
+    if (type == "DOC") {
+        highlightLinks(documentsById["documents_" + d.id], false, type);
+    } else if (type == "LINKHEAD") {
+        highlightLink(d, false);
+    } else if (type == "LINK") {
+        highlightLink(d, false);
+    } else if (type == "ROOT") {
+        highlightLinks(chordsById[d.label], false, type);
     }
 
     toolTip.transition()
@@ -146,46 +140,46 @@ function node_onMouseOut(d,type) {
         .style("opacity", "0");
 }
 
-function highlightLink(g,on,type) {
-    var opacity=((on==true) ? .6 : .1);
-    var link=d3.select(document.getElementById("l_" + g.key));
-    link.transition((on==true) ? 150:550)
-        .style("fill-opacity",opacity)
-        .style("stroke-opacity",opacity);
+function highlightLink(g, on, type) {
+    var opacity = ((on == true) ? .6 : .1);
+    var link = d3.select(document.getElementById("l_" + g.key));
+    link.transition((on == true) ? 150 : 550)
+        .style("fill-opacity", opacity)
+        .style("stroke-opacity", opacity);
 
-    var arc=d3.select(document.getElementById("a_" + g.key));
-    arc.transition().style("fill-opacity",(on==true) ? opacity :.2);
+    var arc = d3.select(document.getElementById("a_" + g.key));
+    arc.transition().style("fill-opacity", (on == true) ? opacity : .2);
 
-    var circ=d3.select(document.getElementById("d_" + g.doc.id));
-    circ.transition((on==true) ? 150:550)
-    .attr("r", function (d) {
-        return d.r;
-    })
-    .style("opacity",((on==true) ?1 :0));
+    var circ = d3.select(document.getElementById("d_" + g.doc.id));
+    circ.transition((on == true) ? 150 : 550)
+        .attr("r", function(d) {
+            return d.r;
+        })
+        .style("opacity", ((on == true) ? 1 : 0));
 
-    var text=d3.select(document.getElementById("t_" + g.id));
-    text.transition((on==true) ? 0:550)
-        .style("fill",(on==true) ? "#000" : "#777")
-        .style("font-size",(on==true) ? "10px" : "8px")
-        .style("stroke-width",((on==true) ? 2 : 0));
+    var text = d3.select(document.getElementById("t_" + g.id));
+    text.transition((on == true) ? 0 : 550)
+        .style("fill", (on == true) ? "#000" : "#777")
+        .style("font-size", (on == true) ? "10px" : "8px")
+        .style("stroke-width", ((on == true) ? 2 : 0));
 }
 
-function highlightLinks(d,on,type) {
-    if(typeof d != "undefined" || typeof d.relatedLinks != "undefined"){
-        d.relatedLinks.forEach(function (d) {
-            highlightLink(d,on, type);
+function highlightLinks(d, on, type) {
+    if (typeof d != "undefined" || typeof d.relatedLinks != "undefined") {
+        d.relatedLinks.forEach(function(d) {
+            highlightLink(d, on, type);
         })
     }
 }
 
 selectNode = function(d) { // TODO: Actually do something.
     position = selectedNodes.indexOf(d);
-    if(position === -1) {
+    if (position === -1) {
         selectedNodes.push(d);
-        var circ=d3.select(document.getElementById("d_" + d.id));
+        var circ = d3.select(document.getElementById("d_" + d.id));
         circ.style("opacity", 1)
-            .attr("r", function (d) {
-                return d.r /* * d.value */;
+            .attr("r", function(d) {
+                return d.r /* * d.value */ ;
             });
     }
     log("selectNode");
@@ -193,17 +187,17 @@ selectNode = function(d) { // TODO: Actually do something.
 
 unselectNode = function(d) {
     position = selectedNodes.indexOf(d);
-    if(position !== -1) {
+    if (position !== -1) {
         selectedNodes.splice(position, 1);
-        var circ=d3.select(document.getElementById("d_" + d.id));
+        var circ = d3.select(document.getElementById("d_" + d.id));
         circ.style("opacity", 0);
     }
     log("unselectNode");
 }
 
-resetSelectedNodes = function(){
-    selectedNodes.forEach(function(d){
-        var circ=d3.select(document.getElementById("d_" + d.id));
+resetSelectedNodes = function() {
+    selectedNodes.forEach(function(d) {
+        var circ = d3.select(document.getElementById("d_" + d.id));
         circ.style("opacity", 0);
     });
     selectedNodes = [];
@@ -349,12 +343,12 @@ clearPhenotypes = function() {
     documents = [];
     docs = [];
     nodes = [];
-    documentsById={},
-    phenotypeRootsById={},
-    chordsById={},
-    nodesById={},
+    documentsById = {},
+    phenotypeRootsById = {},
+    chordsById = {},
+    nodesById = {},
     searchLinks = [];
-    renderLinks=[];
+    renderLinks = [];
     fetchData();
     // updateChart();
     // draw(svgBoxes, data);
@@ -364,11 +358,11 @@ searchPhenotypes = function() {
     documents = [];
     docs = [];
     searchLinks = [];
-    documentsById={},
-    phenotypeRootsById={},
-    chordsById={},
-    nodesById={},
-    renderLinks=[];
+    documentsById = {},
+    phenotypeRootsById = {},
+    chordsById = {},
+    nodesById = {},
+    renderLinks = [];
     nodes = [];
     nodesSvg.selectAll("g.node").remove();
     linksSvg.selectAll("g.links").remove();
@@ -405,7 +399,7 @@ removeChild = function(row, column) {
     found = false;
 
     for (var i = 0; i < dataPheno.length; i++) {
-        if(dataPheno[i].searches.length > 0) {
+        if (dataPheno[i].searches.length > 0) {
             found = true;
             break;
         }

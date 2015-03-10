@@ -7,7 +7,7 @@ var activerow = -1,
     colorArr = [
         "#6b9799", "#96f", "#75525f",
         "#6bbaff", "#e6bea1", "#d9628d",
-        "#4d57ac", "#8d3f5c", "#607334", 
+        "#4d57ac", "#8d3f5c", "#607334",
         "#8c613f", "#aacc5c", "#b25ccc",
         "#807438", "#ff7373", "#8c3f3f",
         "#b35823", "#5ccc9f", "#47ff66",
@@ -36,36 +36,36 @@ var activerow = -1,
     verticalPadding = 10,
     horizontalPadding = 0;
 
-var documents=[], // data
-    phenotypeRoots=[], // data
-    total_docs=0,
-    searchedPhenotypes =[],
+var documents = [], // data
+    phenotypeRoots = [], // data
+    total_docs = 0,
+    searchedPhenotypes = [],
     searchLinks = [],
     selectedNodes = [],
 
-    documentsById={},
-    phenotypeRootsById={},
-    chordsById={},
-    nodesById={},
-    chordLinkCount={},
+    documentsById = {},
+    phenotypeRootsById = {},
+    chordsById = {},
+    nodesById = {},
+    chordLinkCount = {},
 
-    chordCount=20,
-    pText=null,
-    pChords=null,
-    nodes=[],
-    renderLinks=[],
-    colorByName={},
-    delay=2;
+    chordCount = 20,
+    pText = null,
+    pChords = null,
+    nodes = [],
+    renderLinks = [],
+    colorByName = {},
+    delay = 2;
 
-var maxWidth=Math.max(600,Math.min(screen.height,screen.width)-250);
+var maxWidth = Math.max(600, Math.min(screen.height, screen.width) - 250);
 
 var outerRadius = maxWidth / 2,
     innerRadius = outerRadius - 120,
-    bubbleRadius=innerRadius-50,
-    linkRadius=innerRadius-20,
+    bubbleRadius = innerRadius - 50,
+    linkRadius = innerRadius - 20,
     chartTranslateX = 0,
-    nodesTranslate=(outerRadius-innerRadius) + (innerRadius-bubbleRadius) + chartTranslateX,
-    chordsTranslate=(outerRadius + chartTranslateX);
+    nodesTranslate = (outerRadius - innerRadius) + (innerRadius - bubbleRadius) + chartTranslateX,
+    chordsTranslate = (outerRadius + chartTranslateX);
 
 var svgBoxes = d3.select("#phenobar").append("svg")
     .attr("width", 800)
@@ -76,30 +76,30 @@ var svg = d3.select("#phenobar").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-var chordsSvg=svg.append("g")
-    .attr("class","chords")
+var chordsSvg = svg.append("g")
+    .attr("class", "chords")
     .attr("transform", "translate(" + chordsTranslate + "," + chordsTranslate + ")");
 
-var linksSvg=svg.append("g")
-    .attr("class","links")
+var linksSvg = svg.append("g")
+    .attr("class", "links")
     .attr("transform", "translate(" + chordsTranslate + "," + chordsTranslate + ")")
 
-var highlightSvg=svg.append("g")
+var highlightSvg = svg.append("g")
     .attr("transform", "translate(" + chordsTranslate + "," + chordsTranslate + ")")
-    .style("opacity",0);
+    .style("opacity", 0);
 
-var highlightLink=highlightSvg.append("path");
+var highlightLink = highlightSvg.append("path");
 
-var nodesSvg=svg.append("g")
-    .attr("class","nodes")
+var nodesSvg = svg.append("g")
+    .attr("class", "nodes")
     .attr("transform", "translate(" + nodesTranslate + "," + nodesTranslate + ")");
 
-  gScale = d3.scale.linear()
-                     .domain([0, 10])
-                     .range([0.2, 350]);
+gScale = d3.scale.linear()
+    .domain([0, 10])
+    .range([0.2, 350]);
 
- var bubble = d3.layout.pack()
-    .size([bubbleRadius*2, bubbleRadius*2])
+var bubble = d3.layout.pack()
+    .size([bubbleRadius * 2, bubbleRadius * 2])
     .sort(function(a, b) { // http://stackoverflow.com/a/24379148
         return -(a.value - b.value);
     })
@@ -124,10 +124,10 @@ var header = d3.select(document.getElementById("head"));
 var header1 = d3.select(document.getElementById("header1"));
 var header2 = d3.select(document.getElementById("header2"));
 
-var fills= d3.scale.ordinal().range(["#00AC6B","#20815D","#007046","#35D699","#60D6A9"]);
+var fills = d3.scale.ordinal().range(["#00AC6B", "#20815D", "#007046", "#35D699", "#60D6A9"]);
 var linkGroup;
 
-var buf_indexByName={},
+var buf_indexByName = {},
     indexByName = {},
     nameByIndex = {},
     labels = [],
@@ -173,24 +173,25 @@ function colorLuminance(hex, lum) {
     // validate hex string
     hex = String(hex).replace(/[^0-9a-f]/gi, '');
     if (hex.length < 6) {
-        hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
     }
     lum = lum || 0;
 
-    lum = lum/10;
+    lum = lum / 10;
     // convert to decimal and change luminosity
-    var rgb = "#", c, i;
+    var rgb = "#",
+        c, i;
     for (i = 0; i < 3; i++) {
-        c = parseInt(hex.substr(i*2,2), 16);
+        c = parseInt(hex.substr(i * 2, 2), 16);
         c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
-        rgb += ("00"+c).substr(c.length);
+        rgb += ("00" + c).substr(c.length);
     }
 
     return rgb;
 }
 
 color = function(rootOrder, weightDiff) {
-   return colorLuminance(colorArr[rootOrder], weightDiff);
+    return colorLuminance(colorArr[rootOrder], weightDiff);
 }
 
 
