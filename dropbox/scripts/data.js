@@ -191,65 +191,96 @@ searchSolr = function() {
 
     var searchmax = 100;
     var searchString = "";
-    cleanedSearches = [];
+    var cleanedSearches = [];
     var re = /\s/g;
 
-    if(searchedPhenotypes.length > 0) {
+    if(searchedPhenotypes.length > 0) { // if there's searched phenotypes.
         searchedPhenotypes.forEach(function(d){
             searchTerm = d.name;
             searchTerm = searchTerm.replace(re, "+");
             cleanedSearches.push(searchTerm);
         });
 
-        var first = true;
-        cleanedSearches.forEach(function(d){
-            if(!first) { 
-                searchString += "+AND+";
-            } else {
-                first = false;
-            }
+        // create search queries.
+        joinedSearches = [];
 
-            searchString += '"' + d + '"';
-        });
+        // http://codereview.stackexchange.com/a/39747
+        function powerSet(list){
+            var set = [],
+                listSize = list.length,
+                combinationsCount = (1 << listSize);
 
-        var search = {
-             core: 'medline-citations',
-             handler: "select",
-             searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
-             query: searchString,
-             years: JSON.stringify({min: 1900, max: 2015}),
-             start: 0,
-             rows: searchmax
-        };
+            for (var i = 1; i < combinationsCount ; i++ , set.push(combination) )
+                for (var j=0, combination = [];j<listSize;j++)
+                    if ((i & (1 << j)))
+                        combination.push(list[j]);
+            return set;
+        }
 
-        return $.ajax({ // TODO: Slowing down everything.
-          url: url,
-          type:"get", //send it through get method
-          data:search,
-          success: function(result) {
-            var result = jQuery.parseJSON(result);
-            log("searchSolr finish");
-            documents = result.response.docs;
+        joinedSearches = powerSet(cleanedSearches);
+        searchCase = function (queries) {
+            var first = true;
+            searchString = "";
+            query = queries.pop();
+            query.forEach(function (d) {
+                if(!first) { 
+                    searchString += "+AND+";
+                } else {
+                    first = false;
+                }
+                searchString += '"' + d + '"';           
+            });
 
-            for (var i=0; i < documents.length; i++) {
-                var d = documents[i];
-                // d.value = d.phenotypes.length;
-                d.value = 1;
-                d.resultType = "doc";
-                documentsById["documents_" + documents[i].id]=documents[i];
-                total_docs+=1; 
-            }
+            var search = {
+                 core: 'medline-citations',
+                 handler: "select",
+                 searchFields: JSON.stringify(['phenotypes']), //stringify the array so it is sent properly
+                 query: searchString,
+                 years: JSON.stringify({min: 1900, max: 2015}),
+                 start: 0,
+                 rows: searchmax
+            };
 
-            dataInit();
-            main();
-          },
-          error: function(xhr) {
-            log("error searchSolr");
-            documents = [];
-            dataInit();
-            main();
-          }
-        });
+            return $.ajax({ // TODO: Slowing down everything.
+              url: url,
+              type:"get", //send it through get method
+              data:search,
+              success: function(result) {
+                var result = jQuery.parseJSON(result);
+                log("searchSolr finish");
+                documents = result.response.docs;
+
+                for (var i=0; i < documents.length; i++) {
+                    var d = documents[i];
+                    if(typeof d.phenotypes !== "undefined") {
+                        d.value = d.phenotypes.length;
+                    } else {
+                        d.value = 0.5;
+                    }
+
+                    d.resultType = "doc";
+                    documentsById["documents_" + documents[i].id]=documents[i];
+                    total_docs+=1;
+                    searchmax--; 
+                }
+
+                if(searchmax > 0 && queries.length > 0) {
+                    searchCase(queries);
+                } else { // if searchmax = 0, or there's no more reduction left
+                    dataInit();
+                    main();
+                } 
+              },
+              error: function(xhr) {
+                log("error searchSolr");
+                documents = [];
+                dataInit();
+                main();
+              }
+            });
+        } 
+
+        searchCase(joinedSearches);
     } else { // no searched phenotypes
         searchmax = 0;
         var phenoRootNum = [];

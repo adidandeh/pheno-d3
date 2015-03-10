@@ -173,7 +173,11 @@ function updateNodes() {
             if(d.resultType === "cluster") { 
                 return color(d.order, d.depth);
             } else {
-                return color(d.relatedLinks[0].pheno.rootOrder, d.depth);
+                if(typeof d.relatedLinks[0] !== "undefined") {
+                    return color(d.relatedLinks[0].pheno.rootOrder, d.depth);
+                } else {
+                    return "#FFFFFF";
+                }
             }
             // return "FFFFFF";
         });

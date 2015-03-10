@@ -100,6 +100,9 @@ var nodesSvg=svg.append("g")
 
  var bubble = d3.layout.pack()
     .size([bubbleRadius*2, bubbleRadius*2])
+    .sort(function(a, b) { // http://stackoverflow.com/a/24379148
+        return -(a.value - b.value);
+    })
     .padding(1.5);
 
 var chord = d3.layout.chord()
