@@ -204,7 +204,12 @@ function updateNodes() {
             if (d.resultType === "cluster") {
                 return cleanName(d.name).substring(0, 10);
             } else if (d.resultType === "doc") {
-                return cleanName(d.medline_journal_title).substring(0, 10);
+                if (d.medline_journal_title.length < d.r) {
+                    return cleanName(d.medline_journal_title).substring(0, 10);
+
+                } else {
+                    return "";
+                }
             }
         });
 

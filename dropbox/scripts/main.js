@@ -1,3 +1,4 @@
+// http://www.brightpointinc.com/interactive/political_influence/index.html?source=d3js
 fetchData();
 
 var intervalId;

@@ -1,4 +1,4 @@
-var remote = true;
+var remote = false;
 var url = "http://129.100.19.193/soscip/api/search.php";
 
 if (remote) {

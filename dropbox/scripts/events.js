@@ -21,7 +21,7 @@ function node_onMouseOver(d, type) {
             toolTip.transition()
                 .duration(200)
                 .style("opacity", ".9");
-            tempHeight = 140;
+            tempHeight = 200;
             header1.text(d.medline_journal_title);
             header.text(d.medline_article_title);
             tempPheno = "";
@@ -38,12 +38,12 @@ function node_onMouseOver(d, type) {
             toolTip.style("left", (d3.event.pageX + 15) + "px")
                 .style("top", (d3.event.pageY - 75) + "px")
                 .style("height", function() {
-                    if (d.medline_article_title.length > 25 * 2) {
+                    if (d.medline_article_title.length > 30) {
                         tempHeight += (d.medline_article_title.length / 31 * 20);
                     }
 
                     if (d.medline_journal_title.length > 30) {
-                        tempHeight += (d.medline_journal_title.length / 30 * 10)
+                        tempHeight += (d.medline_journal_title.length / 30 * 20)
                     }
                     return tempHeight + "px";
                 });
